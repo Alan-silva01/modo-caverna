@@ -499,13 +499,37 @@ h1, h2, h3, h4, .military-font {
 .mt-lg        { margin-top: var(--space-lg); }
 .mb-md        { margin-bottom: var(--space-md); }
 
-/* ── Motivational Ticker ── */
+/* ── Dashboard header layout ── */
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.motivational-desktop-phrase {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--muted-foreground);
+  letter-spacing: 0.03em;
+  text-align: right;
+  max-width: 50%;
+  line-height: 1.4;
+  flex-shrink: 1;
+}
+
+/* Mobile only: ticker */
+.motivational-mobile-only { display: none; }
+
+/* ── Motivational Ticker (mobile) ── */
 .motivational-ticker-wrap {
   overflow: hidden;
   width: 100%;
-  background: linear-gradient(90deg, rgba(220,38,38,0.08) 0%, rgba(220,38,38,0.04) 100%);
-  border-top: 1px solid rgba(220,38,38,0.25);
-  border-bottom: 1px solid rgba(220,38,38,0.25);
+  background: linear-gradient(90deg, rgba(220,38,38,0.07) 0%, rgba(220,38,38,0.03) 100%);
+  border-top: 1px solid rgba(220,38,38,0.2);
+  border-bottom: 1px solid rgba(220,38,38,0.2);
   margin-bottom: var(--space-lg);
   padding: 6px 0;
   position: relative;
@@ -514,65 +538,43 @@ h1, h2, h3, h4, .military-font {
 .motivational-ticker-wrap::after {
   content: '';
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 40px;
+  top: 0; bottom: 0;
+  width: 32px;
   z-index: 2;
   pointer-events: none;
 }
-.motivational-ticker-wrap::before {
-  left: 0;
-  background: linear-gradient(to right, var(--background), transparent);
-}
-.motivational-ticker-wrap::after {
-  right: 0;
-  background: linear-gradient(to left, var(--background), transparent);
-}
+.motivational-ticker-wrap::before { left: 0; background: linear-gradient(to right, var(--background), transparent); }
+.motivational-ticker-wrap::after  { right: 0; background: linear-gradient(to left,  var(--background), transparent); }
 
 .motivational-ticker-track {
   display: flex;
-  gap: 40px;
+  gap: 32px;
   align-items: center;
   white-space: nowrap;
-  animation: ticker-scroll 38s linear infinite;
+  animation: ticker-scroll 30s linear infinite;
   width: max-content;
   will-change: transform;
 }
-.motivational-ticker-track:hover {
-  animation-play-state: paused;
-}
+.motivational-ticker-track:hover { animation-play-state: paused; }
 
 @keyframes ticker-scroll {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 
-.motivational-ticker-label {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  color: var(--brand);
-  text-transform: uppercase;
-  background: rgba(220,38,38,0.12);
-  border: 1px solid rgba(220,38,38,0.35);
-  padding: 2px 8px;
-  flex-shrink: 0;
-}
-
 .motivational-ticker-text {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  color: var(--muted-foreground);
-  letter-spacing: 0.04em;
   font-style: italic;
+  color: var(--muted-foreground);
+  letter-spacing: 0.03em;
 }
 
 .motivational-ticker-sep {
   color: var(--brand);
-  opacity: 0.4;
-  font-size: 10px;
+  opacity: 0.35;
+  font-size: 9px;
   flex-shrink: 0;
 }
 
@@ -1353,6 +1355,11 @@ h1, h2, h3, h4, .military-font {
    ============================================ */
 @media (max-width: 768px) {
   .sidebar { display: none; }
+
+  /* Phrase: esconde no desktop, mostra ticker no mobile */
+  .motivational-desktop-phrase { display: none; }
+  .motivational-mobile-only    { display: block; }
+  .dashboard-header { flex-direction: column; align-items: flex-start; gap: 4px; }
 
   .main-view {
     margin-left: 0 !important;

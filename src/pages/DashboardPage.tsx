@@ -63,32 +63,26 @@ export default function DashboardPage() {
 
   return (
     <div className="page-container">
-      <div className="page-header">
-        <h1 className="page-title">Modo Caverna</h1>
-        <p className="page-subtitle">Painel de Operações</p>
+      {/* ── Header com frase no desktop ── */}
+      <div className="page-header dashboard-header">
+        <div>
+          <h1 className="page-title">Modo Caverna</h1>
+          <p className="page-subtitle">Painel de Operações</p>
+        </div>
+        {/* Desktop: frase estática à direita */}
+        <p className="motivational-desktop-phrase">{fraseHora}</p>
       </div>
 
-      {/* ── Frase do dia ── */}
-      <div className="motivational-ticker-wrap" aria-label="Frase do dia">
+      {/* Mobile only: ticker scrollando */}
+      <div className="motivational-ticker-wrap motivational-mobile-only">
         <div className="motivational-ticker-track">
-          {/* Cópia 1 */}
-          <span className="motivational-ticker-label">⚡ FRASE DA HORA</span>
           <span className="motivational-ticker-text">{fraseHora}</span>
           <span className="motivational-ticker-sep">◆</span>
-          <span className="motivational-ticker-label">⚡ FRASE DA HORA</span>
           <span className="motivational-ticker-text">{fraseHora}</span>
           <span className="motivational-ticker-sep">◆</span>
-          <span className="motivational-ticker-label">⚡ FRASE DA HORA</span>
-          <span className="motivational-ticker-text">{fraseHora}</span>
-          <span className="motivational-ticker-sep">◆</span>
-          {/* Cópia 2 — idêntica para loop sem quebra */}
-          <span className="motivational-ticker-label" aria-hidden="true">⚡ FRASE DA HORA</span>
+          {/* cópia 2 para loop sem quebra */}
           <span className="motivational-ticker-text" aria-hidden="true">{fraseHora}</span>
           <span className="motivational-ticker-sep" aria-hidden="true">◆</span>
-          <span className="motivational-ticker-label" aria-hidden="true">⚡ FRASE DA HORA</span>
-          <span className="motivational-ticker-text" aria-hidden="true">{fraseHora}</span>
-          <span className="motivational-ticker-sep" aria-hidden="true">◆</span>
-          <span className="motivational-ticker-label" aria-hidden="true">⚡ FRASE DA HORA</span>
           <span className="motivational-ticker-text" aria-hidden="true">{fraseHora}</span>
           <span className="motivational-ticker-sep" aria-hidden="true">◆</span>
         </div>
