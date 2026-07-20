@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDisciplinas } from '../hooks/useDisciplinas';
 import { useTemas } from '../hooks/useTemas';
 import { useQuestoes } from '../hooks/useQuestoes';
+import { useConcurso } from '../contexts/ConcursoContext';
 import type { TipoQuestao } from '../types';
 import {
   Zap,
@@ -16,7 +17,8 @@ import {
 
 export default function GeneratePage() {
   const navigate = useNavigate();
-  const { disciplinas, loading: loadingDisc, createDisciplina } = useDisciplinas();
+  const { concursoAlvo } = useConcurso();
+  const { disciplinas, loading: loadingDisc, createDisciplina } = useDisciplinas(concursoAlvo?.id ?? null);
   const [selectedDiscId, setSelectedDiscId] = useState('');
   const { temas, loading: loadingTemas, createTema } = useTemas(selectedDiscId || null);
   const [selectedTemaId, setSelectedTemaId] = useState('');

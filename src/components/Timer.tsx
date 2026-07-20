@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, Pause, RotateCcw, Timer, ChevronUp, ChevronDown, ArrowUp, ArrowDown } from 'lucide-react';
-import { useTheme } from '../contexts/ThemeContext';
 
 type TimerMode = 'stopwatch' | 'countdown';
 
@@ -8,27 +7,21 @@ function pad(n: number) {
   return n.toString().padStart(2, '0');
 }
 
-function formatTime(totalMs: number, showMs: boolean) {
+function formatTime(totalMs: number) {
   const h = Math.floor(totalMs / 3600000);
   const m = Math.floor((totalMs % 3600000) / 60000);
   const s = Math.floor((totalMs % 60000) / 1000);
-  if (showMs) {
-    const cs = Math.floor((totalMs % 1000) / 10); // Centiseconds (00-99)
-    return `${pad(h)}:${pad(m)}:${pad(s)}:${pad(cs)}`;
-  }
   return `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
 export default function HeaderTimer() {
-  const { modoCaverna } = useTheme();
-
   const [mode, setMode] = useState<TimerMode>(() => {
     return (localStorage.getItem('timer-mode') as TimerMode) || 'stopwatch';
   });
 
   const [countdownTargetMs, setCountdownTargetMs] = useState<number>(() => {
     const secs = parseInt(localStorage.getItem('timer-target') || '3600', 10);
-    return secs * 1000; // Store in ms
+    return secs * 1000;
   });
 
   const [elapsedMs, setElapsedMs] = useState(0);
@@ -41,22 +34,13 @@ export default function HeaderTimer() {
   const lastTimeRef = useRef<number>(0);
   const popoverRef = useRef<HTMLDivElement>(null);
 
-  // Sync mode and countdown state when Modo Caverna is enabled
-  useEffect(() => {
-    if (modoCaverna) {
-      setMode('countdown');
-      setElapsedMs(0);
-      setRunning(true);
-    }
-  }, [modoCaverna]);
-
   // Persist settings
   useEffect(() => {
     localStorage.setItem('timer-mode', mode);
     localStorage.setItem('timer-target', String(Math.floor(countdownTargetMs / 1000)));
   }, [mode, countdownTargetMs]);
 
-  // Timer Tick Interval (running at ~30ms for smooth millisecond/centisecond rendering)
+  // Timer tick (1s interval — sem millisegundos)
   useEffect(() => {
     if (running) {
       lastTimeRef.current = Date.now();
@@ -76,7 +60,7 @@ export default function HeaderTimer() {
           }
           return prev + delta;
         });
-      }, 30);
+      }, 1000);
     } else {
       if (intervalRef.current) clearInterval(intervalRef.current);
     }
@@ -86,7 +70,7 @@ export default function HeaderTimer() {
     };
   }, [running, mode, countdownTargetMs]);
 
-  // Close configuration popover on outside click
+  // Close popover on outside click
   useEffect(() => {
     if (!showConfig) return;
     const handler = (e: MouseEvent) => {
@@ -121,15 +105,13 @@ export default function HeaderTimer() {
 
   const remainingMs = countdownTargetMs - elapsedMs;
   const displayMs = mode === 'stopwatch' ? elapsedMs : Math.max(0, remainingMs);
-  const displayStr = formatTime(displayMs, modoCaverna);
+  const displayStr = formatTime(displayMs);
 
-  // Urgency indicator (flashes red when in Modo Caverna or when countdown is very low)
+  // Urgency indicator only by countdown percentage
   const pct = mode === 'countdown' ? remainingMs / countdownTargetMs : 1;
-  const timerClass = modoCaverna
-    ? 'danger'
-    : mode === 'countdown'
-      ? pct <= 0.1 ? 'danger' : pct <= 0.25 ? 'warning' : ''
-      : '';
+  const timerClass = mode === 'countdown'
+    ? pct <= 0.1 ? 'danger' : pct <= 0.25 ? 'warning' : ''
+    : '';
 
   const adjustH = (delta: number) => setConfigH(h => Math.max(0, Math.min(23, h + delta)));
   const adjustM = (delta: number) => setConfigM(m => Math.max(0, Math.min(59, m + delta)));
@@ -140,7 +122,7 @@ export default function HeaderTimer() {
       <div
         className={`header-timer ${timerClass}`}
         style={{
-          width: modoCaverna ? '95px' : '65px',
+          width: '65px',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -222,7 +204,7 @@ export default function HeaderTimer() {
                     textAlign: 'center',
                     border: '1px solid var(--border)',
                     padding: '4px 0',
-                    background: '#000',
+                    background: 'var(--card)',
                   }}>
                     {pad(configH)}
                   </div>
@@ -244,7 +226,7 @@ export default function HeaderTimer() {
                     textAlign: 'center',
                     border: '1px solid var(--border)',
                     padding: '4px 0',
-                    background: '#000',
+                    background: 'var(--card)',
                   }}>
                     {pad(configM)}
                   </div>
