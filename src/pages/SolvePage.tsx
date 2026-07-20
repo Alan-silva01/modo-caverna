@@ -44,13 +44,9 @@ export default function SolvePage() {
           return true;
         });
 
-        if (valid.length > 0) {
-          setQuestoes(valid);
-        } else {
-          navigate('/gerar');
-        }
+        setQuestoes(valid);
       } else {
-        navigate('/gerar');
+        setQuestoes([]);
       }
       setLoading(false);
     };
@@ -102,7 +98,18 @@ export default function SolvePage() {
   }
 
   if (!currentQuestion) {
-    return null;
+    return (
+      <div className="card" style={{ maxWidth: 500, margin: '40px auto', textAlign: 'center', padding: 'var(--space-xl)' }}>
+        <XCircle size={48} style={{ margin: '0 auto var(--space-md)', display: 'block', color: 'var(--brand)' }} />
+        <h2 className="card-title" style={{ fontSize: '18px', marginBottom: 'var(--space-xs)' }}>Nenhuma questão encontrada</h2>
+        <p className="text-muted" style={{ fontSize: '13px', marginBottom: 'var(--space-lg)', lineHeight: 1.5 }}>
+          Não foi possível encontrar questões válidas para o simulado selecionado no momento.
+        </p>
+        <button className="btn btn-primary" onClick={() => navigate('/gerar')}>
+          Voltar para Gerar Questões
+        </button>
+      </div>
+    );
   }
 
   const isCorrect = selectedAnswer === currentQuestion.gabarito;
