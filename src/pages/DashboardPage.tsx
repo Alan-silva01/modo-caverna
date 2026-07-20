@@ -24,6 +24,13 @@ export default function DashboardPage() {
 
   const totalErros = totalQuestoes - totalAcertos;
 
+  const handleSelectConcurso = (edital: any) => {
+    setConcursoAlvo(edital);
+    setTimeout(() => {
+      navigate('/gerar');
+    }, 250);
+  };
+
   return (
     <div className="page-container">
       <div className="page-header">
@@ -75,7 +82,7 @@ export default function DashboardPage() {
                 <div
                   key={edital.id}
                   className={`concurso-card${isSelected ? ' selected' : ''}`}
-                  onClick={() => setConcursoAlvo(isSelected ? null : edital)}
+                  onClick={() => handleSelectConcurso(edital)}
                 >
                   {isSelected && (
                     <div className="concurso-selected-badge">
