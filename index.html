@@ -14,6 +14,12 @@
     <title>Modo Caverna | Treinamento Tático para Concursos Militares</title>
     <meta name="description" content="Treine para PMMA, PCMA, CBMMA e POCMA com questões estilo CESPE/Cebraspe geradas por IA. Modo Caverna: foco total, sem distrações." />
 
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Modo Caverna" />
+
     <!-- Open Graph (WhatsApp, Facebook, Discord, Telegram) -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Modo Caverna | Treinamento Tático para Concursos Militares" />
@@ -32,5 +38,14 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('Service Worker registrado com sucesso:', reg.scope))
+            .catch(err => console.error('Erro ao registrar Service Worker:', err));
+        });
+      }
+    </script>
   </body>
 </html>

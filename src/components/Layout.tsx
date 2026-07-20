@@ -76,15 +76,9 @@ export default function Layout() {
 
         {/* Right: actions */}
         <div className="header-right">
-          {/* Modo Caverna Label & Toggle Switch */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '12px' }}>
-            <span style={{
-              fontFamily: 'Rajdhani, sans-serif',
-              fontSize: '10px',
-              fontWeight: 700,
-              letterSpacing: '0.08em',
-              color: modoCaverna ? 'var(--brand)' : 'var(--muted-foreground)',
-              textTransform: 'uppercase'
+            <span className="modo-caverna-label" style={{
+              color: modoCaverna ? 'var(--brand)' : 'var(--muted-foreground)'
             }}>
               {modoCaverna ? 'MODO CAVERNA ATIVO' : 'ATIVAR MODO CAVERNA'}
             </span>

@@ -197,6 +197,14 @@ h1, h2, h3, h4, .military-font {
   padding-right: var(--space-md);
 }
 
+.modo-caverna-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .header-btn {
   background: transparent;
   border: none;
@@ -1275,7 +1283,14 @@ h1, h2, h3, h4, .military-font {
     padding-bottom: 72px;
   }
 
+  .header-logo {
+    width: auto !important;
+    border-right: none !important;
+    padding: 6px 10px !important;
+  }
+
   .header-breadcrumbs { display: none; }
+  .modo-caverna-label { display: none !important; }
 
   .header-timer { font-size: 13px; }
 

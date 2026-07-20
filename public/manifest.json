@@ -1,0 +1,24 @@
+{
+  "short_name": "Modo Caverna",
+  "name": "Modo Caverna — Treinamento Tático",
+  "description": "Treinamento tático e simulados com IA para concursos policiais e militares.",
+  "icons": [
+    {
+      "src": "https://res.cloudinary.com/ddhlqymvf/image/upload/w_192,h_192,c_pad,bg_black/v1784556100/Logo_Modo_Cavernas_1_bk1g0x.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://res.cloudinary.com/ddhlqymvf/image/upload/w_512,h_512,c_pad,bg_black/v1784556100/Logo_Modo_Cavernas_1_bk1g0x.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "display": "standalone",
+  "orientation": "portrait"
+}
