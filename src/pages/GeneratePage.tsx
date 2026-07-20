@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDisciplinas } from '../hooks/useDisciplinas';
 import { useTemas } from '../hooks/useTemas';
 import { useQuestoes } from '../hooks/useQuestoes';
 import { useConcurso } from '../contexts/ConcursoContext';
+import { supabase } from '../lib/supabase';
 import type { TipoQuestao } from '../types';
 import {
   Zap,
@@ -13,6 +14,7 @@ import {
   CheckSquare,
   List,
   Loader,
+  Database,
 } from 'lucide-react';
 
 export default function GeneratePage() {
@@ -26,6 +28,12 @@ export default function GeneratePage() {
   const [tipo, setTipo] = useState<TipoQuestao>('certo_errado');
   const { generateQuestoes, loading: generating, error } = useQuestoes();
 
+  // Database study states
+  const [source, setSource] = useState<'ia' | 'banco'>('ia');
+  const [dbCount, setDbCount] = useState<number | null>(null);
+  const [dbLoading, setDbLoading] = useState(false);
+  const [dbError, setDbError] = useState<string | null>(null);
+
   // Modal states
   const [showNewDisc, setShowNewDisc] = useState(false);
   const [showNewTema, setShowNewTema] = useState(false);
@@ -34,6 +42,50 @@ export default function GeneratePage() {
   const selectedDisc = disciplinas.find(d => d.id === selectedDiscId);
   const selectedTema = temas.find(t => t.id === selectedTemaId);
 
+  // Live database question count
+  useEffect(() => {
+    if (source !== 'banco' || !selectedDiscId) {
+      setDbCount(null);
+      return;
+    }
+
+    const fetchCount = async () => {
+      try {
+        const { data: discs } = await supabase
+          .from('disciplinas')
+          .select('id')
+          .eq('nome', selectedDisc?.nome || '');
+        const discIds = discs?.map(d => d.id) || [selectedDiscId];
+
+        let countQuery = supabase
+          .from('questoes')
+          .select('*', { count: 'exact', head: true })
+          .in('disciplina_id', discIds)
+          .eq('tipo', tipo);
+
+        if (selectedTemaId && selectedTema) {
+          const { data: siblingTemas } = await supabase
+            .from('temas')
+            .select('id')
+            .eq('nome', selectedTema.nome);
+          const temaIds = siblingTemas?.map(t => t.id) || [selectedTemaId];
+          countQuery = countQuery.in('tema_id', temaIds);
+        }
+
+        const { count, error } = await countQuery;
+        if (!error && count !== null) {
+          setDbCount(count);
+        } else {
+          setDbCount(0);
+        }
+      } catch {
+        setDbCount(0);
+      }
+    };
+
+    fetchCount();
+  }, [source, selectedDiscId, selectedTemaId, selectedDisc?.nome, selectedTema?.nome, tipo]);
+
   const handleDiscChange = (id: string) => {
     if (id === '__new__') {
       setShowNewDisc(true);
@@ -41,6 +93,7 @@ export default function GeneratePage() {
     }
     setSelectedDiscId(id);
     setSelectedTemaId('');
+    setDbError(null);
   };
 
   const handleTemaChange = (id: string) => {
@@ -49,6 +102,7 @@ export default function GeneratePage() {
       return;
     }
     setSelectedTemaId(id);
+    setDbError(null);
   };
 
   const handleCreateDisc = async (e: FormEvent) => {
@@ -75,24 +129,71 @@ export default function GeneratePage() {
   };
 
   const handleGenerate = async () => {
-    if (!selectedDisc || !selectedTema) return;
+    if (!selectedDisc) return;
+    setDbError(null);
 
-    const questoes = await generateQuestoes(
-      selectedDisc.nome,
-      selectedTema.nome,
-      selectedDisc.id,
-      selectedTema.id,
-      quantidade,
-      tipo
-    );
+    if (source === 'ia') {
+      if (!selectedTema) return;
+      const questoes = await generateQuestoes(
+        selectedDisc.nome,
+        selectedTema.nome,
+        selectedDisc.id,
+        selectedTema.id,
+        quantidade,
+        tipo
+      );
 
-    if (questoes && questoes.length > 0) {
-      const ids = questoes.map(q => q.id).join(',');
-      navigate(`/resolver?ids=${ids}`);
+      if (questoes && questoes.length > 0) {
+        const ids = questoes.map(q => q.id).join(',');
+        navigate(`/resolver?ids=${ids}`);
+      }
+    } else {
+      // Banco de questões
+      setDbLoading(true);
+      try {
+        const { data: discs } = await supabase
+          .from('disciplinas')
+          .select('id')
+          .eq('nome', selectedDisc.nome);
+        const discIds = discs?.map(d => d.id) || [selectedDisc.id];
+
+        let qQuery = supabase
+          .from('questoes')
+          .select('id')
+          .in('disciplina_id', discIds)
+          .eq('tipo', tipo);
+
+        if (selectedTemaId && selectedTema) {
+          const { data: siblingTemas } = await supabase
+            .from('temas')
+            .select('id')
+            .eq('nome', selectedTema.nome);
+          const temaIds = siblingTemas?.map(t => t.id) || [selectedTemaId];
+          qQuery = qQuery.in('tema_id', temaIds);
+        }
+
+        const { data: qs, error: qErr } = await qQuery.limit(quantidade);
+
+        if (qErr) throw qErr;
+
+        if (!qs || qs.length === 0) {
+          setDbError(`Nenhuma questão correspondente encontrada no banco.`);
+        } else {
+          // Sort or randomize simple array
+          const shuffled = [...qs].sort(() => 0.5 - Math.random());
+          const ids = shuffled.map(q => q.id).join(',');
+          navigate(`/resolver?ids=${ids}`);
+        }
+      } catch (err: any) {
+        console.error(err);
+        setDbError(err.message || 'Erro ao buscar questões no banco.');
+      } finally {
+        setDbLoading(false);
+      }
     }
   };
 
-  const canGenerate = selectedDiscId && selectedTemaId && !generating;
+  const canGenerate = selectedDiscId && (source === 'banco' || selectedTemaId) && !generating && !dbLoading;
 
   return (
     <div className="page-container">
@@ -102,6 +203,33 @@ export default function GeneratePage() {
       </div>
 
       <div className="card" style={{ maxWidth: 600 }}>
+        {/* Origem das Questões Toggle */}
+        <div className="form-group">
+          <label className="form-label">Origem das Questões</label>
+          <div className="type-toggle" style={{ marginBottom: 'var(--space-sm)' }}>
+            <button
+              className={`type-toggle-btn ${source === 'ia' ? 'active' : ''}`}
+              onClick={() => { setSource('ia'); setDbError(null); }}
+              type="button"
+              style={{ flex: 1 }}
+            >
+              <Zap size={16} strokeWidth={1.5} />
+              <span className="type-toggle-label">Gerar com IA</span>
+              <span className="type-toggle-desc">Elabora novas questões exclusivas</span>
+            </button>
+            <button
+              className={`type-toggle-btn ${source === 'banco' ? 'active' : ''}`}
+              onClick={() => { setSource('banco'); setDbError(null); }}
+              type="button"
+              style={{ flex: 1 }}
+            >
+              <Database size={16} strokeWidth={1.5} />
+              <span className="type-toggle-label">Banco de Questões</span>
+              <span className="type-toggle-desc">Usa simulados e questões salvas</span>
+            </button>
+          </div>
+        </div>
+
         {/* Disciplina */}
         <div className="form-group">
           <label className="form-label">
@@ -124,7 +252,7 @@ export default function GeneratePage() {
         {/* Tema */}
         <div className="form-group">
           <label className="form-label">
-            Tema
+            Tema {source === 'banco' && <span style={{ fontSize: '9px', color: 'var(--muted-foreground)' }}>(OPCIONAL NO BANCO)</span>}
           </label>
           <select
             className="form-select"
@@ -133,7 +261,9 @@ export default function GeneratePage() {
             disabled={!selectedDiscId || loadingTemas}
           >
             <option value="">
-              {!selectedDiscId
+              {source === 'banco' && selectedDiscId 
+                ? 'Todos os temas' 
+                : !selectedDiscId
                 ? 'Selecione uma disciplina primeiro'
                 : loadingTemas
                 ? 'Carregando temas...'
@@ -190,28 +320,52 @@ export default function GeneratePage() {
           </div>
         </div>
 
+        {/* Live database count badge */}
+        {source === 'banco' && dbCount !== null && (
+          <p className="text-center" style={{
+            fontSize: '11px',
+            marginBottom: 'var(--space-md)',
+            fontFamily: 'Rajdhani',
+            fontWeight: 700,
+            color: dbCount > 0 ? 'var(--success)' : 'var(--error)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em'
+          }}>
+            {dbCount > 0 
+              ? `✓ ENCONTRADAS ${dbCount} QUESTÕES NO BANCO` 
+              : `⚠️ NENHUMA QUESTÃO ENCONTRADA COM ESTE PERFIL NO BANCO`
+            }
+          </p>
+        )}
+
         {error && (
           <div className="form-error" style={{ marginBottom: 'var(--space-md)' }}>
             ⚠️ {error}
           </div>
         )}
 
-        {/* Generate Button */}
+        {dbError && (
+          <div className="form-error" style={{ marginBottom: 'var(--space-md)' }}>
+            ⚠️ {dbError}
+          </div>
+        )}
+
+        {/* Generate / Start Button */}
         <button
           className="btn btn-primary btn-lg btn-block"
           onClick={handleGenerate}
-          disabled={!canGenerate}
+          disabled={!canGenerate || (source === 'banco' && dbCount === 0)}
           style={{ height: '40px', fontSize: '13px' }}
         >
-          {generating ? (
+          {generating || dbLoading ? (
             <>
               <Loader size={16} className="loading-spinner" style={{ width: 16, height: 16, border: 'none', borderTop: 'none' }} />
-              <span>Gerando questões com IA...</span>
+              <span>{generating ? 'Gerando questões com IA...' : 'Buscando no banco...'}</span>
             </>
           ) : (
             <>
-              <Zap size={16} />
-              Gerar {quantidade} Questões
+              {source === 'ia' ? <Zap size={16} /> : <Database size={16} />}
+              <span>{source === 'ia' ? `Gerar ${quantidade} Questões` : `Iniciar Simulado (${quantidade} Questões)`}</span>
             </>
           )}
         </button>
