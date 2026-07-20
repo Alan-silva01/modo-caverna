@@ -28,6 +28,26 @@ export function useDisciplinas(editalId?: string | null) {
 
   useEffect(() => {
     fetchDisciplinas();
+
+    // Inscrição em tempo real para disciplinas
+    const channel = supabase
+      .channel('realtime-disciplinas')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'disciplinas'
+        },
+        () => {
+          fetchDisciplinas();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [fetchDisciplinas]);
 
   const createDisciplina = async (nome: string) => {

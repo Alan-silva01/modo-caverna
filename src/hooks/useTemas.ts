@@ -27,6 +27,26 @@ export function useTemas(disciplinaId: string | null) {
 
   useEffect(() => {
     fetchTemas();
+
+    // Inscrição em tempo real para temas
+    const channel = supabase
+      .channel('realtime-temas')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'temas'
+        },
+        () => {
+          fetchTemas();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [fetchTemas]);
 
   const createTema = async (nome: string) => {

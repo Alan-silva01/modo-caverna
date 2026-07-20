@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Edital } from '../contexts/ConcursoContext';
 
@@ -6,19 +6,40 @@ export function useEditais() {
   const [editais, setEditais] = useState<Edital[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const load = async () => {
-      const { data } = await supabase
-        .from('editais')
-        .select('*')
-        .eq('ativo', true)
-        .order('data_prova', { ascending: true });
+  const load = useCallback(async () => {
+    const { data } = await supabase
+      .from('editais')
+      .select('*')
+      .eq('ativo', true)
+      .order('data_prova', { ascending: true });
 
-      if (data) setEditais(data as Edital[]);
-      setLoading(false);
-    };
-    load();
+    if (data) setEditais(data as Edital[]);
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    load();
+
+    // Inscrição em tempo real para editais
+    const channel = supabase
+      .channel('realtime-editais')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'editais'
+        },
+        () => {
+          load();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [load]);
 
   return { editais, loading };
 }

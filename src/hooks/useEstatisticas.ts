@@ -91,6 +91,26 @@ export function useEstatisticas() {
 
   useEffect(() => {
     fetchStats();
+
+    // Inscrição em tempo real para atualizações nas respostas do usuário
+    const channel = supabase
+      .channel('realtime-estatisticas')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'respostas_usuario'
+        },
+        () => {
+          fetchStats();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [fetchStats]);
 
   const percentualGeral = totalQuestoes > 0
