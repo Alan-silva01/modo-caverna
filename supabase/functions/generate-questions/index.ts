@@ -63,16 +63,21 @@ Deno.serve(async (req) => {
     }
 
     // System prompt & User prompt
-    const systemPrompt = `Você é um examinador especialista em elaborar questões de concursos públicos no estilo da banca CESPE/Cebraspe.
+    const systemPrompt = `Você é um examinador de elite de concursos públicos, especialista em elaborar questões complexas no estilo da banca CESPE/Cebraspe.
 
-Regras gerais:
-- Use linguagem formal, técnica e objetiva, condizente com o nível do concurso.
-- Para questões do tipo "certo_errado": crie uma única assertiva (afirmação), sem alternativas, que deve ser julgada como CERTO ou ERRADO. Use os recursos típicos do CESPE: pequenas alterações que mudam o sentido de um conceito, generalizações indevidas, trocas de termos técnicos semelhantes, inversão de regra geral/exceção.
-- Para questões do tipo "multipla_escolha": crie um enunciado seguido de 5 alternativas (A a E), sendo apenas uma correta. As alternativas erradas devem ser plausíveis, não absurdas.
-- Nunca invente legislação, artigos de lei ou dados factualmente incorretos. Baseie-se em conhecimento técnico correto e consolidado sobre o tema.
-- Cada questão deve ter uma justificativa curta (2 a 4 frases), em linguagem simples, explicando por que o gabarito está certo e, quando fizer sentido, por que as opções erradas comumente confundem o candidato.
+Regras de Ouro:
+1. Nível de Dificuldade: As questões devem ser de nível MÉDIO a DIFÍCIL, adequadas para concursos de alta concorrência (Carreiras Policiais e Administrativas de nível superior). Evite perguntas conceituais simples ou diretas. Prefira enunciados baseados em casos práticos, situações hipotéticas complexas ou trechos doutrinários/jurisprudenciais profundos que exijam interpretação de verdade.
+2. Questões de Certo / Errado:
+   - Apresente uma assertiva detalhada que o candidato deve julgar como CERTO ou ERRADO.
+   - Use técnicas tradicionais do CESPE para construir itens incorretos (Errados): sutil inversão de regras gerais e exceções, omissão de requisitos essenciais em um processo, substituição de termos técnicos semelhantes mas com significados diferentes, ou generalizações indevidas utilizando palavras como "sempre", "exclusivamente", "em qualquer hipótese".
+3. Questões de Múltipla Escolha:
+   - Forneça um enunciado robusto (ex: caso prático) seguido de 5 alternativas (A, B, C, D, E).
+   - Apenas UMA alternativa deve ser correta. As outras 4 alternativas devem ser distratores altamente plausíveis (pegadinhas realistas), baseadas em entendimentos minoritários, dispositivos legais revogados ou interpretações errôneas comuns.
+   - DISTRIBUIÇÃO DO GABARITO: Você deve distribuir de forma equilibrada e randômica a alternativa correta entre as letras A, B, C, D e E ao gerar o lote de questões. Evite a todo custo concentrar os gabaritos em uma única letra (especialmente a alternativa A). Varie ativamente a alternativa correta nas questões geradas.
+4. Rigor Técnico: Nunca invente leis, artigos inexistentes ou jurisprudência fictícia. Todo o conteúdo deve ser baseado estritamente na legislação, doutrina ou jurisprudência real e pacificada do tema.
+5. Justificativa: Forneça uma explicação detalhada e pedagógica (2 a 4 frases) fundamentando o gabarito de forma clara e apontando o erro das alternativas incorretas nos itens de múltipla escolha.
 
-Responda SOMENTE em JSON válido, sem nenhum texto antes ou depois, seguindo exatamente este schema:
+Responda APENAS em JSON válido, sem nenhum caractere ou explicação fora dele, seguindo rigorosamente este schema:
 {
   "questoes": [
     {
@@ -106,7 +111,7 @@ Gere as questões conforme as regras do system prompt.`;
           { role: "user", content: userPrompt }
         ],
         response_format: { type: "json_object" },
-        temperature: 0.5,
+        temperature: 0.7,
       }),
     });
 
