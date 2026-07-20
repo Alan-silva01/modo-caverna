@@ -11,6 +11,36 @@ const brasaoMap: Record<string, string> = {
   POCMA: 'https://res.cloudinary.com/ddhlqymvf/image/upload/v1784559889/pericia_oficial_htcpha.png'
 };
 
+const FRASES_MOTIVACIONAIS = [
+  'Sua mente deve estar alinhada com seu propósito.',
+  'Não pare até pertencer.',
+  'Seja policial — disciplina não se negocia.',
+  'Estudo não é sobre talento, é sobre repetição. Faça até aprender.',
+  'Quem vive de desculpas já fez um acordo com a derrota.',
+  'É você contra você mesmo, sempre foi.',
+  'Todos os dias, faça um pouco mais do que você acha que consegue.',
+  'A aprovação não espera. Você vai esperar por ela?',
+  'O concorrente que vai te eliminar está estudando agora.',
+  'Gabarito não mente. A preparação revela o que você é.',
+  'Fardamento não se conquista com desejo, se conquista com suor.',
+  'Cada questão errada é uma lição que a banca te deu de graça.',
+  'Sonhar com a posse é fácil. Merecer a vaga é o desafio.',
+  'Um dia a mais de estudo é uma questão a menos de erro na prova.',
+  'A dor do treino é temporária. A glória da aprovação é permanente.',
+  'Ninguém acorda um dia pronto. Você se constrói todos os dias.',
+  'Foco, fé e frieza — o tripé de quem é aprovado.',
+  'O candidato mediano estuda quando tem vontade. O aprovado estuda sempre.',
+  'Sua história começa no momento em que você decide não desistir.',
+  'Leitura, revisão, simulado — repita até o dia da prova.',
+];
+
+function getDailyPhrase(): string {
+  const dayOfYear = Math.floor(
+    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000
+  );
+  return FRASES_MOTIVACIONAIS[dayOfYear % FRASES_MOTIVACIONAIS.length];
+}
+
 function formatDate(dateStr: string) {
   const [y, m, d] = dateStr.split('-');
   return `${d}/${m}/${y}`;
@@ -23,6 +53,7 @@ export default function DashboardPage() {
   const { concursoAlvo, setConcursoAlvo } = useConcurso();
 
   const totalErros = totalQuestoes - totalAcertos;
+  const fraseHoje = getDailyPhrase();
 
   const handleSelectConcurso = (edital: any) => {
     setConcursoAlvo(edital);
@@ -38,7 +69,16 @@ export default function DashboardPage() {
         <p className="page-subtitle">Painel de Operações</p>
       </div>
 
-      {/* ── Concursos Abertos ── */}
+      {/* ── Frase do dia ── */}
+      <div className="motivational-ticker-wrap" aria-label="Frase do dia">
+        <div className="motivational-ticker">
+          <span className="motivational-ticker-label">⚡ FRASE DO DIA</span>
+          <span className="motivational-ticker-text">{fraseHoje}</span>
+          <span className="motivational-ticker-sep">···</span>
+          <span className="motivational-ticker-text">{fraseHoje}</span>
+        </div>
+      </div>
+
       <section style={{ marginBottom: 'var(--space-lg)' }}>
         <div style={{
           display: 'flex',

@@ -499,6 +499,82 @@ h1, h2, h3, h4, .military-font {
 .mt-lg        { margin-top: var(--space-lg); }
 .mb-md        { margin-bottom: var(--space-md); }
 
+/* ── Motivational Ticker ── */
+.motivational-ticker-wrap {
+  overflow: hidden;
+  width: 100%;
+  background: linear-gradient(90deg, rgba(220,38,38,0.08) 0%, rgba(220,38,38,0.04) 100%);
+  border-top: 1px solid rgba(220,38,38,0.25);
+  border-bottom: 1px solid rgba(220,38,38,0.25);
+  margin-bottom: var(--space-lg);
+  padding: 6px 0;
+  position: relative;
+}
+.motivational-ticker-wrap::before,
+.motivational-ticker-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  z-index: 2;
+  pointer-events: none;
+}
+.motivational-ticker-wrap::before {
+  left: 0;
+  background: linear-gradient(to right, var(--background), transparent);
+}
+.motivational-ticker-wrap::after {
+  right: 0;
+  background: linear-gradient(to left, var(--background), transparent);
+}
+
+.motivational-ticker {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  white-space: nowrap;
+  animation: ticker-scroll 28s linear infinite;
+  width: max-content;
+}
+.motivational-ticker:hover {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.motivational-ticker-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--brand);
+  text-transform: uppercase;
+  background: rgba(220,38,38,0.12);
+  border: 1px solid rgba(220,38,38,0.35);
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+
+.motivational-ticker-text {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  letter-spacing: 0.04em;
+  font-style: italic;
+}
+
+.motivational-ticker-sep {
+  color: var(--brand);
+  opacity: 0.4;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
