@@ -1365,6 +1365,72 @@ h1, h2, h3, h4, .military-font {
   text-transform: uppercase;
 }
 
+/* ============================================
+   SKELETON LOADING
+   ============================================ */
+@keyframes skeleton-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 25%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 75%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+:root {
+  --skeleton-base:      rgba(0, 0, 0, 0.07);
+  --skeleton-highlight: rgba(0, 0, 0, 0.04);
+}
+.dark {
+  --skeleton-base:      rgba(255, 255, 255, 0.06);
+  --skeleton-highlight: rgba(255, 255, 255, 0.12);
+}
+
+/* Skeleton text line */
+.skeleton-text {
+  height: 12px;
+  border-radius: 2px !important;
+}
+.skeleton-text.lg { height: 22px; }
+.skeleton-text.sm { height: 9px; }
+
+/* Skeleton card block — full card height */
+.skeleton-card {
+  height: 80px;
+}
+
+/* Skeleton stats bar row */
+.skeleton-bar-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+.skeleton-bar-label { height: 12px; width: 200px; flex-shrink: 0; border-radius: 2px !important; }
+.skeleton-bar-track { flex: 1; height: 18px; border-radius: 0px !important; }
+.skeleton-bar-count { height: 12px; width: 42px; flex-shrink: 0; border-radius: 2px !important; }
+
+/* Skeleton concurso card */
+.skeleton-concurso-card {
+  height: 130px;
+  border: 1px solid var(--border);
+  background-color: var(--card);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Skeleton img */
+.skeleton-img { height: 56px; width: 100%; }
+
+
 .empty-state {
   text-align: center;
   padding: var(--space-2xl);

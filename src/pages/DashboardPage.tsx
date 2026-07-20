@@ -35,7 +35,6 @@ const FRASES_MOTIVACIONAIS = [
 ];
 
 function getHourlyPhrase(): string {
-  // Muda a cada hora: usa hora absoluta desde epoch para ciclar entre as frases
   const hourIndex = Math.floor(Date.now() / 3_600_000);
   return FRASES_MOTIVACIONAIS[hourIndex % FRASES_MOTIVACIONAIS.length];
 }
@@ -43,6 +42,57 @@ function getHourlyPhrase(): string {
 function formatDate(dateStr: string) {
   const [y, m, d] = dateStr.split('-');
   return `${d}/${m}/${y}`;
+}
+
+// ── Skeleton: concurso cards ──
+function ConcursoSkeleton() {
+  return (
+    <div className="concurso-grid">
+      {[1, 2, 3, 4].map(i => (
+        <div key={i} className="skeleton-concurso-card">
+          <div className="skeleton skeleton-img" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
+            <div className="skeleton skeleton-text lg" style={{ width: '60%' }} />
+            <div className="skeleton skeleton-text sm" style={{ width: '80%' }} />
+          </div>
+          <div className="skeleton skeleton-text" style={{ width: '40%', marginTop: 6 }} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Skeleton: stat cards ──
+function StatCardsSkeleton() {
+  return (
+    <div className="stats-grid" style={{ marginBottom: 'var(--space-lg)' }}>
+      {[1, 2, 3, 4].map(i => (
+        <div key={i} className="card">
+          <div className="skeleton skeleton-text sm" style={{ width: '60%', marginBottom: 8 }} />
+          <div className="skeleton skeleton-text lg" style={{ width: '50%', marginBottom: 6 }} />
+          <div className="skeleton skeleton-text sm" style={{ width: '80%' }} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Skeleton: progress bar rows ──
+function BarChartSkeleton({ rows = 5 }: { rows?: number }) {
+  return (
+    <div className="card">
+      <div className="skeleton skeleton-text" style={{ width: 180, marginBottom: 'var(--space-md)' }} />
+      <div className="stats-bar-chart">
+        {Array.from({ length: rows }).map((_, i) => (
+          <div key={i} className="skeleton-bar-row">
+            <div className="skeleton skeleton-bar-label" style={{ width: `${120 + (i % 3) * 40}px` }} />
+            <div className="skeleton skeleton-bar-track" />
+            <div className="skeleton skeleton-bar-count" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default function DashboardPage() {
@@ -80,7 +130,6 @@ export default function DashboardPage() {
           <span className="motivational-ticker-sep">◆</span>
           <span className="motivational-ticker-text">{fraseHora}</span>
           <span className="motivational-ticker-sep">◆</span>
-          {/* cópia 2 para loop sem quebra */}
           <span className="motivational-ticker-text" aria-hidden="true">{fraseHora}</span>
           <span className="motivational-ticker-sep" aria-hidden="true">◆</span>
           <span className="motivational-ticker-text" aria-hidden="true">{fraseHora}</span>
@@ -88,6 +137,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* ── Editais ── */}
       <section style={{ marginBottom: 'var(--space-lg)' }}>
         <div style={{
           display: 'flex',
@@ -118,9 +168,7 @@ export default function DashboardPage() {
         </div>
 
         {loadingEditais ? (
-          <div className="loading-container" style={{ minHeight: 120 }}>
-            <div className="loading-spinner" />
-          </div>
+          <ConcursoSkeleton />
         ) : (
           <div className="concurso-grid">
             {editais.map(edital => {
@@ -140,45 +188,46 @@ export default function DashboardPage() {
                     </div>
                   )}
 
-                  {/* Edital image or placeholder */}
                   {edital.image_url ? (
                     <img
                       src={edital.image_url}
                       alt={edital.nome}
                       className="concurso-card-img"
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <div className="concurso-card-img-placeholder">
-                      {edital.tipo === 'militar' ? '🪖' : edital.tipo === 'civil' ? '🔵' : '🏛️'}
+                      {brasaoMap[edital.sigla] ? (
+                        <img
+                          src={brasaoMap[edital.sigla]}
+                          alt={edital.sigla}
+                          style={{ width: 32, height: 32, objectFit: 'contain', opacity: 0.6 }}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <span style={{ fontFamily: 'Rajdhani', fontWeight: 700, fontSize: 18, color: 'var(--muted-foreground)' }}>
+                          {edital.sigla}
+                        </span>
+                      )}
                     </div>
                   )}
 
                   <div className="concurso-card-body">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                      {brasaoMap[edital.sigla] && (
-                        <img
-                          src={brasaoMap[edital.sigla]}
-                          alt=""
-                          style={{ width: '20px', height: '20px', objectFit: 'contain' }}
-                        />
-                      )}
-                      <div className="concurso-card-sigla">{edital.sigla}</div>
-                    </div>
-                    <div className="concurso-card-nome">{edital.nome}</div>
-                    <div className="concurso-card-tipo">
-                      <span>{edital.tipo === 'militar' ? 'MILITAR' : edital.tipo === 'civil' ? 'CIVIL' : 'FEDERAL'}</span>
-                    </div>
+                    <div className="concurso-card-sigla">{edital.sigla}</div>
+                    <div className="concurso-card-nome">{edital.descricao || edital.nome}</div>
+                  </div>
 
-                    <div className="concurso-countdown">
-                      <div className="concurso-countdown-days">
-                        {days > 0 ? days : 0}
-                      </div>
-                      <div className="concurso-countdown-label">
-                        {days === 1 ? 'dia' : 'dias'}
-                      </div>
-                      <div className="concurso-countdown-date">
-                        {formatDate(edital.data_prova)}
-                      </div>
+                  <div className="concurso-countdown">
+                    <div className="concurso-countdown-days">
+                      {days > 0 ? days : 0}
+                    </div>
+                    <div className="concurso-countdown-label">
+                      {days === 1 ? 'dia' : 'dias'}
+                    </div>
+                    <div className="concurso-countdown-date">
+                      {formatDate(edital.data_prova)}
                     </div>
                   </div>
                 </div>
@@ -209,25 +258,31 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Stats Cards ── */}
-      <div className="stats-grid" style={{ marginBottom: 'var(--space-lg)' }}>
-        {[
-          { label: 'Respondidas', value: totalQuestoes, sub: 'Total de assertivas' },
-          { label: 'Acertos',     value: totalAcertos,   sub: 'Corretas',           cls: 'text-success' },
-          { label: 'Erros',       value: totalErros,      sub: 'Incorretas',         cls: 'text-error' },
-          { label: 'Aproveit.',   value: `${percentualGeral}%`, sub: 'Taxa geral' },
-        ].map(s => (
-          <div className="card" key={s.label}>
-            <div className="card-title">{s.label}</div>
-            <div className={`card-value${s.cls ? ' ' + s.cls : ''}`}>
-              {loading ? '—' : s.value}
+      {loading ? (
+        <StatCardsSkeleton />
+      ) : (
+        <div className="stats-grid" style={{ marginBottom: 'var(--space-lg)' }}>
+          {[
+            { label: 'Respondidas', value: totalQuestoes, sub: 'Total de assertivas' },
+            { label: 'Acertos',     value: totalAcertos,   sub: 'Corretas',           cls: 'text-success' },
+            { label: 'Erros',       value: totalErros,      sub: 'Incorretas',         cls: 'text-error' },
+            { label: 'Aproveit.',   value: `${percentualGeral}%`, sub: 'Taxa geral' },
+          ].map(s => (
+            <div className="card" key={s.label}>
+              <div className="card-title">{s.label}</div>
+              <div className={`card-value${s.cls ? ' ' + s.cls : ''}`}>
+                {s.value}
+              </div>
+              <div className="card-label">{s.sub}</div>
             </div>
-            <div className="card-label">{s.sub}</div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* ── Desempenho por Disciplina ── */}
-      {statsDisciplina.length > 0 && (
+      {loading ? (
+        <BarChartSkeleton rows={5} />
+      ) : statsDisciplina.length > 0 && (
         <div className="card">
           <div className="card-title" style={{ marginBottom: 'var(--space-md)' }}>
             Aproveitamento por Disciplina

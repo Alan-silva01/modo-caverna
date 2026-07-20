@@ -101,9 +101,33 @@ export default function HistoryPage() {
 
   if (loading) {
     return (
-      <div className="loading-container" style={{ minHeight: '60vh' }}>
-        <div className="loading-spinner" />
-        <p className="loading-text">Carregando histórico...</p>
+      <div className="page-container">
+        <div className="page-header">
+          <h1 className="page-title">Histórico</h1>
+          <p className="page-subtitle">Suas sessões de estudo anteriores</p>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+          {[1, 2, 3, 4, 5].map(i => (
+            <div key={i} className="card">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', gap: 'var(--space-sm)', marginBottom: 'var(--space-sm)' }}>
+                    <div className="skeleton skeleton-text" style={{ width: 32 }} />
+                    <div className="skeleton skeleton-text" style={{ width: `${80 + (i % 3) * 50}px` }} />
+                    <div className="skeleton skeleton-text" style={{ width: `${60 + (i % 2) * 40}px` }} />
+                  </div>
+                  <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
+                    <div className="skeleton skeleton-text sm" style={{ width: 120 }} />
+                    <div className="skeleton skeleton-text sm" style={{ width: 28 }} />
+                    <div className="skeleton skeleton-text sm" style={{ width: 28 }} />
+                    <div className="skeleton skeleton-text sm" style={{ width: 36 }} />
+                  </div>
+                </div>
+                <div className="skeleton skeleton-text" style={{ width: 24, height: 24 }} />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
