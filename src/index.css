@@ -1228,7 +1228,7 @@ h1, h2, h3, h4, .military-font {
 .stats-bar-row   { display: flex; align-items: center; gap: var(--space-md); }
 
 .stats-bar-label {
-  width: 150px;
+  width: 240px;
   font-family: 'Rajdhani', sans-serif;
   font-size: 12px;
   font-weight: 600;
@@ -1439,6 +1439,7 @@ h1, h2, h3, h4, .military-font {
 
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .ce-buttons { grid-template-columns: 1fr 1fr; }
+  .stats-bar-label { width: 170px; }
 }
 
 @media (min-width: 769px) {
