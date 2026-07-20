@@ -30,10 +30,16 @@ export function useEstatisticas() {
     if (!respostas) { setLoading(false); return; }
 
     // Get disciplinas and temas names
-    const { data: disciplinas } = await supabase.from('disciplinas').select('id, nome');
+    const { data: disciplinas } = await supabase
+      .from('disciplinas')
+      .select('id, nome, editais(sigla)');
     const { data: temas } = await supabase.from('temas').select('id, nome');
 
-    const discMap = new Map((disciplinas || []).map(d => [d.id, d.nome]));
+    const discMap = new Map((disciplinas || []).map(d => {
+      const sigla = (d.editais as any)?.sigla;
+      const nomeExibicao = sigla ? `${d.nome} (${sigla})` : d.nome;
+      return [d.id, nomeExibicao];
+    }));
     const temaMap = new Map((temas || []).map(t => [t.id, t.nome]));
 
     // Calculate overall stats
