@@ -1255,6 +1255,7 @@ h1, h2, h3, h4, .military-font {
   padding: var(--space-2xl);
   border: 1px dashed var(--border);
   background-color: var(--card);
+  transition: background-color 2.5s cubic-bezier(0.4, 0, 0.2, 1), border-color 2.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .empty-state-icon { margin-bottom: var(--space-sm); color: var(--muted-foreground); display: flex; justify-content: center; }
