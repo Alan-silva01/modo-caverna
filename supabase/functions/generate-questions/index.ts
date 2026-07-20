@@ -92,11 +92,11 @@ Responda APENAS em JSON válido, sem nenhum caractere ou explicação fora dele,
 }`;
 
     const userPrompt = `Disciplina: ${disciplina}
-    Tema: ${tema}
-    Quantidade de questões: ${quantidade}
-    Tipo de questão: ${tipo}
+Tema: ${tema}
+Quantidade de questões: ${quantidade}
+Tipo de questão: ${tipo}
 
-    Gere as questões conforme as regras do system prompt.`;
+Gere as questões conforme as regras do system prompt.`;
 
     // Call OpenAI
     const openAiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -126,7 +126,7 @@ Responda APENAS em JSON válido, sem nenhum caractere ou explicação fora dele,
 
     const openAiData = await openAiResponse.json();
     let content = openAiData.choices[0].message.content.trim();
-    
+
     // Clean up potential markdown code block wrappers
     if (content.startsWith("```json")) {
       content = content.substring(7);
@@ -160,9 +160,8 @@ Responda APENAS em JSON válido, sem nenhum caractere ou explicação fora dele,
         } else if (upper.startsWith("E") || upper === "ERRADO" || upper === "FALSE") {
           normalizedGabarito = "E";
         } else {
-          // Fallback robusto de segurança: deduz gabarito a partir da justificativa da IA
+          // Fallback robusto: deduz gabarito a partir da justificativa
           const justUpper = String(q.justificativa).toUpperCase();
-          const enunUpper = String(q.enunciado).toUpperCase();
           if (
             justUpper.includes("CORRETA") ||
             justUpper.includes("CERTA") ||
@@ -178,10 +177,10 @@ Responda APENAS em JSON válido, sem nenhum caractere ou explicação fora dele,
         }
       } else if (tipo === "multipla_escolha" && Array.isArray(alts) && alts.length === 5) {
         // Limpa os prefixos (ex: "A) ", "a - ")
-        const cleanAlts = alts.map(a => a.replace(/^[A-E][)\-\s]*/i, "").trim());
-        
+        const cleanAlts = alts.map((a: string) => a.replace(/^[A-E][)\-\s]*/i, "").trim());
+
         // A resposta correta gerada pela IA sempre estará no índice 0
-        const indexedAlts = cleanAlts.map((text, idx) => ({
+        const indexedAlts = cleanAlts.map((text: string, idx: number) => ({
           text,
           isCorrect: idx === 0
         }));
@@ -190,18 +189,17 @@ Responda APENAS em JSON válido, sem nenhum caractere ou explicação fora dele,
         const shuffled = [...indexedAlts].sort(() => Math.random() - 0.5);
 
         // Encontra a nova posição da alternativa correta
-        const correctIdx = shuffled.findIndex(item => item.isCorrect);
+        const correctIdx = shuffled.findIndex((item: any) => item.isCorrect);
         normalizedGabarito = String.fromCharCode(65 + correctIdx); // A, B, C, D, E
 
         // Reconstitui com os prefixos corretos das novas posições
-        alts = shuffled.map((item, idx) => {
+        alts = shuffled.map((item: any, idx: number) => {
           const letter = String.fromCharCode(65 + idx);
           return `${letter}) ${item.text}`;
         });
       } else if (tipo === "multipla_escolha") {
         normalizedGabarito = normalizedGabarito.toUpperCase().replace(/[^A-E]/g, "").charAt(0) || "A";
       }
-
 
       return {
         user_id: userId,
