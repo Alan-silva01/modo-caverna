@@ -36,15 +36,21 @@ export default function StatsPage() {
         </div>
 
         <div className="card">
+          <div className="card-title">Aproveitamento</div>
+          <div className="card-value">{percentualGeral}%</div>
+          <div className="card-label">Aproveitamento médio</div>
+        </div>
+
+        <div className="card">
           <div className="card-title">Acertos</div>
           <div className="card-value text-success">{totalAcertos}</div>
           <div className="card-label">Respostas corretas</div>
         </div>
 
         <div className="card">
-          <div className="card-title">Aproveitamento</div>
-          <div className="card-value">{percentualGeral}%</div>
-          <div className="card-label">Aproveitamento médio</div>
+          <div className="card-title">Erros</div>
+          <div className="card-value text-error">{totalQuestoes - totalAcertos}</div>
+          <div className="card-label">Respostas incorretas</div>
         </div>
       </div>
 
