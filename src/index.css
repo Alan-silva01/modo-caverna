@@ -36,6 +36,7 @@
   --error-bg:          rgba(139, 26, 26, 0.1);
   --warning:           #8B6614;
   --warning-bg:        rgba(139, 102, 20, 0.12);
+  --feedback-justificativa-bg: rgba(0, 0, 0, 0.06);
   --radius-sm: 0px; --radius-md: 0px; --radius-lg: 0px; --radius-xl: 0px; --radius-full: 0px;
   --space-xs: 0.25rem; --space-sm: 0.5rem; --space-md: 1rem;
   --space-lg: 1.5rem; --space-xl: 2rem; --space-2xl: 3rem;
@@ -76,6 +77,7 @@
   --error-bg:          rgba(139, 34, 34, 0.12);
   --warning:           #8B6614;
   --warning-bg:        rgba(139, 102, 20, 0.12);
+  --feedback-justificativa-bg: rgba(0, 0, 0, 0.35);
 }
 
 /* ============================================
@@ -1067,13 +1069,14 @@ h1, h2, h3, h4, .military-font {
   line-height: 1.6;
   color: var(--foreground);
   padding: var(--space-sm) var(--space-md);
-  background-color: rgba(0,0,0,0.4);
+  background-color: var(--feedback-justificativa-bg);
   border-left: 2px solid;
   font-family: 'Inter', sans-serif;
 }
 
 .feedback-panel.correct  .feedback-justificativa { border-left-color: var(--success); }
 .feedback-panel.incorrect .feedback-justificativa { border-left-color: var(--error); }
+
 
 /* ============================================
    LOGIN PAGE — MODO CAVERNA
