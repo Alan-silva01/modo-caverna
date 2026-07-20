@@ -36,7 +36,19 @@ export default function SolvePage() {
         const sorted = idList
           .map(id => data.find(q => q.id === id))
           .filter(Boolean) as Questao[];
-        setQuestoes(sorted);
+
+        // Filtra questões corrompidas (certo_errado com gabarito inválido)
+        const valid = sorted.filter(q => {
+          if (q.tipo === 'certo_errado') return q.gabarito === 'C' || q.gabarito === 'E';
+          if (q.tipo === 'multipla_escolha') return ['A','B','C','D','E'].includes(q.gabarito);
+          return true;
+        });
+
+        if (valid.length > 0) {
+          setQuestoes(valid);
+        } else {
+          navigate('/gerar');
+        }
       } else {
         navigate('/gerar');
       }
@@ -57,7 +69,10 @@ export default function SolvePage() {
   const handleConfirm = useCallback(async () => {
     if (!selectedAnswer || !currentQuestion) return;
 
-    const acertou = selectedAnswer === currentQuestion.gabarito;
+    // Normaliza o gabarito para garantir comparação segura
+    const gabNorm = String(currentQuestion.gabarito).trim().toUpperCase();
+    const selNorm = String(selectedAnswer).trim().toUpperCase();
+    const acertou = selNorm === gabNorm;
     setAnswered(true);
 
     await saveResposta(currentQuestion.id, selectedAnswer, acertou);
