@@ -34,11 +34,10 @@ const FRASES_MOTIVACIONAIS = [
   'Leitura, revisão, simulado — repita até o dia da prova.',
 ];
 
-function getDailyPhrase(): string {
-  const dayOfYear = Math.floor(
-    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000
-  );
-  return FRASES_MOTIVACIONAIS[dayOfYear % FRASES_MOTIVACIONAIS.length];
+function getHourlyPhrase(): string {
+  // Muda a cada hora: usa hora absoluta desde epoch para ciclar entre as frases
+  const hourIndex = Math.floor(Date.now() / 3_600_000);
+  return FRASES_MOTIVACIONAIS[hourIndex % FRASES_MOTIVACIONAIS.length];
 }
 
 function formatDate(dateStr: string) {
@@ -53,7 +52,7 @@ export default function DashboardPage() {
   const { concursoAlvo, setConcursoAlvo } = useConcurso();
 
   const totalErros = totalQuestoes - totalAcertos;
-  const fraseHoje = getDailyPhrase();
+  const fraseHora = getHourlyPhrase();
 
   const handleSelectConcurso = (edital: any) => {
     setConcursoAlvo(edital);
@@ -71,11 +70,27 @@ export default function DashboardPage() {
 
       {/* ── Frase do dia ── */}
       <div className="motivational-ticker-wrap" aria-label="Frase do dia">
-        <div className="motivational-ticker">
-          <span className="motivational-ticker-label">⚡ FRASE DO DIA</span>
-          <span className="motivational-ticker-text">{fraseHoje}</span>
-          <span className="motivational-ticker-sep">···</span>
-          <span className="motivational-ticker-text">{fraseHoje}</span>
+        <div className="motivational-ticker-track">
+          {/* Cópia 1 */}
+          <span className="motivational-ticker-label">⚡ FRASE DA HORA</span>
+          <span className="motivational-ticker-text">{fraseHora}</span>
+          <span className="motivational-ticker-sep">◆</span>
+          <span className="motivational-ticker-label">⚡ FRASE DA HORA</span>
+          <span className="motivational-ticker-text">{fraseHora}</span>
+          <span className="motivational-ticker-sep">◆</span>
+          <span className="motivational-ticker-label">⚡ FRASE DA HORA</span>
+          <span className="motivational-ticker-text">{fraseHora}</span>
+          <span className="motivational-ticker-sep">◆</span>
+          {/* Cópia 2 — idêntica para loop sem quebra */}
+          <span className="motivational-ticker-label" aria-hidden="true">⚡ FRASE DA HORA</span>
+          <span className="motivational-ticker-text" aria-hidden="true">{fraseHora}</span>
+          <span className="motivational-ticker-sep" aria-hidden="true">◆</span>
+          <span className="motivational-ticker-label" aria-hidden="true">⚡ FRASE DA HORA</span>
+          <span className="motivational-ticker-text" aria-hidden="true">{fraseHora}</span>
+          <span className="motivational-ticker-sep" aria-hidden="true">◆</span>
+          <span className="motivational-ticker-label" aria-hidden="true">⚡ FRASE DA HORA</span>
+          <span className="motivational-ticker-text" aria-hidden="true">{fraseHora}</span>
+          <span className="motivational-ticker-sep" aria-hidden="true">◆</span>
         </div>
       </div>
 
