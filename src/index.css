@@ -87,12 +87,15 @@
   box-sizing: border-box;
   border-radius: 0px !important;
   outline: none !important;
-  transition:
-    background-color 300ms ease,
-    background 300ms ease,
-    color 300ms ease,
-    border-color 300ms ease,
-    box-shadow 300ms ease;
+}
+
+/* ── Transição suave ao mudar tema / Modo Caverna ── */
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition-property: background-color, background, color, border-color, box-shadow, fill, stroke !important;
+  transition-duration: 320ms !important;
+  transition-timing-function: ease !important;
 }
 
 html {

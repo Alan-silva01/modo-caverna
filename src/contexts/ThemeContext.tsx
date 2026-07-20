@@ -26,16 +26,26 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // Apply classes based on theme/modoCaverna
   useEffect(() => {
     const root = document.documentElement;
-    // Modo Caverna forces dark mode
     const activeDark = theme === 'dark' || modoCaverna;
+
+    // Adiciona classe de transição antes de trocar o tema
+    root.classList.add('theme-transitioning');
 
     if (activeDark) {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
     }
+
     localStorage.setItem('theme', theme);
     localStorage.setItem('modo-caverna', String(modoCaverna));
+
+    // Remove a classe após a transição terminar (350ms)
+    const timer = setTimeout(() => {
+      root.classList.remove('theme-transitioning');
+    }, 350);
+
+    return () => clearTimeout(timer);
   }, [theme, modoCaverna]);
 
   const toggleTheme = () => {
