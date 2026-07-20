@@ -67,8 +67,8 @@ export default function StatsPage() {
                 <div className="stats-bar-track">
                   <div
                     className={`stats-bar-fill ${
-                      stat.percentual >= 70 ? 'high' :
-                      stat.percentual >= 40 ? 'medium' : 'low'
+                      stat.percentual >= 80 ? 'high' :
+                      stat.percentual >= 60 ? 'medium' : 'low'
                     }`}
                     style={{ width: `${Math.max(stat.percentual, 8)}%` }}
                   >
@@ -95,8 +95,8 @@ export default function StatsPage() {
                 <div className="stats-bar-track">
                   <div
                     className={`stats-bar-fill ${
-                      stat.percentual >= 70 ? 'high' :
-                      stat.percentual >= 40 ? 'medium' : 'low'
+                      stat.percentual >= 80 ? 'high' :
+                      stat.percentual >= 60 ? 'medium' : 'low'
                     }`}
                     style={{ width: `${Math.max(stat.percentual, 8)}%` }}
                   >

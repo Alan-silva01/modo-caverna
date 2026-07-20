@@ -58,8 +58,8 @@ export default function ResultsPage() {
   }, [searchParams]);
 
   const getPercentualClass = () => {
-    if (percentual >= 70) return 'high';
-    if (percentual >= 40) return 'medium';
+    if (percentual >= 80) return 'high';
+    if (percentual >= 60) return 'medium';
     return 'low';
   };
 
