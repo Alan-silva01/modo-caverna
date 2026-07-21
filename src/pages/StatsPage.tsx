@@ -38,6 +38,8 @@ export default function StatsPage() {
   const {
     statsDisciplina,
     statsTema,
+    statsDificuldade,
+    statsTipo,
     totalQuestoes,
     totalAcertos,
     percentualGeral,
@@ -78,6 +80,66 @@ export default function StatsPage() {
             <div className="card-title">Erros</div>
             <div className="card-value text-error">{totalQuestoes - totalAcertos}</div>
             <div className="card-label">Respostas incorretas</div>
+          </div>
+        </div>
+      )}
+
+      {/* By Nível de Dificuldade */}
+      {loading ? (
+        <BarChartSkeleton rows={3} title="Desempenho por Nível de Dificuldade" />
+      ) : statsDificuldade.length > 0 && (
+        <div className="card" style={{ marginBottom: 'var(--space-md)' }}>
+          <div className="card-title" style={{ marginBottom: 'var(--space-md)' }}>
+            Desempenho por Nível de Dificuldade
+          </div>
+          <div className="stats-bar-chart">
+            {statsDificuldade.map(stat => (
+              <div key={stat.dificuldade} className="stats-bar-row">
+                <span className="stats-bar-label">{stat.label}</span>
+                <div className="stats-bar-track">
+                  <div
+                    className={`stats-bar-fill ${
+                      stat.percentual >= 80 ? 'high' :
+                      stat.percentual >= 60 ? 'medium' : 'low'
+                    }`}
+                    style={{ width: `${Math.max(stat.percentual, 8)}%` }}
+                  >
+                    <span className="stats-bar-value">{stat.percentual}%</span>
+                  </div>
+                </div>
+                <span className="stats-bar-count">{stat.acertos}/{stat.total}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* By Formato de Questão */}
+      {loading ? (
+        <BarChartSkeleton rows={2} title="Desempenho por Formato de Questão" />
+      ) : statsTipo.length > 0 && (
+        <div className="card" style={{ marginBottom: 'var(--space-md)' }}>
+          <div className="card-title" style={{ marginBottom: 'var(--space-md)' }}>
+            Desempenho por Formato de Questão
+          </div>
+          <div className="stats-bar-chart">
+            {statsTipo.map(stat => (
+              <div key={stat.tipo} className="stats-bar-row">
+                <span className="stats-bar-label">{stat.label}</span>
+                <div className="stats-bar-track">
+                  <div
+                    className={`stats-bar-fill ${
+                      stat.percentual >= 80 ? 'high' :
+                      stat.percentual >= 60 ? 'medium' : 'low'
+                    }`}
+                    style={{ width: `${Math.max(stat.percentual, 8)}%` }}
+                  >
+                    <span className="stats-bar-value">{stat.percentual}%</span>
+                  </div>
+                </div>
+                <span className="stats-bar-count">{stat.acertos}/{stat.total}</span>
+              </div>
+            ))}
           </div>
         </div>
       )}

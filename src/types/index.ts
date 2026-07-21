@@ -71,6 +71,22 @@ export interface EstatisticaTema {
   percentual: number;
 }
 
+export interface EstatisticaDificuldade {
+  dificuldade: 'extremo' | 'dificil' | 'medio';
+  label: string;
+  total: number;
+  acertos: number;
+  percentual: number;
+}
+
+export interface EstatisticaTipo {
+  tipo: TipoQuestao;
+  label: string;
+  total: number;
+  acertos: number;
+  percentual: number;
+}
+
 export interface SessaoHistorico {
   data: string;
   disciplina_nome: string;
