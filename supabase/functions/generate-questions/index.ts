@@ -227,6 +227,7 @@ Gere as ${quantidade} questões no nível ${dificuldade} conforme o prompt.`;
         gabarito: normalizedGabarito,
         justificativa: q.justificativa,
         banca_estilo: "CESPE",
+        dificuldade: dificuldade,
       };
     });
 

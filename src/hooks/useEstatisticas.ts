@@ -16,7 +16,7 @@ export function useEstatisticas() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setLoading(false); return; }
 
-    // Get all answers with question data
+    // Get all answers with question data (only columns that always existed)
     const { data: respostas } = await supabase
       .from('respostas_usuario')
       .select(`
@@ -25,13 +25,27 @@ export function useEstatisticas() {
         questoes (
           disciplina_id,
           tema_id,
-          tipo,
-          dificuldade
+          tipo
         )
       `)
       .eq('user_id', user.id);
 
-    if (!respostas) { setLoading(false); return; }
+    if (!respostas || respostas.length === 0) { setLoading(false); return; }
+
+    // Fetch dificuldade separately (column may not exist yet on old DBs)
+    const questaoIds = [...new Set(respostas.map(r => r.questao_id))];
+    let difMap = new Map<string, string>();
+    try {
+      const { data: qDifs } = await supabase
+        .from('questoes')
+        .select('id, dificuldade')
+        .in('id', questaoIds);
+      if (qDifs) {
+        difMap = new Map(qDifs.map(q => [q.id, q.dificuldade || 'extremo']));
+      }
+    } catch {
+      // Column doesn't exist yet — all default to 'extremo'
+    }
 
     // Get disciplinas and temas names
     const { data: disciplinas } = await supabase
@@ -70,7 +84,6 @@ export function useEstatisticas() {
         disciplina_id: string;
         tema_id: string;
         tipo?: string;
-        dificuldade?: string;
       };
       if (!q) continue;
 
@@ -86,10 +99,9 @@ export function useEstatisticas() {
       if (r.acertou) ts.acertos++;
       temaStats.set(q.tema_id, ts);
 
-      // By dificuldade
-      const difKey = (q.dificuldade && ['extremo', 'dificil', 'medio'].includes(q.dificuldade))
-        ? q.dificuldade
-        : 'extremo';
+      // By dificuldade (from separate lookup)
+      const rawDif = difMap.get(r.questao_id) || 'extremo';
+      const difKey = ['extremo', 'dificil', 'medio'].includes(rawDif) ? rawDif : 'extremo';
       const dif = diffStats.get(difKey)!;
       dif.total++;
       if (r.acertou) dif.acertos++;
