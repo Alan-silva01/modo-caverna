@@ -90,14 +90,14 @@
   --feedback-justificativa-bg: rgba(0, 0, 0, 0.35);
   --select-option-bg:    #0D0D0D;
   --select-option-color: #D4CFB8;
-  --stats-bar-track-bg: #1A1A19;
-  --stats-bar-track-border: rgba(255, 255, 255, 0.1);
-  --stats-bar-high-bg: #F1EFE8;
-  --stats-bar-high-text: #2C2C2A;
-  --stats-bar-medium-bg: #B4B2A9;
-  --stats-bar-medium-text: #2C2C2A;
-  --stats-bar-low-bg: #5F5E5A;
-  --stats-bar-low-text: #F1EFE8;
+  --stats-bar-track-bg: #141413;
+  --stats-bar-track-border: rgba(255, 255, 255, 0.06);
+  --stats-bar-high-bg: #6B6962;
+  --stats-bar-high-text: #E8E4D4;
+  --stats-bar-medium-bg: #3E3D3A;
+  --stats-bar-medium-text: #9A9890;
+  --stats-bar-low-bg: #252421;
+  --stats-bar-low-text: #5A5956;
 }
 
 /* ============================================
