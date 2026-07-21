@@ -198,36 +198,38 @@ export default function DashboardPage() {
                     />
                   ) : (
                     <div className="concurso-card-img-placeholder">
-                      {brasaoMap[edital.sigla] ? (
-                        <img
-                          src={brasaoMap[edital.sigla]}
-                          alt={edital.sigla}
-                          style={{ width: 32, height: 32, objectFit: 'contain', opacity: 0.6 }}
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : (
-                        <span style={{ fontFamily: 'Rajdhani', fontWeight: 700, fontSize: 18, color: 'var(--muted-foreground)' }}>
-                          {edital.sigla}
-                        </span>
-                      )}
+                      {edital.tipo === 'militar' ? '🪖' : edital.tipo === 'civil' ? '🔵' : '🏛️'}
                     </div>
                   )}
 
                   <div className="concurso-card-body">
-                    <div className="concurso-card-sigla">{edital.sigla}</div>
-                    <div className="concurso-card-nome">{edital.descricao || edital.nome}</div>
-                  </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                      {brasaoMap[edital.sigla] && (
+                        <img
+                          src={brasaoMap[edital.sigla]}
+                          alt=""
+                          style={{ width: '20px', height: '20px', objectFit: 'contain' }}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      )}
+                      <div className="concurso-card-sigla">{edital.sigla}</div>
+                    </div>
+                    <div className="concurso-card-nome">{edital.nome}</div>
+                    <div className="concurso-card-tipo">
+                      <span>{edital.tipo === 'militar' ? 'MILITAR' : edital.tipo === 'civil' ? 'CIVIL' : 'FEDERAL'}</span>
+                    </div>
 
-                  <div className="concurso-countdown">
-                    <div className="concurso-countdown-days">
-                      {days > 0 ? days : 0}
-                    </div>
-                    <div className="concurso-countdown-label">
-                      {days === 1 ? 'dia' : 'dias'}
-                    </div>
-                    <div className="concurso-countdown-date">
-                      {formatDate(edital.data_prova)}
+                    <div className="concurso-countdown">
+                      <div className="concurso-countdown-days">
+                        {days > 0 ? days : 0}
+                      </div>
+                      <div className="concurso-countdown-label">
+                        {days === 1 ? 'dia' : 'dias'}
+                      </div>
+                      <div className="concurso-countdown-date">
+                        {formatDate(edital.data_prova)}
+                      </div>
                     </div>
                   </div>
                 </div>
