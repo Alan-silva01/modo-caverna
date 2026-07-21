@@ -37,6 +37,8 @@
   --warning:           #8B6614;
   --warning-bg:        rgba(139, 102, 20, 0.12);
   --feedback-justificativa-bg: rgba(0, 0, 0, 0.06);
+  --select-option-bg:    #E8E4D6;
+  --select-option-color: #1A1A0F;
   --stats-bar-track-bg: #D5D1C3;
   --stats-bar-track-border: rgba(11, 11, 11, 0.15);
   --stats-bar-high-bg: #2C2C2A;
@@ -86,6 +88,8 @@
   --warning:           #8B6614;
   --warning-bg:        rgba(139, 102, 20, 0.12);
   --feedback-justificativa-bg: rgba(0, 0, 0, 0.35);
+  --select-option-bg:    #0D0D0D;
+  --select-option-color: #D4CFB8;
   --stats-bar-track-bg: #1A1A19;
   --stats-bar-track-border: rgba(255, 255, 255, 0.1);
   --stats-bar-high-bg: #F1EFE8;
@@ -852,6 +856,12 @@ h1, h2, h3, h4, .military-font {
   font-size: 13px;
   outline: none;
   transition: border-color 150ms ease;
+  color-scheme: light;
+}
+
+.dark .form-input,
+.dark .form-select {
+  color-scheme: dark;
 }
 
 .form-input:focus,
@@ -868,7 +878,10 @@ h1, h2, h3, h4, .military-font {
   padding-right: 30px;
 }
 
-.form-select option { background-color: #0D0D0D; color: var(--foreground); }
+.form-select option {
+  background-color: var(--select-option-bg);
+  color: var(--select-option-color);
+}
 .form-help  { font-size: 10px; color: var(--muted-foreground); margin-top: 4px; }
 .form-error { font-size: 11px; color: var(--error); margin-top: 4px; }
 
