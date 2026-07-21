@@ -69,40 +69,55 @@ Deno.serve(async (req) => {
       ? 'DIFÍCIL (Concursos de nível superior avançado. Casos práticos e interpretação jurídica/técnica profunda).'
       : 'EXTREMO / ALTO NÍVEL (Estilo Prova de Perito Criminal, Delegado e Oficial PM. Questões ultra-desafiadoras baseadas em situações hipotéticas complexas, jurisprudência recente de STF/STJ, exceções da regra e pegadinhas de doutrina de alto nível).';
 
-    const concursoInfo = concurso ? `\nCONCURSO / ÓRGÃO ALVO: ${concurso}` : '';
+    const concursoInfo = concurso ? `\nCONCURSO ALVO: ${concurso}` : '';
 
-    // System prompt & User prompt
-    const systemPrompt = `Você é um examinador sênior de elite da banca CESPE / Cebraspe, famoso por elaborar provas de altíssimo nível de dificuldade para concursos de elite (Carreiras Policiais, Perícia, Magistratura e Fiscal).${concursoInfo}
+    // Verifica se é uma disciplina/tema de legislação institucional/específica do órgão
+    const isDisciplinaEspecifica = /legisla|estatuto|institucion|regulamento|órgão|orgao|normas|código|codigo|direitos.*deveres/i.test(disciplina) || /legisla|estatuto|institucion|regulamento|órgão|orgao|normas|código|codigo|direitos.*deveres/i.test(tema);
 
-NÍVEL EXIGIDO NESTA GERAÇÃO: ${nivelInstrucao}
-
-REGRA CRÍTICA DE LEGISLAÇÃO ESPECÍFICA E ESTADUAL:
-- Toda questão de Legislação Institucional, Direitos e Deveres, Legislação Específica, História/Geografia ou Normas do Órgão DEVE ser estritamente fundamentada na legislação e normas oficiais do estado/órgão do concurso alvo.
+    let regraDisciplinaContext = '';
+    if (isDisciplinaEspecifica) {
+      regraDisciplinaContext = `
+REGRA DE LEGISLAÇÃO ESPECÍFICA E ESTADUAL (APLICÁVEL A ESTA DISCIPLINA):
+- Toda questão desta disciplina DEVE ser estritamente fundamentada na legislação e normas oficiais do órgão do concurso alvo (${concurso}).
 - Para a PMMA (Polícia Militar do Maranhão), utilize o Estatuto dos Policiais Militares do Maranhão (Lei Estadual nº 6.513/1995), o Código de Ética/Regulamento Disciplinar (Lei Estadual nº 10.230/2015 e Dec. 13.297/1993) e a Lei de Organização Básica da PMMA (Lei nº 10.667/2017).
 - Para a PCMA (Polícia Civil do Maranhão), utilize o Estatuto dos Policiais Civis do Maranhão (Lei Estadual nº 8.508/2006) e a Lei Orgânica da PCMA.
-- Para o CBMMA (Corpo de Bombeiros do Maranhão), utilize o Estatuto dos Bombeiros Militares do MA (Lei Estadual nº 6.513/1995 com adaptações) e legislação específica.
-- Para a POCMA (Perícia Oficial do Maranhão), utilize a Lei da Perícia Oficial do MA (Lei Estadual nº 9.539/2011).
-- JAMAIS utilize leis ou estatutos de outros estados (como PMESP, PMPR, PMDF) ou normas genéricas quando o concurso for de um órgão do Estado do Maranhão.
+- JAMAIS utilize leis ou estatutos de outros estados ou normas genéricas.`;
+    } else {
+      regraDisciplinaContext = `
+REGRA OBRIGATÓRIA PARA DISCIPLINA GERAL / ACADÊMICA (${disciplina}):
+- ESTA DISCIPLINA É DE CONHECIMENTOS GERAIS/ACADÊMICOS (${disciplina} - ${tema}).
+- NUNCA crie historinhas de "operações policiais", "oficial da PMMA", "fiscalização ambiental de policiais" ou referências a leis policiais no enunciado desta disciplina!
+- A questão deve ser focada 100% no conteúdo teórico/acadêmico próprio da matéria. Por exemplo:
+  * Para Geografia: trate puramente dos aspectos físicos, climáticos, vegetação, relevo, biomas ou socioeconômicos (ex: a transição entre Cerrado e Floresta Amazônica na Mata dos Cocais/Maranhão).
+  * Para História: trate dos fatos históricos, processos políticos ou sociais reais.
+  * Para Português, Informática, Raciocínio Lógico ou Direitos Humanos: foco exclusivo na teoria e regras da disciplina.`;
+    }
+
+    // System prompt & User prompt
+    const systemPrompt = `Você é um examinador sênior de elite da banca CESPE / Cebraspe, famoso por elaborar provas de altíssimo nível de dificuldade para concursos de elite.${concursoInfo}
+
+NÍVEL EXIGIDO NESTA GERAÇÃO: ${nivelInstrucao}
+${regraDisciplinaContext}
 
 Regras Obrigatórias de Formatação e Dificuldade:
 1. Complexidade e Pegadinhas Cebraspe:
    - NUNCA crie perguntas conceituais simples ou diretas do tipo "O que é X?".
-   - Crie enunciados densos e realistas baseados em CASOS PRÁTICOS (situações hipotéticas de 4 a 7 linhas), jurisprudência pacificada (STF/STJ, Súmulas Vinculantes) ou trechos doutrinários e legais avançados.
+   - Crie enunciados densos e realistas baseados no conteúdo acadêmico/doutrinário exato da disciplina.
    - Aplique as famosas "pegadinhas sutis" do Cebraspe para itens ERRADOS: substituição de termos técnicos semelhantes, inversão imperceptível de regra geral x exceção, omissão de requisito indispensável, ou generalizações indevidas com palavras como "exclusivamente", "sempre", "em qualquer hipótese".
 
 2. Questões de Certo / Errado:
-   - Apresente um caso/assertiva robusta que o candidato deve julgar como CERTO ou ERRADO.
+   - Apresente uma assertiva robusta que o candidato deve julgar como CERTO ou ERRADO.
    - O campo "gabarito" no JSON para Certo/Errado deve ser "C" (para Certo) ou "E" (para Errado).
 
 3. Questões de Múltipla Escolha:
-   - Enunciado robusto com caso prático seguido de 5 alternativas (A, B, C, D, E) verossímeis e desafiadoras.
-   - OBRIGATÓRIO: Coloque SEMPRE a resposta correta no índice 0 ("A) ..."). As outras 4 (B a E) devem ser distratores muito bem elaborados que parecem corretos para quem não domina os detalhes. Defina "gabarito" no JSON sempre como "A".
+   - Enunciado robusto com caso prático/conceito seguido de 5 alternativas (A, B, C, D, E) verossímeis e desafiadoras.
+   - OBRIGATÓRIO: Coloque SEMPRE a resposta correta no índice 0 ("A) ..."). As outras 4 (B a E) devem ser distratores muito bem elaborados. Defina "gabarito" no JSON sempre como "A".
 
-4. Rigor Técnico e Legislação Real:
-   - Baseie-se 100% na legislação oficial brasileira/estadual, doutrina respeitada e jurisprudência real. Jamais invente dados ou leis.
+4. Rigor Técnico e Legislação/Teoria Real:
+   - Baseie-se 100% no conteúdo oficial da disciplina (${disciplina} - ${tema}). Jamais invente fatos ou dados.
 
 5. Justificativa Pedagógica de Elite:
-   - Forneça uma justificativa detalhada (3 a 5 frases) fundamentando o motivo legal/doutrinário exato e citando o artigo/lei correspondente e o erro das alternativas falsas. Não mencione a letra da alternativa na justificativa.
+   - Forneça uma justificativa detalhada (3 a 5 frases) fundamentando o motivo teórico/legal exato. Não mencione a letra da alternativa na justificativa.
 
 Responda APENAS em JSON válido conforme este schema:
 {
@@ -117,14 +132,14 @@ Responda APENAS em JSON válido conforme este schema:
   ]
 }`;
 
-    const userPrompt = `Concurso Alvo: ${concurso || 'Concurso Público do Maranhão'}
-Disciplina: ${disciplina}
+    const userPrompt = `Disciplina: ${disciplina}
 Tema: ${tema}
+Concurso Alvo: ${concurso || 'Concurso Público'}
 Quantidade de questões: ${quantidade}
 Tipo de questão: ${tipo}
 Nível de dificuldade: ${validDificuldade}
 
-Gere as ${quantidade} questões no nível ${validDificuldade} fundamentadas na legislação oficial do concurso ${concurso || 'solicitado'}.`;
+Gere as ${quantidade} questões no nível ${validDificuldade} respeitando estritamente a natureza da disciplina (${disciplina}).`;
 
     // Call OpenAI with GPT-4o
     const openAiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
