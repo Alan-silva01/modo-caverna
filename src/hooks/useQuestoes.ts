@@ -14,7 +14,8 @@ export function useQuestoes() {
     temaId: string,
     quantidade: number,
     tipo: TipoQuestao,
-    dificuldade: 'medio' | 'dificil' | 'extremo' = 'extremo'
+    dificuldade: 'medio' | 'dificil' | 'extremo' = 'extremo',
+    concurso?: string
   ) => {
     setLoading(true);
     setError(null);
@@ -39,6 +40,7 @@ export function useQuestoes() {
             quantidade,
             tipo,
             dificuldade,
+            concurso,
           }),
         }
       );

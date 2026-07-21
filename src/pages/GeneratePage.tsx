@@ -159,7 +159,8 @@ export default function GeneratePage() {
         selectedTema.id,
         quantidade,
         tipo,
-        dificuldade
+        dificuldade,
+        concursoAlvo ? `${concursoAlvo.sigla} (${concursoAlvo.nome})` : 'PMMA (Polícia Militar do Maranhão)'
       );
 
       if (questoes && questoes.length > 0) {
