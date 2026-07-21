@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
     }
 
     // Parse request body
-    const { disciplina, tema, disciplina_id, tema_id, quantidade, tipo } = await req.json();
+    const { disciplina, tema, disciplina_id, tema_id, quantidade, tipo, dificuldade = 'extremo' } = await req.json();
 
     if (!disciplina || !tema || !disciplina_id || !tema_id || !quantidade || !tipo) {
       return new Response(JSON.stringify({ error: "Parâmetros inválidos" }), {
@@ -62,23 +62,38 @@ Deno.serve(async (req) => {
       });
     }
 
+    const nivelInstrucao = dificuldade === 'medio'
+      ? 'MÉDIO (Concursos de nível intermediário/técnico. Itens diretos com boa fundamentação).'
+      : dificuldade === 'dificil'
+      ? 'DIFÍCIL (Concursos de nível superior avançado. Casos práticos e interpretação jurídica/técnica profunda).'
+      : 'EXTREMO / ALTO NÍVEL (Estilo Prova de Perito Criminal, Delegado e Oficial PM. Questões ultra-desafiadoras baseadas em situações hipotéticas complexas, jurisprudência recente de STF/STJ, exceções da regra e pegadinhas de doutrina de alto nível).';
+
     // System prompt & User prompt
-    const systemPrompt = `Você é um examinador de elite de concursos públicos, especialista em elaborar questões complexas no estilo da banca CESPE/Cebraspe.
+    const systemPrompt = `Você é um examinador sênior de elite da banca CESPE / Cebraspe, famoso por elaborar provas de altíssimo nível de dificuldade para concursos de elite (Carreiras Policiais, Perícia, Magistratura e Fiscal).
 
-Regras de Ouro:
-1. Nível de Dificuldade: As questões devem ser de nível MÉDIO a DIFÍCIL, adequadas para concursos de alta concorrência (Carreiras Policiais e Administrativas de nível superior). Evite perguntas conceituais simples ou diretas. Prefira enunciados baseados em casos práticos, situações hipotéticas complexas ou trechos doutrinários/jurisprudenciais profundos que exijam interpretação de verdade.
+NÍVEL EXIGIDO NESTA GERAÇÃO: ${nivelInstrucao}
+
+Regras Obrigatórias de Formatação e Dificuldade:
+1. Complexidade e Pegadinhas Cebraspe:
+   - NUNCA crie perguntas conceituais simples ou diretas do tipo "O que é X?".
+   - Crie enunciados densos e realistas baseados em CASOS PRÁTICOS (situações hipotéticas de 4 a 7 linhas), jurisprudência pacificada (STF/STJ, Súmulas Vinculantes) ou trechos doutrinários avançados.
+   - Aplique as famosas "pegadinhas sutis" do Cebraspe para itens ERRADOS: substituição de termos técnicos semelhantes, inversão imperceptível de regra geral x exceção, omissão de requisito indispensável, ou generalizações indevidas com palavras como "exclusivamente", "sempre", "em qualquer hipótese".
+
 2. Questões de Certo / Errado:
-   - Apresente uma assertiva detalhada que o candidato deve julgar como CERTO ou ERRADO.
-   - Use técnicas tradicionais do CESPE para construir itens incorretos (Errados): sutil inversão de regras gerais e exceções, omissão de requisitos essenciais em um processo, substituição de termos técnicos semelhantes mas com significados diferentes, ou generalizações indevidas utilizando palavras como "sempre", "exclusivamente", "em qualquer hipótese".
-   - O campo "gabarito" no JSON para questões de Certo/Errado deve ser estritamente "C" (para Certo) ou "E" (para Errado).
-3. Questões de Múltipla Escolha:
-   - Forneça um enunciado robusto (ex: caso prático) seguido de 5 alternativas (A, B, C, D, E).
-   - OBRIGATÓRIO: Coloque SEMPRE a resposta correta como a primeira alternativa (no índice 0, com o prefixo "A) ..."). As outras 4 alternativas (B a E) devem ser os distratores incorretos. Defina o campo "gabarito" no JSON sempre como "A".
-   - O sistema irá embaralhar as alternativas e ajustar a letra do gabarito automaticamente no servidor antes de salvar no banco, garantindo a randomização das posições de forma 100% segura.
-4. Rigor Técnico: Nunca invente leis, artigos inexistentes ou jurisprudência fictícia. Todo o conteúdo deve ser baseado estritamente na legislação, doutrina ou jurisprudência real e pacificada do tema.
-5. Justificativa: Forneça uma explicação detalhada e pedagógica (2 a 4 frases) fundamentando por que o conteúdo da resposta correta está certo e por que os distratores estão errados. IMPORTANTE: Na justificativa, evite citar a letra da alternativa (ex: não escreva "a alternativa A é a correta"). Em vez disso, explique a resposta diretamente utilizando o próprio conteúdo (ex: escreva "O resultado de 90% está correto porque...").
+   - Apresente um caso/assertiva robusta que o candidato deve julgar como CERTO ou ERRADO.
+   - O campo "gabarito" no JSON para Certo/Errado deve ser "C" (para Certo) ou "E" (para Errado).
 
-Responda APENAS em JSON válido, sem nenhum caractere ou explicação fora dele, seguindo rigorosamente este schema:
+3. Questões de Múltipla Escolha:
+   - Enunciado robusto com caso prático seguido de 5 alternativas (A, B, C, D, E) verossímeis e desafiadoras.
+   - OBRIGATÓRIO: Coloque SEMPRE a resposta correta no índice 0 ("A) ..."). As outras 4 (B a E) devem ser distratores muito bem elaborados que parecem corretos para quem não domina os detalhes. Defina "gabarito" no JSON sempre como "A".
+
+4. Rigor Técnico e Legislação Real:
+   - Baseie-se 100% na legislação oficial brasileira, doutrina respeitada e jurisprudência real. Jamais invente dados.
+
+5. Justificativa Pedagógica de Elite:
+   - Forneça uma justificativa detalhada (3 a 5 frases) fundamentando o motivo legal/doutrinário exato e citando o erro das alternativas falsas. Não mencione a letra da alternativa na justificativa (ex: explique a matéria diretamente).
+
+Responda APENAS em JSON válido conforme este schema:
 {
   "questoes": [
     {
@@ -95,10 +110,11 @@ Responda APENAS em JSON válido, sem nenhum caractere ou explicação fora dele,
 Tema: ${tema}
 Quantidade de questões: ${quantidade}
 Tipo de questão: ${tipo}
+Nível de dificuldade: ${dificuldade}
 
-Gere as questões conforme as regras do system prompt.`;
+Gere as ${quantidade} questões no nível ${dificuldade} conforme o prompt.`;
 
-    // Call OpenAI
+    // Call OpenAI with GPT-4o
     const openAiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -106,13 +122,13 @@ Gere as questões conforme as regras do system prompt.`;
         "Authorization": `Bearer ${openaiApiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "gpt-4o",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
         ],
         response_format: { type: "json_object" },
-        temperature: 0.7,
+        temperature: 0.5,
       }),
     });
 

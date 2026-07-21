@@ -13,7 +13,8 @@ export function useQuestoes() {
     disciplinaId: string,
     temaId: string,
     quantidade: number,
-    tipo: TipoQuestao
+    tipo: TipoQuestao,
+    dificuldade: 'medio' | 'dificil' | 'extremo' = 'extremo'
   ) => {
     setLoading(true);
     setError(null);
@@ -37,6 +38,7 @@ export function useQuestoes() {
             tema_id: temaId,
             quantidade,
             tipo,
+            dificuldade,
           }),
         }
       );

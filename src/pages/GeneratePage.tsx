@@ -26,6 +26,7 @@ export default function GeneratePage() {
   const [selectedTemaId, setSelectedTemaId] = useState('');
   const [quantidade, setQuantidade] = useState(10);
   const [tipo, setTipo] = useState<TipoQuestao>('certo_errado');
+  const [dificuldade, setDificuldade] = useState<'medio' | 'dificil' | 'extremo'>('extremo');
   const { generateQuestoes, loading: generating, error } = useQuestoes();
 
   // Database study states
@@ -156,7 +157,8 @@ export default function GeneratePage() {
         selectedDisc.id,
         selectedTema.id,
         quantidade,
-        tipo
+        tipo,
+        dificuldade
       );
 
       if (questoes && questoes.length > 0) {
@@ -340,6 +342,42 @@ export default function GeneratePage() {
             </button>
           </div>
         </div>
+
+        {/* Nível de Dificuldade (Apenas para IA) */}
+        {source === 'ia' && (
+          <div className="form-group">
+            <label className="form-label">Nível de Dificuldade</label>
+            <div className="type-toggle">
+              <button
+                className={`type-toggle-btn ${dificuldade === 'medio' ? 'active' : ''}`}
+                onClick={() => setDificuldade('medio')}
+                type="button"
+                style={{ flex: 1 }}
+              >
+                <span className="type-toggle-label">Médio</span>
+                <span className="type-toggle-desc">Concursos gerais</span>
+              </button>
+              <button
+                className={`type-toggle-btn ${dificuldade === 'dificil' ? 'active' : ''}`}
+                onClick={() => setDificuldade('dificil')}
+                type="button"
+                style={{ flex: 1 }}
+              >
+                <span className="type-toggle-label">Difícil</span>
+                <span className="type-toggle-desc">Carreiras superiores</span>
+              </button>
+              <button
+                className={`type-toggle-btn ${dificuldade === 'extremo' ? 'active' : ''}`}
+                onClick={() => setDificuldade('extremo')}
+                type="button"
+                style={{ flex: 1 }}
+              >
+                <span className="type-toggle-label">Extremo 🔥</span>
+                <span className="type-toggle-desc">Perito & Delegado</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Live database count badge */}
         {source === 'banco' && dbCount !== null && (
