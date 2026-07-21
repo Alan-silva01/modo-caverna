@@ -1128,7 +1128,7 @@ h1, h2, h3, h4, .military-font {
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.03;
+  opacity: 0.08;
   pointer-events: none;
 }
 
@@ -1174,8 +1174,24 @@ h1, h2, h3, h4, .military-font {
 
 .login-card {
   background-color: rgba(13,13,13,0.95);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255,255,255,0.08);
   padding: var(--space-xl);
+}
+
+/* Inputs dentro do login-card são sempre escuros (card é sempre dark) */
+.login-card .form-input {
+  background-color: #1A1A0F;
+  color: #D4CFB8;
+  border-color: rgba(255,255,255,0.12);
+  color-scheme: dark;
+}
+.login-card .form-input::placeholder { color: rgba(212,207,184,0.35); }
+.login-card .form-input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 1px var(--brand);
+}
+.login-card .form-label {
+  color: rgba(212,207,184,0.6);
 }
 
 .login-toggle {
