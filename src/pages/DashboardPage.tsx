@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEstatisticas } from '../hooks/useEstatisticas';
 import { useEditais, calcDaysLeft } from '../hooks/useEditais';
 import { useConcurso } from '../contexts/ConcursoContext';
-import { PlusCircle, Target, Zap, Check } from 'lucide-react';
+import { PlusCircle, Target, Zap, Check, Shield } from 'lucide-react';
 
 const brasaoMap: Record<string, string> = {
   PMMA: 'https://res.cloudinary.com/ddhlqymvf/image/upload/v1784558946/1_mbyxqy.png',
@@ -198,7 +198,7 @@ export default function DashboardPage() {
                     />
                   ) : (
                     <div className="concurso-card-img-placeholder">
-                      {edital.tipo === 'militar' ? '🪖' : edital.tipo === 'civil' ? '🔵' : '🏛️'}
+                      <Shield size={20} strokeWidth={1.5} style={{ color: 'var(--muted-foreground)' }} />
                     </div>
                   )}
 

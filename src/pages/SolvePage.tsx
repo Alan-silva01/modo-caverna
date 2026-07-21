@@ -132,7 +132,7 @@ export default function SolvePage() {
       {/* Question Card */}
       <div className="question-card">
         <div className="question-badge">
-          {currentQuestion.tipo === 'certo_errado' ? '✓/✗ Certo ou Errado' : '📝 Múltipla Escolha'}
+          {currentQuestion.tipo === 'certo_errado' ? 'Certo ou Errado' : 'Múltipla Escolha'}
           {' · '}CESPE
         </div>
 

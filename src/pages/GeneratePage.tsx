@@ -15,6 +15,7 @@ import {
   List,
   Loader,
   Database,
+  Skull,
 } from 'lucide-react';
 
 export default function GeneratePage() {
@@ -268,7 +269,7 @@ export default function GeneratePage() {
             {disciplinas.map(d => (
               <option key={d.id} value={d.id}>{d.nome}</option>
             ))}
-            <option value="__new__">➕ Criar nova disciplina</option>
+            <option value="__new__">+ Criar nova disciplina</option>
           </select>
         </div>
 
@@ -296,7 +297,7 @@ export default function GeneratePage() {
               <option key={t.id} value={t.id}>{t.nome}</option>
             ))}
             {selectedDiscId && (
-              <option value="__new__">➕ Criar novo tema</option>
+              <option value="__new__">+ Criar novo tema</option>
             )}
           </select>
         </div>
@@ -372,7 +373,9 @@ export default function GeneratePage() {
                 type="button"
                 style={{ flex: 1 }}
               >
-                <span className="type-toggle-label">Extremo 🔥</span>
+                <span className="type-toggle-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', justifyContent: 'center' }}>
+                  Extremo <Skull size={14} strokeWidth={1.5} style={{ color: 'var(--muted-foreground)' }} />
+                </span>
                 <span className="type-toggle-desc">Máxima complexidade</span>
               </button>
             </div>
@@ -391,21 +394,21 @@ export default function GeneratePage() {
             letterSpacing: '0.04em'
           }}>
             {dbCount > 0 
-              ? `✓ ENCONTRADAS ${dbCount} QUESTÕES ${totalGlobalCount !== null ? `(DE ${totalGlobalCount} NO BANCO TOTAL)` : ''}` 
-              : `⚠️ NENHUMA QUESTÃO ENCONTRADA COM ESTE PERFIL NO BANCO`
+              ? `ENCONTRADAS ${dbCount} QUESTÕES ${totalGlobalCount !== null ? `(DE ${totalGlobalCount} NO BANCO TOTAL)` : ''}` 
+              : `NENHUMA QUESTÃO ENCONTRADA COM ESTE PERFIL NO BANCO`
             }
           </p>
         )}
 
         {error && (
           <div className="form-error" style={{ marginBottom: 'var(--space-md)' }}>
-            ⚠️ {error}
+            {error}
           </div>
         )}
 
         {dbError && (
           <div className="form-error" style={{ marginBottom: 'var(--space-md)' }}>
-            ⚠️ {dbError}
+            {dbError}
           </div>
         )}
 

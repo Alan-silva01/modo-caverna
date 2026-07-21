@@ -46,6 +46,7 @@ Deno.serve(async (req) => {
 
     // Parse request body
     const { disciplina, tema, disciplina_id, tema_id, quantidade, tipo, dificuldade = 'extremo' } = await req.json();
+    const validDificuldade = ['medio', 'dificil', 'extremo'].includes(dificuldade) ? dificuldade : 'extremo';
 
     if (!disciplina || !tema || !disciplina_id || !tema_id || !quantidade || !tipo) {
       return new Response(JSON.stringify({ error: "Parâmetros inválidos" }), {
@@ -62,9 +63,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    const nivelInstrucao = dificuldade === 'medio'
+    const nivelInstrucao = validDificuldade === 'medio'
       ? 'MÉDIO (Concursos de nível intermediário/técnico. Itens diretos com boa fundamentação).'
-      : dificuldade === 'dificil'
+      : validDificuldade === 'dificil'
       ? 'DIFÍCIL (Concursos de nível superior avançado. Casos práticos e interpretação jurídica/técnica profunda).'
       : 'EXTREMO / ALTO NÍVEL (Estilo Prova de Perito Criminal, Delegado e Oficial PM. Questões ultra-desafiadoras baseadas em situações hipotéticas complexas, jurisprudência recente de STF/STJ, exceções da regra e pegadinhas de doutrina de alto nível).';
 
@@ -227,7 +228,7 @@ Gere as ${quantidade} questões no nível ${dificuldade} conforme o prompt.`;
         gabarito: normalizedGabarito,
         justificativa: q.justificativa,
         banca_estilo: "CESPE",
-        dificuldade: dificuldade,
+        dificuldade: validDificuldade,
       };
     });
 

@@ -1,5 +1,5 @@
 import { useEstatisticas } from '../hooks/useEstatisticas';
-import { BarChart3 } from 'lucide-react';
+import { BarChart3, Skull } from 'lucide-react';
 
 // ── Skeleton: stat cards ──
 function StatCardsSkeleton() {
@@ -95,7 +95,12 @@ export default function StatsPage() {
           <div className="stats-bar-chart">
             {statsDificuldade.map(stat => (
               <div key={stat.dificuldade} className="stats-bar-row">
-                <span className="stats-bar-label">{stat.label}</span>
+                <span className="stats-bar-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  {stat.label}
+                  {stat.dificuldade === 'extremo' && (
+                    <Skull size={14} strokeWidth={1.5} style={{ color: 'var(--muted-foreground)' }} />
+                  )}
+                </span>
                 <div className="stats-bar-track">
                   <div
                     className={`stats-bar-fill ${

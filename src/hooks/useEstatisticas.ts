@@ -136,9 +136,9 @@ export function useEstatisticas() {
       .sort((a, b) => a.tema_nome.localeCompare(b.tema_nome));
 
     const difLabels: Record<string, string> = {
-      extremo: 'Nível Extremo 🔥',
-      dificil: 'Nível Difícil 🟠',
-      medio: 'Nível Médio 🟢',
+      extremo: 'Nível Extremo',
+      dificil: 'Nível Difícil',
+      medio: 'Nível Médio',
     };
 
     const difArray: EstatisticaDificuldade[] = ['extremo', 'dificil', 'medio']
