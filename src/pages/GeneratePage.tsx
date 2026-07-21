@@ -31,8 +31,24 @@ export default function GeneratePage() {
   // Database study states
   const [source, setSource] = useState<'ia' | 'banco'>('ia');
   const [dbCount, setDbCount] = useState<number | null>(null);
+  const [totalGlobalCount, setTotalGlobalCount] = useState<number | null>(null);
   const [dbLoading, setDbLoading] = useState(false);
   const [dbError, setDbError] = useState<string | null>(null);
+
+  // Fetch total global questions count in database
+  useEffect(() => {
+    const fetchGlobalCount = async () => {
+      try {
+        const { count } = await supabase
+          .from('questoes')
+          .select('*', { count: 'exact', head: true });
+        setTotalGlobalCount(count);
+      } catch (err) {
+        console.error('Erro ao buscar total de questões:', err);
+      }
+    };
+    fetchGlobalCount();
+  }, []);
 
   // Modal states
   const [showNewDisc, setShowNewDisc] = useState(false);
@@ -172,15 +188,16 @@ export default function GeneratePage() {
           qQuery = qQuery.in('tema_id', temaIds);
         }
 
-        const { data: qs, error: qErr } = await qQuery.limit(quantidade);
+        // Busca TODAS as questões correspondentes no banco (sem .limit) para sortear de forma 100% aleatória
+        const { data: qs, error: qErr } = await qQuery;
 
         if (qErr) throw qErr;
 
         if (!qs || qs.length === 0) {
           setDbError(`Nenhuma questão correspondente encontrada no banco.`);
         } else {
-          // Sort or randomize simple array
-          const shuffled = [...qs].sort(() => 0.5 - Math.random());
+          // Embaralha TODAS as questões correspondentes encontradas e pega 'quantidade' aleatórias
+          const shuffled = [...qs].sort(() => 0.5 - Math.random()).slice(0, quantidade);
           const ids = shuffled.map(q => q.id).join(',');
           navigate(`/resolver?ids=${ids}`);
         }
@@ -199,7 +216,9 @@ export default function GeneratePage() {
     <div className="page-container">
       <div className="page-header">
         <h1 className="page-title">Gerar Questões</h1>
-        <p className="page-subtitle">IA CESPE/Cebraspe</p>
+        <p className="page-subtitle">
+          IA CESPE/Cebraspe {totalGlobalCount !== null ? `· ${totalGlobalCount} questões no banco` : ''}
+        </p>
       </div>
 
       <div className="card" style={{ maxWidth: 600 }}>
@@ -225,7 +244,9 @@ export default function GeneratePage() {
             >
               <Database size={16} strokeWidth={1.5} />
               <span className="type-toggle-label">Banco de Questões</span>
-              <span className="type-toggle-desc">Usa simulados e questões salvas</span>
+              <span className="type-toggle-desc">
+                {totalGlobalCount !== null ? `${totalGlobalCount} salvas no acervo` : 'Usa simulados e questões salvas'}
+              </span>
             </button>
           </div>
         </div>
@@ -332,7 +353,7 @@ export default function GeneratePage() {
             letterSpacing: '0.04em'
           }}>
             {dbCount > 0 
-              ? `✓ ENCONTRADAS ${dbCount} QUESTÕES NO BANCO` 
+              ? `✓ ENCONTRADAS ${dbCount} QUESTÕES ${totalGlobalCount !== null ? `(DE ${totalGlobalCount} NO BANCO TOTAL)` : ''}` 
               : `⚠️ NENHUMA QUESTÃO ENCONTRADA COM ESTE PERFIL NO BANCO`
             }
           </p>
