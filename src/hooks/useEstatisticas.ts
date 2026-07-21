@@ -41,10 +41,10 @@ export function useEstatisticas() {
         .select('id, dificuldade')
         .in('id', questaoIds);
       if (qDifs) {
-        difMap = new Map(qDifs.map(q => [q.id, q.dificuldade || 'extremo']));
+        difMap = new Map(qDifs.map(q => [q.id, q.dificuldade || 'medio']));
       }
     } catch {
-      // Column doesn't exist yet — all default to 'extremo'
+      // Column doesn't exist yet — all default to 'medio'
     }
 
     // Get disciplinas and temas names
@@ -100,8 +100,8 @@ export function useEstatisticas() {
       temaStats.set(q.tema_id, ts);
 
       // By dificuldade (from separate lookup)
-      const rawDif = difMap.get(r.questao_id) || 'extremo';
-      const difKey = ['extremo', 'dificil', 'medio'].includes(rawDif) ? rawDif : 'extremo';
+      const rawDif = difMap.get(r.questao_id) || 'medio';
+      const difKey = ['extremo', 'dificil', 'medio'].includes(rawDif) ? rawDif : 'medio';
       const dif = diffStats.get(difKey)!;
       dif.total++;
       if (r.acertou) dif.acertos++;
@@ -136,9 +136,9 @@ export function useEstatisticas() {
       .sort((a, b) => a.tema_nome.localeCompare(b.tema_nome));
 
     const difLabels: Record<string, string> = {
-      extremo: 'Nível Extremo 🔥 (Perito / Delegado)',
-      dificil: 'Nível Difícil 🟠 (Carreiras Superiores)',
-      medio: 'Nível Médio 🟢 (Concursos Gerais)',
+      extremo: 'Nível Extremo 🔥',
+      dificil: 'Nível Difícil 🟠',
+      medio: 'Nível Médio 🟢',
     };
 
     const difArray: EstatisticaDificuldade[] = ['extremo', 'dificil', 'medio']

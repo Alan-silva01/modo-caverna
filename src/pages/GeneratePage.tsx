@@ -355,7 +355,7 @@ export default function GeneratePage() {
                 style={{ flex: 1 }}
               >
                 <span className="type-toggle-label">Médio</span>
-                <span className="type-toggle-desc">Concursos gerais</span>
+                <span className="type-toggle-desc">Questões fundamentadas</span>
               </button>
               <button
                 className={`type-toggle-btn ${dificuldade === 'dificil' ? 'active' : ''}`}
@@ -364,7 +364,7 @@ export default function GeneratePage() {
                 style={{ flex: 1 }}
               >
                 <span className="type-toggle-label">Difícil</span>
-                <span className="type-toggle-desc">Carreiras superiores</span>
+                <span className="type-toggle-desc">Casos práticos e pegadinhas</span>
               </button>
               <button
                 className={`type-toggle-btn ${dificuldade === 'extremo' ? 'active' : ''}`}
@@ -373,7 +373,7 @@ export default function GeneratePage() {
                 style={{ flex: 1 }}
               >
                 <span className="type-toggle-label">Extremo 🔥</span>
-                <span className="type-toggle-desc">Perito & Delegado</span>
+                <span className="type-toggle-desc">Máxima complexidade</span>
               </button>
             </div>
           </div>
