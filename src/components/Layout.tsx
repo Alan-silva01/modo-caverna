@@ -12,6 +12,7 @@ import {
   PinOff,
   Bell,
   ChevronRight,
+  FileText,
 } from 'lucide-react';
 import HeaderTimer from './Timer';
 
@@ -20,6 +21,7 @@ const LOGO_URL = 'https://res.cloudinary.com/ddhlqymvf/image/upload/v1784556100/
 const navItems = [
   { to: '/',            icon: LayoutDashboard, label: 'Início' },
   { to: '/gerar',       icon: PlusCircle,      label: 'Gerar' },
+  { to: '/redacao',     icon: FileText,        label: 'Redação', desktopOnly: true },
   { to: '/estatisticas',icon: BarChart3,        label: 'Stats' },
   { to: '/historico',   icon: History,          label: 'Histórico' },
 ];
@@ -27,6 +29,7 @@ const navItems = [
 function getBreadcrumbs(path: string): string[] {
   if (path === '/')              return ['Início'];
   if (path === '/gerar')         return ['Início', 'Gerar'];
+  if (path === '/redacao')       return ['Início', 'Produção Textual'];
   if (path === '/resolver')      return ['Início', 'Simulado'];
   if (path === '/resultados')    return ['Início', 'Resultados'];
   if (path === '/estatisticas')  return ['Início', 'Estatísticas'];
@@ -183,7 +186,7 @@ export default function Layout() {
 
       {/* ── Bottom Navigation (mobile only) ── */}
       <nav className="bottom-nav">
-        {navItems.map(({ to, icon: Icon, label }) => (
+        {navItems.filter(item => !item.desktopOnly).map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
             to={to}
