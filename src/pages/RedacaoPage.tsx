@@ -15,23 +15,17 @@ import {
   ChevronUp,
   FileText,
   Copy,
-  Check
+  Check,
+  Zap,
+  Eye,
+  X
 } from 'lucide-react';
-
-export interface Esqueleto {
-  titulo_sugerido: string;
-  introducao: string;
-  desenvolvimento1: string;
-  desenvolvimento2: string;
-  conclusao: string;
-}
 
 export interface TemaRedacao {
   id: string;
   tema: string;
   categoria: string;
   textos_motivadores: string[];
-  esqueleto: Esqueleto;
 }
 
 export interface ResultadoCorrecao {
@@ -67,6 +61,52 @@ export interface RedacaoSalva {
   created_at: string;
 }
 
+// Esqueletos Coringas Universais (Modelos que se encaixam em qualquer tema)
+const ESQUELETOS_CORINGAS = [
+  {
+    id: 'constitucional',
+    nome: '1. Modelo Coringa Constitucional & Filosofia (Bauman + Hobbes)',
+    descricao: 'Ideal para temas sociais, ambientais, direitos ou falha de políticas públicas.',
+    template: `[TÍTULO IMPACTANTE RELACIONADO AO TEMA]
+
+Promulgada com a promessa de assegurar a dignidade e os direitos fundamentais de todos os cidadãos, a Constituição Federal de 1988 estabeleceu preceitos indispensáveis para o bem-estar social. Contudo, ao observar a realidade brasileira no que tange a [COLOCAR O TEMA DO TEXTO], percebe-se uma grave distorção entre a norma jurídica e a prática cotidiana. Nesse sentido, torna-se premente analisar [PRIMEIRA CAUSA / ARGUMENTO 1] e [SEGUNDA CAUSA / ARGUMENTO 2] como fatores determinantes para a continuidade dessa problemática.
+
+Em primeiro lugar, é imperativo pontuar que a [PRIMEIRA CAUSA / ARGUMENTO 1] perpetua a ineficácia na resolução do impasse. Sob a perspectiva do filósofo Zygmunt Bauman em sua obra "Modernidade Líquida", as instituições contemporâneas frequentemente perdem sua capacidade de proteção social, gerando um cenário de fragilidade coletiva. De maneira análoga, [DESDOBRAMENTO DA 1ª IDEIA EM RELAÇÃO AO TEMA], o que atesta a necessidade urgente de reformulação das ações vigentes.
+
+Ademais, a [SEGUNDA CAUSA / ARGUMENTO 2] atua como outro pilar fortalecedor desse panorama adverso. Segundo o pensamento do filósofo Thomas Hobbes, o Estado possui o dever de garantir a ordem e o desenvolvimento pleno da coletividade. Entretanto, o que se observa na prática em relação a [REVISITAR O TEMA] é [EXEMPLO PRÁTICO OU IMPACTO NEGATIVO NA SOCIEDADE]. Dessa forma, enquanto essa negligência persistir, a plena cidadania continuará sendo um objetivo inalcançável para parcela significativa da população.
+
+Portanto, medidas interventivas são urgentes para mitigar os impactos de [RETOMAR O TEMA DO TEXTO]. Para tanto, cabe ao [AGENTE: GOVERNO FEDERAL / MINISTÉRIO COMPETENTE], em parceria com [PARCEIRO / SOCIEDADE CIVIL], promover [AÇÃO: O QUE FAZER], por meio de [MEIO / COMO FAZER], com o fito de [FINALIDADE / PARA QUÊ]. Somente assim o Brasil poderá transformar as garantias constitucionais em uma realidade efetiva.`
+  },
+  {
+    "id": "sociologico",
+    "nome": "2. Modelo Coringa de Problematização Social (Durkheim + Kant)",
+    "descricao": "Focado em dilemas culturais, comportamento, cidadania ou educação.",
+    "template": `[TÍTULO RELEVANTE AO TEMA]
+
+Ao se refletir a respeito de [COLOCAR O TEMA DO TEXTO], verifica-se que a sociedade brasileira enfrenta um relevante dilema estrutural. Isso aponta para a necessidade de defender que [PONTO DE VISTA / TESE A SER DEFENDIDA]. Nesse panorama, é fundamental analisar não apenas [FATOR 1: OMISSÃO ESTATAL / LENTIDÃO LEGISLATIVA], como também [FATOR 2: PASSIVIDADE SOCIAL / FALTA DE CONSCIENTIZAÇÃO].
+
+Sob esse viés, o primeiro fator que deve ser analisado em relação à situação em questão é [FATOR 1 / ARGUMENTO 1]. Como defende o sociólogo Émile Durkheim, para que a sociedade funcione em harmonia, as instituições devem desempenhar seu papel de forma coesa. Entende-se, contudo, que no caso de [COLOCAR O TEMA DO TEXTO], ocorre uma verdadeira disfunção social, visto que [DESDOBRAMENTO DA 1ª IDEIA].
+
+O segundo fator importante para a reflexão é [FATOR 2 / ARGUMENTO 2]. Pode-se verificar a gravidade dessa questão ao constatar que [EXEMPLIFICAR / DESCREVER O IMPACTO DO PROBLEMA]. Como consequência direta, [CONSEQUÊNCIA NEGATIVA PARA A POPULAÇÃO], demonstrando que a falta de engajamento e fiscalização agrava o quadro existente.
+
+Assim, a necessidade de intervenção apontada inicialmente se mostra ainda mais premente. Com o intuito de superar os entraves relativos a [RETOMAR O TEMA DO TEXTO], impõe-se que o [AGENTE RESPONSÁVEL] implemente [PROPOSTA DE AÇÃO], mediante [MECANISMO / FERRAMENTA], garantindo que [RESULTADO ESPERADO].`
+  },
+  {
+    "id": "tecnologico",
+    "nome": "3. Modelo Coringa de Modernidade & Mudança (Hannah Arendt)",
+    "descricao": "Perfeito para tecnologia, ciência, trabalho, saúde ou transformações aceleradas.",
+    "template": `[TÍTULO SOBRE SOCIEDADE / MODERNIDADE]
+
+A partir da aceleração das transformações contemporâneas, o debate sobre [COLOCAR O TEMA DO TEXTO] ganhou lugar de destaque no cenário nacional. Contudo, ao contrário do que se esperava, o avanço da sociedade não garantiu a superação dessa questão, visto que [TESE CENTRAL]. Dessa forma, torna-se essencial discutir os efeitos de [ARGUMENTO 1] e a urgência de encarar [ARGUMENTO 2].
+
+Em primeira análise, deve-se considerar que [ARGUMENTO 1 DESENVOLVIDO]. Em consonância com o pensamento de Hannah Arendt sobre a 'banalização de problemas sociais', a repetição contínua de entraves ligados a [TEMA] faz com que a população naturalize o absurdo, resultando em [DESDOBRAMENTO DA 1ª IDEIA].
+
+Ademais, é preciso destacar que [ARGUMENTO 2 DESENVOLVIDO]. Isso fica evidente ao observar que [EXEMPLO PRÁTICO OU DADO RELEVANTE]. Sem uma resposta articulada e moderna, o problema se ramifica, afetando diretamente a qualidade de vida e a segurança dos indivíduos.
+
+Em suma, a resolução da problemática atinente a [RETOMAR TEMA] exige ação coordenada. Cabe ao [AGENTE PÚBLICO OU PRIVADO] articular [PROPOSTA DE INTERVENÇÃO], através de [RECURSO OU ESTRATÉGIA], com o objetivo de [RESULTADO PRETENDIDO].`
+  }
+];
+
 // Estimate lines count based on text length and line breaks (~65 chars per line)
 function countLines(text: string): number {
   if (!text.trim()) return 0;
@@ -97,6 +137,9 @@ export default function RedacaoPage() {
   const [currentTema, setCurrentTema] = useState<TemaRedacao>(temasData[0] as TemaRedacao);
   const [showMotivadores, setShowMotivadores] = useState<boolean>(true);
 
+  // Esqueleto selection state
+  const [selectedEsqueletoId, setSelectedEsqueletoId] = useState<string>('constitucional');
+
   // Editor states
   const [modo, setModo] = useState<'zero' | 'esqueleto'>('zero');
   const [texto, setTexto] = useState<string>('');
@@ -114,6 +157,7 @@ export default function RedacaoPage() {
   const [historico, setHistorico] = useState<RedacaoSalva[]>([]);
   const [loadingHistory, setLoadingHistory] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'editor' | 'historico'>('editor');
+  const [selectedHistoricoItem, setSelectedHistoricoItem] = useState<RedacaoSalva | null>(null);
 
   const categorias = useMemo(() => {
     const cats = new Set(temasData.map(t => t.categoria));
@@ -136,16 +180,15 @@ export default function RedacaoPage() {
     setErrorMsg(null);
 
     if (modo === 'esqueleto') {
-      applyEsqueleto(newTema);
+      applySelectedEsqueleto();
     } else {
       setTexto('');
     }
   };
 
-  const applyEsqueleto = (temaObj: TemaRedacao) => {
-    const esq = temaObj.esqueleto;
-    const templateText = `${esq.titulo_sugerido}\n\n${esq.introducao}\n\n${esq.desenvolvimento1}\n\n${esq.desenvolvimento2}\n\n${esq.conclusao}`;
-    setTexto(templateText);
+  const applySelectedEsqueleto = () => {
+    const esq = ESQUELETOS_CORINGAS.find(e => e.id === selectedEsqueletoId) || ESQUELETOS_CORINGAS[0];
+    setTexto(esq.template);
   };
 
   const handleSelectModo = (newModo: 'zero' | 'esqueleto') => {
@@ -153,9 +196,17 @@ export default function RedacaoPage() {
     setResultado(null);
     setErrorMsg(null);
     if (newModo === 'esqueleto') {
-      applyEsqueleto(currentTema);
+      applySelectedEsqueleto();
     } else {
       setTexto('');
+    }
+  };
+
+  const handleEsqueletoChange = (esqueletoId: string) => {
+    setSelectedEsqueletoId(esqueletoId);
+    const esq = ESQUELETOS_CORINGAS.find(e => e.id === esqueletoId);
+    if (esq) {
+      setTexto(esq.template);
     }
   };
 
@@ -174,7 +225,9 @@ export default function RedacaoPage() {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (!error && data) {
+      if (error) {
+        console.error('Erro ao buscar histórico:', error);
+      } else if (data) {
         setHistorico(data as RedacaoSalva[]);
       }
     } catch (err) {
@@ -253,7 +306,7 @@ export default function RedacaoPage() {
 
       const resData: ResultadoCorrecao = await response.json();
       setResultado(resData);
-      saveRedacaoToDb(resData);
+      await saveRedacaoToDb(resData);
     } catch (err: any) {
       setErrorMsg(err.message || 'Erro ao conectar ao servidor de correção.');
     } finally {
@@ -267,7 +320,7 @@ export default function RedacaoPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      await supabase.from('redacoes').insert({
+      const { error } = await supabase.from('redacoes').insert({
         user_id: user.id,
         tema_id: currentTema.id,
         tema_titulo: currentTema.tema,
@@ -288,6 +341,13 @@ export default function RedacaoPage() {
         pontos_fracos: res.pontosFracos,
         sugestoes: res.sugestoesDeMelhoria,
       });
+
+      if (error) {
+        console.error('Erro ao salvar no banco Supabase:', error);
+      } else {
+        // Reload history list automatically
+        loadHistorico();
+      }
     } catch (err) {
       console.error('Erro ao salvar redação no banco:', err);
     }
@@ -383,7 +443,7 @@ export default function RedacaoPage() {
             style={{ fontSize: '12px', height: '34px' }}
           >
             <History size={14} />
-            <span>Histórico</span>
+            <span>Histórico {historico.length > 0 ? `(${historico.length})` : ''}</span>
           </button>
         </div>
       </div>
@@ -391,20 +451,26 @@ export default function RedacaoPage() {
       {activeTab === 'historico' ? (
         /* ── Aba 2: Histórico de Redações ── */
         <div className="card">
-          <div className="card-title" style={{ marginBottom: 'var(--space-md)' }}>
-            Suas Redações Anteriores
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
+            <div className="card-title" style={{ margin: 0 }}>
+              Histórico de Redações Salvas no Supabase
+            </div>
+            <button className="btn btn-ghost" onClick={loadHistorico} style={{ fontSize: '11px', height: '28px' }}>
+              <Zap size={12} />
+              <span>Atualizar</span>
+            </button>
           </div>
 
           {loadingHistory ? (
             <div className="loading-container" style={{ padding: '40px 0' }}>
               <div className="loading-spinner" />
-              <p className="loading-text">Carregando histórico...</p>
+              <p className="loading-text">Carregando histórico do banco de dados...</p>
             </div>
           ) : historico.length === 0 ? (
             <div className="empty-state" style={{ padding: '40px 0' }}>
               <FileText size={32} strokeWidth={1.5} style={{ color: 'var(--muted-foreground)' }} />
               <h3 className="empty-state-title" style={{ marginTop: 12 }}>Nenhuma redação realizada ainda</h3>
-              <p className="empty-state-text">Sorteie um tema no editor e envie seu primeiro texto para receber avaliação detalhada.</p>
+              <p className="empty-state-text">Sorteie um tema no editor e envie seu primeiro texto para receber avaliação detalhada e salvar no histórico.</p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
@@ -423,25 +489,36 @@ export default function RedacaoPage() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
                       <span style={{ fontSize: '10px', color: 'var(--muted-foreground)', textTransform: 'uppercase', fontFamily: 'Rajdhani', fontWeight: 700 }}>
-                        {new Date(item.created_at).toLocaleDateString('pt-BR')} · Modo: {item.modo === 'esqueleto' ? 'Com Esqueleto' : 'Do Zero'}
+                        {new Date(item.created_at).toLocaleDateString('pt-BR')} às {new Date(item.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} · Modo: {item.modo === 'esqueleto' ? 'Esqueleto Coringa' : 'Do Zero'}
                       </span>
                       <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--foreground)', marginTop: 2 }}>
                         {item.tema_titulo}
                       </h4>
                     </div>
 
-                    <div style={{ textAlign: 'right' }}>
-                      <span style={{
-                        fontSize: '18px',
-                        fontWeight: 800,
-                        fontFamily: 'Rajdhani',
-                        color: item.zerou || item.eliminado ? 'var(--error)' : item.nota_final_100 >= 80 ? 'var(--success)' : 'var(--brand)'
-                      }}>
-                        {item.nota_final_100} / 100
-                      </span>
-                      {item.zerou && (
-                        <span style={{ display: 'block', fontSize: '10px', color: 'var(--error)', fontWeight: 700 }}>ZEROU</span>
-                      )}
+                    <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div>
+                        <span style={{
+                          fontSize: '20px',
+                          fontWeight: 800,
+                          fontFamily: 'Rajdhani',
+                          color: item.zerou || item.eliminado ? 'var(--error)' : item.nota_final_100 >= 80 ? 'var(--success)' : 'var(--brand)'
+                        }}>
+                          {item.nota_final_100} <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>/ 100</span>
+                        </span>
+                        {item.zerou && (
+                          <span style={{ display: 'block', fontSize: '10px', color: 'var(--error)', fontWeight: 700 }}>ZEROU</span>
+                        )}
+                      </div>
+
+                      <button
+                        className="btn btn-ghost"
+                        onClick={() => setSelectedHistoricoItem(item)}
+                        style={{ height: '32px', fontSize: '11px', padding: '0 10px' }}
+                      >
+                        <Eye size={13} />
+                        <span>Ver Detalhes</span>
+                      </button>
                     </div>
                   </div>
 
@@ -451,12 +528,12 @@ export default function RedacaoPage() {
 
                   {/* Criteria badges */}
                   {item.criterios && (
-                    <div style={{ display: 'flex', gap: '8px', fontSize: '10px', fontFamily: 'Rajdhani', color: 'var(--muted-foreground)', flexWrap: 'wrap', paddingTop: 4 }}>
-                      <span>C1: {item.criterios.c1 ?? 0}/2</span>
-                      <span>C2: {item.criterios.c2 ?? 0}/2</span>
-                      <span>C3: {item.criterios.c3 ?? 0}/2</span>
-                      <span>C4: {item.criterios.c4 ?? 0}/2</span>
-                      <span>C5: {item.criterios.c5 ?? 0}/2</span>
+                    <div style={{ display: 'flex', gap: '12px', fontSize: '11px', fontFamily: 'Rajdhani', fontWeight: 700, color: 'var(--muted-foreground)', flexWrap: 'wrap', paddingTop: 4, borderTop: '1px solid var(--border)' }}>
+                      <span>C1 (Tema): {item.criterios.c1 ?? 0}/2.0</span>
+                      <span>C2 (Coesão): {item.criterios.c2 ?? 0}/2.0</span>
+                      <span>C3 (Coerência): {item.criterios.c3 ?? 0}/2.0</span>
+                      <span>C4 (Tipologia): {item.criterios.c4 ?? 0}/2.0</span>
+                      <span>C5 (Norma Culta): {item.criterios.c5 ?? 0}/2.0</span>
                     </div>
                   )}
                 </div>
@@ -587,26 +664,60 @@ export default function RedacaoPage() {
             {/* Modos de Escrita (Do zero vs Esqueleto) */}
             <div className="card" style={{ padding: 'var(--space-md)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-md)' }}>
-                <label className="form-label" style={{ margin: 0 }}>Modo de Produção</label>
+                <label className="form-label" style={{ margin: 0 }}>Modo de Produção Textual</label>
                 <div className="type-toggle" style={{ width: 'auto' }}>
                   <button
                     className={`type-toggle-btn ${modo === 'zero' ? 'active' : ''}`}
                     onClick={() => handleSelectModo('zero')}
                     type="button"
-                    style={{ padding: '4px 12px', fontSize: '11px' }}
+                    style={{ padding: '4px 14px', fontSize: '11px' }}
                   >
-                    Do Zero
+                    Escrever Do Zero
                   </button>
                   <button
                     className={`type-toggle-btn ${modo === 'esqueleto' ? 'active' : ''}`}
                     onClick={() => handleSelectModo('esqueleto')}
                     type="button"
-                    style={{ padding: '4px 12px', fontSize: '11px' }}
+                    style={{ padding: '4px 14px', fontSize: '11px' }}
                   >
-                    Com Esqueleto
+                    Usar Esqueleto Coringa
                   </button>
                 </div>
               </div>
+
+              {/* Painel de Seletor de Esqueletos Coringas Universais (Se modo === 'esqueleto') */}
+              {modo === 'esqueleto' && (
+                <div style={{
+                  padding: 'var(--space-md)',
+                  background: 'var(--background)',
+                  border: '1px solid var(--border)',
+                  marginBottom: 'var(--space-md)'
+                }}>
+                  <label className="form-label" style={{ marginBottom: 'var(--space-xs)' }}>
+                    Selecione o Modelo de Esqueleto Coringa (Universal):
+                  </label>
+
+                  <select
+                    className="form-select"
+                    value={selectedEsqueletoId}
+                    onChange={(e) => handleEsqueletoChange(e.target.value)}
+                    style={{ fontSize: '12px', marginBottom: 'var(--space-xs)' }}
+                  >
+                    {ESQUELETOS_CORINGAS.map(esq => (
+                      <option key={esq.id} value={esq.id}>
+                        {esq.nome}
+                      </option>
+                    ))}
+                  </select>
+
+                  <p style={{ fontSize: '11px', color: 'var(--muted-foreground)', margin: 0 }}>
+                    💡 <em>{ESQUELETOS_CORINGAS.find(e => e.id === selectedEsqueletoId)?.descricao}</em>
+                  </p>
+                  <p style={{ fontSize: '11px', color: 'var(--brand)', marginTop: 4, fontWeight: 600 }}>
+                    As lacunas indicadas entre colchetes <strong>[ COLOQUE AQUI... ]</strong> foram inseridas no editor abaixo. Substitua-as com as ideias do seu texto.
+                  </p>
+                </div>
+              )}
 
               {/* Textarea Editor */}
               <div style={{ position: 'relative' }}>
@@ -616,7 +727,7 @@ export default function RedacaoPage() {
                   onChange={(e) => setTexto(e.target.value)}
                   placeholder={
                     modo === 'esqueleto'
-                      ? 'Substitua os termos entre colchetes [ ... ] com suas ideias...'
+                      ? 'Substitua os termos entre colchetes [ ... ] com suas ideias no esqueleto coringa...'
                       : 'Escreva seu título e os parágrafos da sua redação aqui...'
                   }
                   rows={16}
@@ -692,7 +803,7 @@ export default function RedacaoPage() {
                 }}>
                   <div>
                     <span style={{ fontSize: '10px', color: 'var(--muted-foreground)', textTransform: 'uppercase', fontFamily: 'Rajdhani', fontWeight: 700 }}>
-                      Resultado da Avaliação UEMA
+                      Resultado da Avaliação UEMA (Salvo no Histórico)
                     </span>
                     <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0 }}>
                       {resultado.zerou ? 'Redação Zerada' : resultado.eliminado ? 'Candidato Eliminado' : 'Desempenho Final'}
@@ -812,6 +923,77 @@ export default function RedacaoPage() {
         </div>
       )}
 
+      {/* ── Modal Detalhes do Histórico ── */}
+      {selectedHistoricoItem && (
+        <div className="modal-overlay" onClick={() => setSelectedHistoricoItem(null)}>
+          <div className="modal-content-form" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 680 }}>
+            <div className="modal-header-border">
+              <span className="modal-title-text">
+                Detalhes da Redação ({new Date(selectedHistoricoItem.created_at).toLocaleDateString('pt-BR')})
+              </span>
+              <button className="btn btn-ghost" style={{ padding: 0, width: 24, height: 24 }} onClick={() => setSelectedHistoricoItem(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="modal-body-scroll" style={{ maxHeight: '70vh' }}>
+              <span className="badge" style={{ marginBottom: '8px' }}>
+                Nota: {selectedHistoricoItem.nota_final_100} / 100
+              </span>
+              <h3 style={{ fontSize: '15px', fontWeight: 700, marginBottom: 'var(--space-md)' }}>
+                "{selectedHistoricoItem.tema_titulo}"
+              </h3>
+
+              <div style={{
+                background: 'var(--background)',
+                padding: 'var(--space-md)',
+                fontSize: '13px',
+                lineHeight: 1.6,
+                whiteSpace: 'pre-wrap',
+                borderLeft: '3px solid var(--brand)',
+                marginBottom: 'var(--space-md)'
+              }}>
+                {selectedHistoricoItem.texto_enviado}
+              </div>
+
+              {/* Critérios */}
+              {selectedHistoricoItem.criterios && (
+                <div style={{ marginBottom: 'var(--space-md)' }}>
+                  <h4 style={{ fontSize: '12px', fontFamily: 'Rajdhani', fontWeight: 700, textTransform: 'uppercase', color: 'var(--muted-foreground)', marginBottom: '8px' }}>
+                    Notas por Critério
+                  </h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '11px' }}>
+                    <div>C1 Tema: <strong>{selectedHistoricoItem.criterios.c1 ?? 0}/2.0</strong></div>
+                    <div>C2 Coesão: <strong>{selectedHistoricoItem.criterios.c2 ?? 0}/2.0</strong></div>
+                    <div>C3 Coerência: <strong>{selectedHistoricoItem.criterios.c3 ?? 0}/2.0</strong></div>
+                    <div>C4 Tipologia: <strong>{selectedHistoricoItem.criterios.c4 ?? 0}/2.0</strong></div>
+                    <div>C5 Norma Culta: <strong>{selectedHistoricoItem.criterios.c5 ?? 0}/2.0</strong></div>
+                  </div>
+                </div>
+              )}
+
+              {/* Sugestões */}
+              {selectedHistoricoItem.sugestoes && selectedHistoricoItem.sugestoes.length > 0 && (
+                <div style={{ background: 'var(--background)', padding: 'var(--space-sm)', borderLeft: '3px solid var(--brand)' }}>
+                  <span style={{ fontSize: '11px', fontFamily: 'Rajdhani', fontWeight: 700, color: 'var(--brand)', textTransform: 'uppercase' }}>
+                    💡 Sugestões Recebidas
+                  </span>
+                  <ul style={{ margin: '4px 0 0', paddingLeft: '16px', fontSize: '11px', color: 'var(--foreground)' }}>
+                    {selectedHistoricoItem.sugestoes.map((s, i) => <li key={i}>{s}</li>)}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer-border">
+              <button className="btn btn-ghost" onClick={() => setSelectedHistoricoItem(null)}>
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Modal Redação-Modelo Nota 100 ── */}
       {showModelModal && (
         <div className="modal-overlay" onClick={() => setShowModelModal(false)}>
@@ -822,7 +1004,7 @@ export default function RedacaoPage() {
                 Redação-Modelo Nota 100 (Referência)
               </span>
               <button className="btn btn-ghost" style={{ padding: 0, width: 24, height: 24 }} onClick={() => setShowModelModal(false)}>
-                ✕
+                <X size={16} />
               </button>
             </div>
 
