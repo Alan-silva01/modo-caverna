@@ -3,128 +3,100 @@
     "id": "amazonia-desmatamento-2026",
     "tema": "Os desafios do combate ao desmatamento na Amazônia legal",
     "categoria": "Meio ambiente",
+    "concursos": ["uema", "pcma", "pocma"],
     "textos_motivadores": [
       "Dados do Instituto de Pesquisas Espaciais (INPE) indicam que a preservação da Amazônia é ponto crucial para a regulação do clima global. A perda da cobertura vegetal afeta diretamente o ciclo das chuvas no Centro-Sul brasileiro e reduz a biodiversidade nacional.",
       "A fiscalização ambiental enfrenta desafios logísticos imensos devido à extensão territorial, somados à atuação de grupos criminosos ligados ao garimpo ilegal e à grilagem de terras públicas."
-    ],
-    "esqueleto": {
-      "titulo_sugerido": "Entre a floresta e o progresso: o dilema da preservação amazônica",
-      "introducao": "Promulgada com a promessa de garantir o meio ambiente ecologicamente equilibrado, a Constituição Federal de 1988 estabelece a proteção ambiental como dever do Estado e da sociedade. No entanto, o avanço contínuo do desmatamento na Amazônia legal evidencia uma grave ruptura entre a norma jurídica e a realidade do país. Nesse contexto, torna-se imperativo discutir a fragilidade da fiscalização estatal e os impactos socioambientais da exploração predatória.",
-      "desenvolvimento1": "Em primeiro plano, é preciso destacar que a insuficiência de infraestrutura e de recursos humanos nos órgãos ambientais compromete a eficácia do combate aos ilícitos. Conforme o pensamento do sociólogo Zygmunt Bauman, as instituições da modernidade muitas vezes falham em oferecer respostas sólidas diante de problemas complexos. Assim, a vastidão da Amazônia favorece a impunidade de grileiros e garimpeiros ilegais.",
-      "desenvolvimento2": "Ademais, os efeitos da devastação ambiental ultrapassam as fronteiras da Região Norte e comprometem o equilíbrio climático de todo o território nacional. A alteração no regime de chuvas e a perda irreparável da biodiversidade ameaçam o futuro das próximas gerações, ferindo o princípio da responsabilidade socioambiental.",
-      "conclusao": "Portanto, medidas urgentes são necessárias para conter o desmatamento na Amazônia. Para tanto, cabe ao Governo Federal, por meio do Ministério do Meio Ambiente e dos órgãos de segurança, reforçar o contingente de fiscalização e aplicar sanções severas aos infratores. Somente assim o Brasil garantirá o desenvolvimento sustentável assegurado pelo texto constitucional."
-    }
+    ]
+  },
+  {
+    "id": "cibercriminalidade-investigacao",
+    "tema": "A atuação das forças policiais de investigação no combate aos crimes cibernéticos",
+    "categoria": "Segurança e cidadania",
+    "concursos": ["pcma", "uema", "pocma"],
+    "textos_motivadores": [
+      "Com a migração de atividades financeiras e sociais para o ambiente digital, fraudes eletrônicas, vazamentos de dados e extorsões cibernéticas cresceram exponencialmente nos últimos anos.",
+      "A resposta estatal exige capacitação técnica avançada, inteligência de dados e cooperação interinstitucional entre a Polícia Civil e órgãos de fiscalização nacional e internacional."
+    ]
+  },
+  {
+    "id": "historia-geografia-maranhao",
+    "tema": "O desenvolvimento socioeconômico e a preservação do patrimônio histórico e ambiental do Maranhão",
+    "categoria": "Conhecimentos gerais do Maranhão",
+    "concursos": ["pocma", "uema"],
+    "textos_motivadores": [
+      "O Estado do Maranhão possui uma rica diversidade ecológica — marcada pela transição entre o Cerrado, a Caatinga e a Amazônia — e um acervo arquitetônico e cultural de valor incalculável.",
+      "O avanço de empreendimentos industriais e agrícolas impõe a necessidade de conciliar o crescimento econômico regional com a salvaguarda ambiental e a valorização da identidade maranhense."
+    ]
   },
   {
     "id": "ia-trabalho-futuro",
     "tema": "Os impactos da inteligência artificial no mercado de trabalho e nas relações humanas",
     "categoria": "Tecnologia",
+    "concursos": ["uema", "pcma", "pocma"],
     "textos_motivadores": [
       "A automação avançada e a expansão da inteligência artificial generativa estão redefinindo profissões tradicionais, exigindo requalificação contínua dos trabalhadores e levantando questões éticas sobre a substituição do trabalho humano.",
       "Especialistas apontam que, embora novas oportunidades surjam na economia digital, a velocidade das transformações tecnológicas pode intensificar a desigualdade no acesso ao emprego formal."
-    ],
-    "esqueleto": {
-      "titulo_sugerido": "O trabalho na era dos algoritmos: inovação e precarização",
-      "introducao": "A Terceira Revolução Industrial consolidou a tecnologia como pilar central da sociedade contemporânea. Contudo, a rápida difusão da inteligência artificial no mercado de trabalho traz à tona um dilema desafiador: a substituição do esforço humano pela automação. Desse modo, é fundamental analisar a obsolescência profissional precoce e a necessidade de políticas de inclusão digital sustentável.",
-      "desenvolvimento1": "De início, cabe pontuar que a substituição de funções operacionais e intelectuais por sistemas de IA gera incerteza socioeconômica. Sob a ótica do filósofo Hans Jonas e sua 'Ética da Responsabilidade', o avanço tecnológico deve ser guiado pelo compromisso com o bem-estar coletivo, o que não ocorre quando a tecnologia precariza o trabalho humano.",
-      "desenvolvimento2": "Além disso, a falta de capacitação técnica ampla aprofunda o abismo entre profissionais altamente qualificados e trabalhadores vulneráveis. Sem políticas públicas de requalificação, a automação intensifica a exclusão social e a concentração de renda.",
-      "conclusao": "Impõe-se, pois, a intervenção do Ministério do Trabalho e do Ministério da Educação para mitigar esses impactos. Cabe a esses órgãos formular programas nacionais de requalificação profissional focados na economia digital, garantindo uma transição justa e protegendo a dignidade do trabalhador."
-    }
+    ]
   },
   {
     "id": "educacao-desigualdade-digital",
     "tema": "Caminhos para combater a desigualdade no acesso à educação de qualidade no Brasil",
     "categoria": "Educação",
+    "concursos": ["uema", "pcma"],
     "textos_motivadores": [
       "A disparidade na infraestrutura das escolas públicas e privadas brasileiras reflete diretamente no desempenho acadêmico dos estudantes e no acesso ao ensino superior.",
       "Segundo a UNESCO, a garantia de uma educação inclusiva, equitativa e de qualidade é a ferramenta mais poderosa para romper o ciclo intergeracional da pobreza."
-    ],
-    "esqueleto": {
-      "titulo_sugerido": "Educação e cidadania: caminhos para a democratização do saber",
-      "introducao": "O educador Paulo Freire afirmava que a educação não transforma o mundo, mas transforma as pessoas que vão transformar o mundo. Apesar da relevância desse preceito, a persistente desigualdade no acesso ao ensino de qualidade no Brasil impede que milhões de jovens desenvolvam seu pleno potencial. Logo, torna-se essencial debater a disparidade de infraestrutura escolar e a urgência de investimentos equitativos.",
-      "desenvolvimento1": "Em primeira análise, a assimetria entre o ensino público e o privado perpetua a exclusão social. Enquanto instituições privadas dispõem de tecnologias avançadas e suporte pedagógico integral, escolas públicas em regiões vulneráveis frequentemente carecem de saneamento básico e internet de alta velocidade, violando o direito constitucional ao saber.",
-      "desenvolvimento2": "Outrossim, a falta de valorização docente e de recursos pedagógicos atrativos reduz o engajamento dos estudantes e eleva os índices de evasão escolar, privando o país do desenvolvimento científico e cultural necessário para o progresso.",
-      "conclusao": "Assim, cabe ao Ministério da Educação, em parceria com os governos estaduais e municipais, implementar um plano nacional de modernização da infraestrutura escolar pública, priorizando comunidades carentes. Com isso, o Brasil caminhará rumo à efetivação da igualdade de oportunidades."
-    }
+    ]
   },
   {
     "id": "saude-mental-jovens",
     "tema": "A urgência do debate sobre a saúde mental dos jovens na sociedade hiperconectada",
     "categoria": "Saúde pública",
+    "concursos": ["uema", "pcma"],
     "textos_motivadores": [
       "A Organização Mundial da Saúde (OMS) alerta para o aumento significativo de quadros de ansiedade e depressão entre adolescentes e jovens adultos, impulsionados pela comparação social constante nas redes digitais.",
       "A pressão por desempenho acadêmico e a superexposição a telas demandam ações preventivas no ambiente escolar e no sistema de saúde pública."
-    ],
-    "esqueleto": {
-      "titulo_sugerido": "Mentes invisíveis: os desafios da saúde mental na juventude",
-      "introducao": "Na obra 'Modernidade Líquida', Zygmunt Bauman descreve uma sociedade marcada pelo imediatismo e pela fragilidade das relações interpessoais. Essa realidade se reflete criticamente na saúde mental dos jovens brasileiros, que enfrentam níveis crescentes de ansiedade e sofrimento psíquico. Torna-se imperioso, portanto, discutir a cultura da comparação digital e a carência de assistência psicológica na rede pública.",
-      "desenvolvimento1": "Inicialmente, vale ressaltar que a convivência contínua em redes sociais impõe padrões de vida inalcançáveis, alimentando sentimentos de inadequação. A busca obsessiva por aprovação virtual sobrecarrega o desenvolvimento emocional da juventude, gerando desgaste psicológico silencioso.",
-      "desenvolvimento2": "Somado a isso, o estigma social que ainda cerca os transtornos mentais dificulta a busca por ajuda especializada. Na ausência de suporte emocional nas escolas e comunidades, jovens enfrentam quadros graves sem o amparo necessário.",
-      "conclusao": "Diante disso, o Ministério da Saúde, em conjunto com o Ministério da Educação, deve criar núcleos de apoio psicológico nas escolas públicas e ampliar o atendimento multiprofissional nos postos de saúde. Dessa forma, será possível acolher a juventude e promover o bem-estar social."
-    }
+    ]
   },
   {
     "id": "violencia-mulher-feminicidio",
     "tema": "Perspectivas para a erradicação da violência contra a mulher no Brasil",
     "categoria": "Direitos humanos",
+    "concursos": ["uema", "pcma", "pocma"],
     "textos_motivadores": [
       "Embora a Lei Maria da Penha represente um avanço legislativo expressivo, os números de feminicídio e violência doméstica continuam elevados, exigindo reforço na rede de proteção e na conscientização cultural.",
       "Especialistas enfatizam que o combate à misoginia passa pelo fortalecimento de delegacias especializadas e por programas educativos de prevenção ao machismo desde a infância."
-    ],
-    "esqueleto": {
-      "titulo_sugerido": "Respeito e dignidade: a luta contínua contra a violência de gênero",
-      "introducao": "A Constituição Federal de 1988 assegura o direito à vida e à integridade física como garantias inalienáveis de todos os cidadãos. Todavia, a alta incidência de violência contra a mulher no Brasil revela a persistência de uma estrutura patriarcal que vitimiza diariamente milhares de cidadãs. Desse modo, cumpre analisar a ineficácia parcial da rede de proteção e a necessidade de reeducação cultural.",
-      "desenvolvimento1": "Em primeiro lugar, nota-se que a dependência financeira e psicológica muitas vezes impede a vítima de denunciar o agressor. Além disso, a morosidade na concessão de medidas protetivas de urgência expõe mulheres a situações de risco extremo, enfraquecendo a proteção estatal.",
-      "desenvolvimento2": "Paralelamente, a reprodução de discursos machistas naturaliza comportamentos abusivos desde a juventude. Conforme o pensamento do filósofo Immanuel Kant, o ser humano é aquilo que a educação faz dele; logo, sem educação reflexiva sobre igualdade de gênero, o ciclo violento perpetua-se.",
-      "conclusao": "Portanto, cabe ao Governo Federal reforçar o orçamento destinado às Delegacias de Atendimento à Mulher (DEAMs) e implementar campanhas pedagógicas contínuas nas redes de ensino. Somente com rigor legal e transformação cultural o Brasil garantirá às mulheres uma vida sem violência."
-    }
+    ]
   },
   {
     "id": "seguranca-publica-cidadania",
     "tema": "Desafios para a construção de uma segurança pública cidadã e preventiva no Brasil",
     "categoria": "Segurança e cidadania",
+    "concursos": ["pcma", "pocma", "uema"],
     "textos_motivadores": [
       "O artigo 144 da Constituição Federal define a segurança pública como dever do Estado, direito e responsabilidade de todos. No entanto, o modelo reativo predominantemente focado na repressão tem se mostrado insuficiente para conter a criminalidade urbana.",
       "A integração entre forças policiais, tecnologia de inteligência e investimentos sociais em áreas vulneráveis surge como caminho essencial para a redução dos índices de violência."
-    ],
-    "esqueleto": {
-      "titulo_sugerido": "Segurança e cidadania: o imperativo da prevenção social",
-      "introducao": "O artigo 144 da Carta Magna brasileira estabelece que a segurança pública é dever do Estado e direito de todos, visando à preservação da ordem pública e da incolumidade das pessoas. No entanto, a prevalência de políticas foca-das quase exclusivamente na repressão atesta a fragilidade do modelo atual. Nesse panorama, cabe examinar a carência de investimento em inteligência policial e a urgência de inclusão social em territórios vulneráveis.",
-      "desenvolvimento1": "Por um lado, é evidente que a atuação policial carece de suporte tecnológico abrangente e integração de dados interinstitucionais. A falta de inteligência ostensiva compromete a antecipação de ilícitos e fragiliza a proteção do cidadão comum.",
-      "desenvolvimento2": "Por outro lado, a ausência de serviços básicos como iluminação pública, lazer e capacitação profissional nas periferias favorece a alocação de jovens no crime organizado, demonstrando que a segurança exige presença social do Estado.",
-      "conclusao": "Em suma, o Ministério da Justiça e Segurança Pública deve articular um plano integrado de polícia comunitária e investimento social urbano nas regiões de maior vulnerabilidade. Dessa forma, efetivar-se-á uma segurança genuinamente cidadã."
-    }
+    ]
   },
   {
     "id": "sustentabilidade-lixo-urbano",
     "tema": "A gestão dos resíduos sólidos e os desafios da economia circular nas cidades brasileiras",
     "categoria": "Meio ambiente",
+    "concursos": ["uema", "pcma"],
     "textos_motivadores": [
       "A Política Nacional de Resíduos Sólidos (PNRS) estabeleceu diretrizes para a erradicação dos lixões a céu aberto e incentivo à reciclagem, mas a maioria dos municípios brasileiros ainda descarta resíduos de forma inadequada.",
       "O fortalecimento de cooperativas de catadores e a logística reversa nas indústrias são apontados como motores decisivos para o desenvolvimento sustentável urbano."
-    ],
-    "esqueleto": {
-      "titulo_sugerido": "Cidades sustentáveis: o desafio do manejo de resíduos",
-      "introducao": "A Agenda 2030 das Nações Unidas destaca a necessidade de tornar as cidades resilientes e sustentáveis. Apesar das previsões legais da Política Nacional de Resíduos Sólidos, a proliferação de lixões e a baixa taxa de reciclagem no Brasil evidenciam uma gestão urbana ineficiente. Torna-se fundamental, assim, abordar a precariedade do descarte de lixo e a baixa adesão à economia circular.",
-      "desenvolvimento1": "Em primeiro plano, a falta de destinação ambientalmente adequada de resíduos polui recursos hídricos e dissemina enfermidades nas populações do entorno. A omissão municipal viola a sustentabilidade intergeracional defendida pelo Direito Ambiental.",
-      "desenvolvimento2": "Ademais, o trabalho dos catadores de materiais recicláveis sofre com a precarização e o desamparo institucional. Sem investimentos em cooperativas e logística reversa, toneladas de materiais descartáveis perdem valor econômico.",
-      "conclusao": "Diante dessa problemática, os Governos Municipais devem firmar parcerias com cooperativas de reciclagem e implantar a coleta seletiva obrigatória em todos os bairros. Com isso, promover-se-á a preservação ambiental e a inclusão produtiva."
-    }
+    ]
   },
   {
     "id": "cultura-patrimonio-preservacao",
     "tema": "A importância da preservação do patrimônio histórico e cultural para a identidade nacional",
     "categoria": "Cultura, Segurança e Cidadania",
+    "concursos": ["uema", "pocma"],
     "textos_motivadores": [
       "O patrimônio cultural material e imaterial de um país constitui a memória viva de seu povo. No Brasil, episódios de degradação e incêndios em museus reforçam a necessidade de políticas públicas de salvaguarda.",
       "A valorização dos centros históricos impulsiona o turismo sustentável, gera emprego e fortalece o sentimento de pertencimento comunitário."
-    ],
-    "esqueleto": {
-      "titulo_sugerido": "Guardiões da memória: a valorização do patrimônio nacional",
-      "introducao": "O historiador Marc Bloch afirmava que a incompreensão do presente nasce fatalmente da ignorância do passado. No Brasil, contudo, o descuido recorrente com monumentos, acervos e centros históricos reflete um preocupante desapreço pela memória coletiva. Nesse sentido, cumpre discutir a escassez de recursos públicos para conservação e a fraca consciência patrimonial da sociedade.",
-      "desenvolvimento1": "Inicialmente, a falta de verbas continuadas para órgãos como o IPHAN vulnerabiliza edifícios históricos e museus contra incêndios e deterioração natural, apagando marcos fundamentais da identidade nacional.",
-      "desenvolvimento2": "Outrossim, a ausência de programas educacionais voltados ao patrimônio faz com que muitos cidadãos não reconheçam a relevância histórica dos bens culturais de sua região, reduzindo o engajamento na sua preservação.",
-      "conclusao": "Assim, cabe ao Ministério da Cultura criar um fundo nacional de restauro continuado e promover projetos pedagógicos de educação patrimonial nas escolas públicas. Dessa maneira, a memória e a história do país estarão resguardadas."
-    }
+    ]
   }
 ]

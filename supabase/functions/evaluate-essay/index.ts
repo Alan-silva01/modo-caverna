@@ -20,35 +20,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { tema, texto, linhasCount } = await req.json();
+    const { tema, texto, linhasCount, concursoId = 'uema' } = await req.json();
 
     if (!tema || !texto) {
       return new Response(JSON.stringify({ error: "Tema e texto são obrigatórios." }), {
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Check client-side rule: less than 15 lines -> zero without calling OpenAI API
-    if (typeof linhasCount === 'number' && linhasCount < 15) {
-      const responsePayload = {
-        criterio1: 0.0,
-        criterio2: 0.0,
-        criterio3: 0.0,
-        criterio4: 0.0,
-        criterio5: 0.0,
-        notaBruta10: 0.0,
-        notaFinal100: 0.0,
-        zerou: true,
-        motivoZero: "O texto possui menos de 15 linhas (regra de eliminação direta do Edital UEMA).",
-        eliminado: true,
-        pontosFortes: [],
-        pontosFracos: ["Texto muito curto (menos de 15 linhas)."],
-        sugestoesDeMelhoria: ["Desenvolva a estrutura completa de introdução, 2 parágrafos de desenvolvimento e conclusão com pelo menos 15 linhas."]
-      };
-
-      return new Response(JSON.stringify(responsePayload), {
-        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -61,19 +37,154 @@ Deno.serve(async (req) => {
       });
     }
 
-    const systemPrompt = `Você é um corretor sênior de redação do vestibular UEMA (Edital 214/2026-GR/UEMA).
-Avalie o texto do candidato estritamente segundo estes 5 critérios, cada um valendo de 0,0 a 2,0 pontos:
+    const tl = Math.max(1, linhasCount || 15);
 
-1. Atendimento ao tema proposto (relações intertextuais, autonomia na escrita, amplo conhecimento de mundo/formal) [0.0 a 2.0]
-2. Coesão entre as partes do texto (uso adequado de elementos coesivos inter e intraparágrafos, ausência de ambiguidade) [0.0 a 2.0]
-3. Coerência dos argumentos (presença obrigatória de título, estrutura introdução/desenvolvimento/conclusão, progressão de ideias, clareza) [0.0 a 2.0]
-4. Atendimento à tipologia dissertativo-argumentativa (tese clara, argumentos consistentes, poder persuasivo) [0.0 a 2.0]
-5. Domínio do padrão culto escrito da língua (léxico apurado, morfologia, sintaxe, pontuação, ortografia, ausência de oralidade) [0.0 a 2.0]
+    // ── MODO CEBRASPE: PCMA e POCMA ──
+    if (concursoId === 'pcma' || concursoId === 'pocma') {
+      const orgaoNome = concursoId === 'pcma' ? 'Polícia Civil do Maranhão (PCMA)' : 'Perícia Oficial do Maranhão (POCMA)';
 
-Verifique também se o texto se enquadra em alguma situação de NOTA ZERO:
-fuga total ao tema, fuga à tipologia dissertativo-argumentativa, texto sem tese/argumentação clara, texto não articulado ou palavras soltas.
+      const systemPromptCebraspe = `Você é uma banca examinadora sênior do Cebraspe responsável pela correção da prova discursiva do concurso da ${orgaoNome}.
+A prova consiste em uma redação de até 30 linhas valendo no máximo 20,00 pontos.
+
+Sua tarefa é avaliar dois aspectos cruciais conforme o item 9.7 do edital oficial:
+
+1. Nota de Conteúdo (NC) [0,00 a 20,00 pontos]:
+   Apresentação visual, legibilidade/estrutura textual e desenvolvimento técnico dos conceitos do tema proposto.
+
+2. Número de Erros (NE) [Inteiro >= 0]:
+   Contagem minuciosa de falhas gramaticais (ortografia, acentuação, crase, concordância, regência, propriedade vocabular).
+
+Regras de Zeragem Cebraspe:
+- Marque "zerou": true se houver fuga total ao tema ou ausência de texto/texto não articulado.
 
 Responda ESTRITAMENTE em JSON válido, sem nenhum texto fora do JSON, neste formato exato:
+{
+  "notaConteudoNC": 18.5,
+  "errosGramaticaisNE": 2,
+  "zerou": false,
+  "motivoZero": null,
+  "errosDetalhados": [
+    { "trecho": "nao", "erro": "Falta de acentuação gráfica", "correcao": "não" }
+  ],
+  "pontosFortes": ["...", "..."],
+  "pontosFracos": ["...", "..."],
+  "sugestoesDeMelhoria": ["...", "..."]
+}`;
+
+      const userMessageCebraspe = `CONCURSO: ${orgaoNome} (Banca Cebraspe - Vale 20,00 pts)
+TEMA PROPOSTO: "${tema}"
+NÚMERO DE LINHAS ESCRITAS (TL): ${tl}
+
+TEXTO DA REDAÇÃO DO CANDIDATO:
+${texto}`;
+
+      const openAiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${openaiApiKey}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o",
+          messages: [
+            { role: "system", content: systemPromptCebraspe },
+            { role: "user", content: userMessageCebraspe }
+          ],
+          response_format: { type: "json_object" },
+          temperature: 0.2,
+        }),
+      });
+
+      if (!openAiResponse.ok) {
+        const errText = await openAiResponse.text();
+        return new Response(JSON.stringify({ error: `Erro na API OpenAI: ${errText}` }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const openAiData = await openAiResponse.json();
+      let contentStr = openAiData.choices[0].message.content.trim();
+
+      if (contentStr.startsWith("```json")) contentStr = contentStr.substring(7);
+      if (contentStr.startsWith("```")) contentStr = contentStr.substring(3);
+      if (contentStr.endsWith("```")) contentStr = contentStr.substring(0, contentStr.length - 3);
+      contentStr = contentStr.trim();
+
+      const resultJson = JSON.parse(contentStr);
+
+      const nc = Number(resultJson.notaConteudoNC) || 0;
+      const ne = Number(resultJson.errosGramaticaisNE) || 0;
+
+      // Official Cebraspe Formula: NPD = NC - (4 * NE) / TL
+      const penalidade = Number(((4 * ne) / tl).toFixed(2));
+      let npd = resultJson.zerou ? 0 : Number((nc - penalidade).toFixed(2));
+      if (npd < 0) npd = 0;
+
+      const aprovado = !resultJson.zerou && npd >= 10.00;
+      const eliminado = !aprovado;
+
+      const payloadCebraspe = {
+        concursoId,
+        banca: 'Cebraspe',
+        notaConteudoNC: nc,
+        errosGramaticaisNE: ne,
+        linhasTL: tl,
+        penalidadeErros: penalidade,
+        notaFinalNPD: npd,
+        notaFinal100: Number((npd * 5).toFixed(2)), // Convert to scale of 100 for comparison
+        aprovado,
+        eliminado,
+        zerou: Boolean(resultJson.zerou),
+        motivoZero: resultJson.motivoZero || (npd < 0 ? "Nota final discursiva menor que 0,00." : null),
+        errosDetalhados: Array.isArray(resultJson.errosDetalhados) ? resultJson.errosDetalhados : [],
+        pontosFortes: Array.isArray(resultJson.pontosFortes) ? resultJson.pontosFortes : [],
+        pontosFracos: Array.isArray(resultJson.pontosFracos) ? resultJson.pontosFracos : [],
+        sugestoesDeMelhoria: Array.isArray(resultJson.sugestoesDeMelhoria) ? resultJson.sugestoesDeMelhoria : []
+      };
+
+      return new Response(JSON.stringify(payloadCebraspe), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ── MODO UEMA (Edital 214/2026-GR/UEMA) ──
+    if (typeof linhasCount === 'number' && linhasCount < 15) {
+      const responsePayload = {
+        concursoId: 'uema',
+        banca: 'UEMA',
+        criterio1: 0.0,
+        criterio2: 0.0,
+        criterio3: 0.0,
+        criterio4: 0.0,
+        criterio5: 0.0,
+        notaBruta10: 0.0,
+        notaFinal100: 0.0,
+        zerou: true,
+        motivoZero: "O texto possui menos de 15 linhas (regra de eliminação direta do Edital UEMA).",
+        eliminado: true,
+        pontosFortes: [],
+        pontosFracos: ["Texto muito curto (menos de 15 linhas)."],
+        sugestoesDeMelhoria: ["Desenvolva a estrutura completa em pelo menos 15 linhas."]
+      };
+
+      return new Response(JSON.stringify(responsePayload), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const systemPromptUema = `Você é um corretor sênior de redação do vestibular UEMA (Edital 214/2026-GR/UEMA).
+Avalie o texto do candidato estritamente segundo estes 5 critérios, cada um valendo de 0,0 a 2,0 pontos:
+
+1. Atendimento ao tema proposto [0.0 a 2.0]
+2. Coesão entre as partes do texto [0.0 a 2.0]
+3. Coerência dos argumentos & Estrutura [0.0 a 2.0]
+4. Atendimento à tipologia dissertativo-argumentativa [0.0 a 2.0]
+5. Domínio do padrão culto escrito da língua [0.0 a 2.0]
+
+Responda ESTRITAMENTE em JSON válido, sem nenhum texto fora do JSON:
 {
   "criterio1": 0.0,
   "criterio2": 0.0,
@@ -87,7 +198,7 @@ Responda ESTRITAMENTE em JSON válido, sem nenhum texto fora do JSON, neste form
   "sugestoesDeMelhoria": ["...", "..."]
 }`;
 
-    const userMessage = `TEMA PROPOSTO: "${tema}"\n\nTEXTO DA REDAÇÃO DO CANDIDATO:\n\n${texto}`;
+    const userMessageUema = `TEMA PROPOSTO: "${tema}"\n\nTEXTO DA REDAÇÃO DO CANDIDATO:\n\n${texto}`;
 
     const openAiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -98,8 +209,8 @@ Responda ESTRITAMENTE em JSON válido, sem nenhum texto fora do JSON, neste form
       body: JSON.stringify({
         model: "gpt-4o",
         messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userMessage }
+          { role: "system", content: systemPromptUema },
+          { role: "user", content: userMessageUema }
         ],
         response_format: { type: "json_object" },
         temperature: 0.3,
@@ -124,7 +235,6 @@ Responda ESTRITAMENTE em JSON válido, sem nenhum texto fora do JSON, neste form
 
     const resultJson = JSON.parse(contentStr);
 
-    // Backend arithmetic post-processing to ensure precision
     const c1 = Number(resultJson.criterio1) || 0;
     const c2 = Number(resultJson.criterio2) || 0;
     const c3 = Number(resultJson.criterio3) || 0;
@@ -135,7 +245,9 @@ Responda ESTRITAMENTE em JSON válido, sem nenhum texto fora do JSON, neste form
     const notaFinal100 = resultJson.zerou ? 0 : Number((notaBruta10 * 10).toFixed(2));
     const eliminado = resultJson.zerou || notaBruta10 < 2.0;
 
-    const payload = {
+    const payloadUema = {
+      concursoId: 'uema',
+      banca: 'UEMA',
       criterio1: c1,
       criterio2: c2,
       criterio3: c3,
@@ -151,7 +263,7 @@ Responda ESTRITAMENTE em JSON válido, sem nenhum texto fora do JSON, neste form
       sugestoesDeMelhoria: Array.isArray(resultJson.sugestoesDeMelhoria) ? resultJson.sugestoesDeMelhoria : []
     };
 
-    return new Response(JSON.stringify(payload), {
+    return new Response(JSON.stringify(payloadUema), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
