@@ -6,6 +6,22 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Helper to extract JSON from raw AI text response
+function extractJsonFromText(text: string) {
+  let cleaned = text.trim();
+  if (cleaned.startsWith("```json")) cleaned = cleaned.substring(7);
+  if (cleaned.startsWith("```")) cleaned = cleaned.substring(3);
+  if (cleaned.endsWith("```")) cleaned = cleaned.substring(0, cleaned.length - 3);
+  cleaned = cleaned.trim();
+
+  const firstBrace = cleaned.indexOf("{");
+  const lastBrace = cleaned.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace !== -1) {
+    cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+  }
+  return JSON.parse(cleaned);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -20,7 +36,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { tema, concursoId = "uema", textoAtual = "", modelId = "google/gemini-2.0-flash-exp:free" } = await req.json();
+    const { tema, concursoId = "uema", textoAtual = "", modelId = "meta-llama/llama-3.3-70b-instruct:free" } = await req.json();
 
     if (!tema) {
       return new Response(JSON.stringify({ error: "Tema é obrigatório." }), {
@@ -33,46 +49,22 @@ Deno.serve(async (req) => {
     const openaiKey = Deno.env.get("OPENAI_API_KEY");
 
     if (!openrouterKey && !openaiKey) {
-      return new Response(JSON.stringify({ error: "Nenhuma chave de API (OPENROUTER_API_KEY ou OPENAI_API_KEY) configurada no Supabase Secrets." }), {
+      return new Response(JSON.stringify({ error: "Nenhuma chave de API configurada no Supabase Secrets." }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Map old/legacy model IDs to exact OpenRouter slugs
-    let targetModel = modelId || "google/gemini-2.0-flash-exp:free";
-    if (targetModel === "google/gemini-2.0-flash-001") {
-      targetModel = "google/gemini-2.0-flash-exp:free";
-    }
+    const systemPrompt = `Você é um tutor especialista em redação de concursos (UEMA e Cebraspe).
+O estudante está escrevendo sobre: "${tema}". Concurso: ${concursoId.toUpperCase()}.
 
-    let apiUrl = "https://openrouter.ai/api/v1/chat/completions";
-    let apiKey = openrouterKey || openaiKey;
-    let isOpenRouter = Boolean(openrouterKey);
-
-    if (!openrouterKey && openaiKey) {
-      apiUrl = "https://api.openai.com/v1/chat/completions";
-      apiKey = openaiKey;
-      targetModel = "gpt-4o-mini";
-      isOpenRouter = false;
-    }
-
-    const systemPrompt = `Você é um tutor e assistente especialista em redação de concursos públicos (bancas UEMA e Cebraspe).
-O estudante está escrevendo uma redação sobre o tema: "${tema}".
-Edital Alvo: ${concursoId.toUpperCase()}.
-
-Sua tarefa é analisar o texto escrito até o momento e sugerir continuações gramaticais de elite, elegantes e coerentes.
+Sua missão: analisar o texto atual e sugerir continuações formais e elegantes.
 
 REGRAS:
-1. Retorne ESTRITAMENTE um JSON válido.
-2. Não use clichês vazios (ex: "é notório que", "nos dias atuais", "em suma").
-3. Forneça:
-   - "sugestaoTab": 1 frase curta ou continuação direta (máximo 15 palavras) que completa naturalmente o raciocínio atual.
-   - "opcoes": Um array com 3 sugestões estratégicas:
-     * Opção 1 (tipo: "Conectivo de Transição"): Um conectivo ou elemento coesivo formal para iniciar ou transitar no período.
-     * Opção 2 (tipo: "Repertório Sociocultural"): Uma citação filosófica, jurídica, histórica ou dado relevante diretamente aplicável ao tema.
-     * Opção 3 (tipo: "Desdobramento Argumentativo"): Uma frase persuasiva que aprofunda a tese ou causa do problema.
+- Retorne APENAS um objeto JSON válido, sem texto fora do JSON.
+- Forneça "sugestaoTab" (1 frase curta para continuar) e "opcoes" (array com 3 sugestões: "Conectivo de Transição", "Repertório Sociocultural", "Desdobramento Argumentativo").
 
-Formato JSON esperado:
+Formato estrito:
 {
   "sugestaoTab": "...",
   "opcoes": [
@@ -84,54 +76,57 @@ Formato JSON esperado:
 
     const userMessage = textoAtual.trim()
       ? `TEXTO ATUAL DO ESTUDANTE:\n"${textoAtual}"`
-      : `O estudante acabou de iniciar a folha de rascunho para o tema "${tema}". Sugira como começar a introdução.`;
+      : `O estudante vai começar a redação sobre "${tema}". Sugira a introdução.`;
 
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`,
-    };
+    let successResult = null;
 
-    if (isOpenRouter) {
-      headers["HTTP-Referer"] = "https://intelflux.app";
-      headers["X-Title"] = "Intelflux Concursos";
+    // 1. Try OpenRouter if key is present
+    if (openrouterKey) {
+      const openRouterModelsToTry = [
+        modelId,
+        "meta-llama/llama-3.3-70b-instruct:free",
+        "google/gemini-2.0-pro-exp-02-05:free",
+        "deepseek/deepseek-r1:free"
+      ];
+
+      for (const currentModel of [...new Set(openRouterModelsToTry)]) {
+        try {
+          // Note: OpenRouter free models reject response_format: { type: 'json_object' }
+          const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${openrouterKey}`,
+              "HTTP-Referer": "https://intelflux.app",
+              "X-Title": "Intelflux Concursos"
+            },
+            body: JSON.stringify({
+              model: currentModel,
+              messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: userMessage }
+              ],
+              temperature: 0.5,
+            }),
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            const textContent = data.choices[0]?.message?.content;
+            if (textContent) {
+              successResult = extractJsonFromText(textContent);
+              break;
+            }
+          }
+        } catch {
+          // continue to next model candidate
+        }
+      }
     }
 
-    // Try selected model first
-    let aiResponse = await fetch(apiUrl, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        model: targetModel,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userMessage }
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.5,
-      }),
-    });
-
-    // Fallback try if OpenRouter model slug is unavailable or 404
-    if (!aiResponse.ok && isOpenRouter) {
-      const fallbackModel = "meta-llama/llama-3.3-70b-instruct:free";
-      aiResponse = await fetch(apiUrl, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          model: fallbackModel,
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userMessage }
-          ],
-          response_format: { type: "json_object" },
-          temperature: 0.5,
-        }),
-      });
-    }
-
-    // Final fallback to OpenAI gpt-4o-mini if OpenRouter fails completely
-    if (!aiResponse.ok && openaiKey) {
-      aiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+    // 2. Fallback to OpenAI gpt-4o-mini if OpenRouter didn't yield a result
+    if (!successResult && openaiKey) {
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -147,27 +142,24 @@ Formato JSON esperado:
           temperature: 0.5,
         }),
       });
+
+      if (res.ok) {
+        const data = await res.json();
+        const textContent = data.choices[0]?.message?.content;
+        if (textContent) {
+          successResult = extractJsonFromText(textContent);
+        }
+      }
     }
 
-    if (!aiResponse.ok) {
-      const errText = await aiResponse.text();
-      return new Response(JSON.stringify({ error: `Erro na API (${aiResponse.status}): ${errText}` }), {
+    if (!successResult) {
+      return new Response(JSON.stringify({ error: "Não foi possível obter sugestões no momento. Tente novamente em instantes." }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const aiData = await aiResponse.json();
-    let contentStr = aiData.choices[0].message.content.trim();
-
-    if (contentStr.startsWith("```json")) contentStr = contentStr.substring(7);
-    if (contentStr.startsWith("```")) contentStr = contentStr.substring(3);
-    if (contentStr.endsWith("```")) contentStr = contentStr.substring(0, contentStr.length - 3);
-    contentStr = contentStr.trim();
-
-    const resultJson = JSON.parse(contentStr);
-
-    return new Response(JSON.stringify(resultJson), {
+    return new Response(JSON.stringify(successResult), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
