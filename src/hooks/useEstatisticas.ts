@@ -16,42 +16,43 @@ export function useEstatisticas() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setLoading(false); return; }
 
-    // Get all answers with question data (only columns that always existed)
-    const { data: respostas } = await supabase
-      .from('respostas_usuario')
-      .select(`
-        acertou,
-        questao_id,
-        questoes (
-          disciplina_id,
-          tema_id,
-          tipo
-        )
-      `)
-      .eq('user_id', user.id);
+    // Fetch answers, disciplinas and temas in parallel for maximum speed
+    const [respostasRes, disciplinasRes, temasRes] = await Promise.all([
+      supabase
+        .from('respostas_usuario')
+        .select(`
+          acertou,
+          questao_id,
+          questoes (
+            disciplina_id,
+            tema_id,
+            tipo,
+            dificuldade
+          )
+        `)
+        .eq('user_id', user.id),
+      supabase
+        .from('disciplinas')
+        .select('id, nome, editais(sigla)'),
+      supabase
+        .from('temas')
+        .select('id, nome')
+    ]);
 
-    if (!respostas || respostas.length === 0) { setLoading(false); return; }
+    const respostas = respostasRes.data;
+    const disciplinas = disciplinasRes.data;
+    const temas = temasRes.data;
 
-    // Fetch dificuldade separately (column may not exist yet on old DBs)
-    const questaoIds = [...new Set(respostas.map(r => r.questao_id))];
-    let difMap = new Map<string, string>();
-    try {
-      const { data: qDifs } = await supabase
-        .from('questoes')
-        .select('id, dificuldade')
-        .in('id', questaoIds);
-      if (qDifs) {
-        difMap = new Map(qDifs.map(q => [q.id, q.dificuldade || 'medio']));
-      }
-    } catch {
-      // Column doesn't exist yet — all default to 'medio'
+    if (!respostas || respostas.length === 0) {
+      setStatsDisciplina([]);
+      setStatsTema([]);
+      setStatsDificuldade([]);
+      setStatsTipo([]);
+      setTotalQuestoes(0);
+      setTotalAcertos(0);
+      setLoading(false);
+      return;
     }
-
-    // Get disciplinas and temas names
-    const { data: disciplinas } = await supabase
-      .from('disciplinas')
-      .select('id, nome, editais(sigla)');
-    const { data: temas } = await supabase.from('temas').select('id, nome');
 
     const discMap = new Map((disciplinas || []).map(d => {
       const sigla = (d.editais as any)?.sigla;
@@ -84,6 +85,7 @@ export function useEstatisticas() {
         disciplina_id: string;
         tema_id: string;
         tipo?: string;
+        dificuldade?: string;
       };
       if (!q) continue;
 
@@ -99,8 +101,8 @@ export function useEstatisticas() {
       if (r.acertou) ts.acertos++;
       temaStats.set(q.tema_id, ts);
 
-      // By dificuldade (from separate lookup)
-      const rawDif = difMap.get(r.questao_id) || 'medio';
+      // By dificuldade
+      const rawDif = q.dificuldade || 'medio';
       const difKey = ['extremo', 'dificil', 'medio'].includes(rawDif) ? rawDif : 'medio';
       const dif = diffStats.get(difKey)!;
       dif.total++;
