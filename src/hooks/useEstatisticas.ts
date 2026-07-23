@@ -121,7 +121,7 @@ export function useEstatisticas() {
         disciplina_nome: discMap.get(id) || 'Desconhecida',
         total: stats.total,
         acertos: stats.acertos,
-        percentual: stats.total > 0 ? Math.round((stats.acertos / stats.total) * 100) : 0,
+        percentual: stats.total > 0 ? Number(((stats.acertos / stats.total) * 100).toFixed(1)) : 0,
       }))
       .sort((a, b) => a.disciplina_nome.localeCompare(b.disciplina_nome));
 
@@ -131,7 +131,7 @@ export function useEstatisticas() {
         tema_nome: temaMap.get(id) || 'Desconhecido',
         total: stats.total,
         acertos: stats.acertos,
-        percentual: stats.total > 0 ? Math.round((stats.acertos / stats.total) * 100) : 0,
+        percentual: stats.total > 0 ? Number(((stats.acertos / stats.total) * 100).toFixed(1)) : 0,
       }))
       .sort((a, b) => a.tema_nome.localeCompare(b.tema_nome));
 
@@ -149,7 +149,7 @@ export function useEstatisticas() {
           label: difLabels[key],
           total: s.total,
           acertos: s.acertos,
-          percentual: s.total > 0 ? Math.round((s.acertos / s.total) * 100) : 0,
+          percentual: s.total > 0 ? Number(((s.acertos / s.total) * 100).toFixed(1)) : 0,
         };
       })
       .filter(d => d.total > 0);
@@ -167,7 +167,7 @@ export function useEstatisticas() {
           label: tipoLabels[key],
           total: s.total,
           acertos: s.acertos,
-          percentual: s.total > 0 ? Math.round((s.acertos / s.total) * 100) : 0,
+          percentual: s.total > 0 ? Number(((s.acertos / s.total) * 100).toFixed(1)) : 0,
         };
       })
       .filter(t => t.total > 0);
@@ -204,7 +204,7 @@ export function useEstatisticas() {
   }, [fetchStats]);
 
   const percentualGeral = totalQuestoes > 0
-    ? Math.round((totalAcertos / totalQuestoes) * 100)
+    ? Number(((totalAcertos / totalQuestoes) * 100).toFixed(1))
     : 0;
 
   return {

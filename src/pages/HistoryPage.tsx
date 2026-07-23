@@ -153,7 +153,7 @@ export default function HistoryPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
           {historico.map(item => {
             const erros = item.total - item.acertos;
-            const percentual = item.total > 0 ? Math.round((item.acertos / item.total) * 100) : 0;
+            const percentual = item.total > 0 ? Number(((item.acertos / item.total) * 100).toFixed(1)) : 0;
 
             return (
               <div key={item.id} className="card" style={{ cursor: 'pointer' }}
@@ -183,7 +183,7 @@ export default function HistoryPage() {
                         {erros}
                       </span>
                       <span className={`text-xs font-bold ${percentual >= 70 ? 'text-success' : percentual >= 40 ? 'text-warning' : 'text-error'}`}>
-                        {percentual}%
+                        {percentual.toFixed(1)}%
                       </span>
                     </div>
                   </div>

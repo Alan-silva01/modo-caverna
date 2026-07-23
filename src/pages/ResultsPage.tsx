@@ -17,7 +17,7 @@ export default function ResultsPage() {
   const total = parseInt(searchParams.get('total') || '0', 10);
   const acertos = parseInt(searchParams.get('acertos') || '0', 10);
   const erros = total - acertos;
-  const percentual = total > 0 ? Math.round((acertos / total) * 100) : 0;
+  const percentual = total > 0 ? Number(((acertos / total) * 100).toFixed(1)) : 0;
 
   const [questoes, setQuestoes] = useState<Questao[]>([]);
   const [respostas, setRespostas] = useState<Map<string, { resposta_dada: string; acertou: boolean }>>(new Map());
@@ -68,7 +68,7 @@ export default function ResultsPage() {
       {/* Hero */}
       <div className="results-hero">
         <div className={`results-percentage ${getPercentualClass()}`}>
-          {percentual}%
+          {percentual.toFixed(1)}%
         </div>
         <p className="results-summary">
           {percentual >= 70

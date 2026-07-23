@@ -268,7 +268,7 @@ export default function DashboardPage() {
             { label: 'Respondidas', value: totalQuestoes, sub: 'Total de assertivas' },
             { label: 'Acertos',     value: totalAcertos,   sub: 'Corretas',           cls: 'text-success' },
             { label: 'Erros',       value: totalErros,      sub: 'Incorretas',         cls: 'text-error' },
-            { label: 'Aproveit.',   value: `${percentualGeral}%`, sub: 'Taxa geral' },
+            { label: 'Aproveit.',   value: `${percentualGeral.toFixed(1)}%`, sub: 'Taxa geral' },
           ].map(s => (
             <div className="card" key={s.label}>
               <div className="card-title">{s.label}</div>
@@ -301,7 +301,7 @@ export default function DashboardPage() {
                     }`}
                     style={{ width: `${Math.max(stat.percentual, 8)}%` }}
                   >
-                    <span className="stats-bar-value">{stat.percentual}%</span>
+                    <span className="stats-bar-value">{stat.percentual.toFixed(1)}%</span>
                   </div>
                 </div>
                 <span className="stats-bar-count">{stat.acertos}/{stat.total}</span>

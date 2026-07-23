@@ -66,7 +66,7 @@ export default function StatsPage() {
 
           <div className="card">
             <div className="card-title">Aproveitamento</div>
-            <div className="card-value">{percentualGeral}%</div>
+            <div className="card-value">{percentualGeral.toFixed(1)}%</div>
             <div className="card-label">Aproveitamento médio</div>
           </div>
 
@@ -109,7 +109,7 @@ export default function StatsPage() {
                     }`}
                     style={{ width: `${Math.max(stat.percentual, 8)}%` }}
                   >
-                    <span className="stats-bar-value">{stat.percentual}%</span>
+                    <span className="stats-bar-value">{stat.percentual.toFixed(1)}%</span>
                   </div>
                 </div>
                 <span className="stats-bar-count">{stat.acertos}/{stat.total}</span>
@@ -139,7 +139,7 @@ export default function StatsPage() {
                     }`}
                     style={{ width: `${Math.max(stat.percentual, 8)}%` }}
                   >
-                    <span className="stats-bar-value">{stat.percentual}%</span>
+                    <span className="stats-bar-value">{stat.percentual.toFixed(1)}%</span>
                   </div>
                 </div>
                 <span className="stats-bar-count">{stat.acertos}/{stat.total}</span>
@@ -169,7 +169,7 @@ export default function StatsPage() {
                     }`}
                     style={{ width: `${Math.max(stat.percentual, 8)}%` }}
                   >
-                    <span className="stats-bar-value">{stat.percentual}%</span>
+                    <span className="stats-bar-value">{stat.percentual.toFixed(1)}%</span>
                   </div>
                 </div>
                 <span className="stats-bar-count">{stat.acertos}/{stat.total}</span>
@@ -199,7 +199,7 @@ export default function StatsPage() {
                     }`}
                     style={{ width: `${Math.max(stat.percentual, 8)}%` }}
                   >
-                    <span className="stats-bar-value">{stat.percentual}%</span>
+                    <span className="stats-bar-value">{stat.percentual.toFixed(1)}%</span>
                   </div>
                 </div>
                 <span className="stats-bar-count">{stat.acertos}/{stat.total}</span>
