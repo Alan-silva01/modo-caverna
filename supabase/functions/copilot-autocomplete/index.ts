@@ -29,15 +29,28 @@ Deno.serve(async (req) => {
       });
     }
 
-    const openrouterApiKey = Deno.env.get("OPENROUTER_API_KEY") || Deno.env.get("OPENAI_API_KEY");
-    
-    // Choose endpoint and headers based on key
-    const isOpenRouter = Boolean(Deno.env.get("OPENROUTER_API_KEY"));
-    const apiUrl = isOpenRouter
-      ? "https://openrouter.ai/api/v1/chat/completions"
-      : "https://api.openai.com/v1/chat/completions";
+    const openrouterKey = Deno.env.get("OPENROUTER_API_KEY");
+    const openaiKey = Deno.env.get("OPENAI_API_KEY");
 
-    const targetModel = isOpenRouter ? (modelId || "google/gemini-2.0-flash-001") : "gpt-4o";
+    if (!openrouterKey && !openaiKey) {
+      return new Response(JSON.stringify({ error: "Nenhuma chave de API (OPENROUTER_API_KEY ou OPENAI_API_KEY) configurada no Supabase Secrets." }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    let apiUrl = "https://openrouter.ai/api/v1/chat/completions";
+    let apiKey = openrouterKey;
+    let targetModel = modelId || "google/gemini-2.0-flash-001";
+    let isOpenRouter = true;
+
+    // Fallback to OpenAI gpt-4o-mini if OPENROUTER_API_KEY is not yet added in Supabase Secrets
+    if (!openrouterKey && openaiKey) {
+      apiUrl = "https://api.openai.com/v1/chat/completions";
+      apiKey = openaiKey;
+      targetModel = "gpt-4o-mini";
+      isOpenRouter = false;
+    }
 
     const systemPrompt = `Você é um tutor e assistente especialista em redação de concursos públicos (bancas UEMA e Cebraspe).
 O estudante está escrevendo uma redação sobre o tema: "${tema}".
@@ -71,7 +84,7 @@ Formato JSON esperado:
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${openrouterApiKey}`,
+      "Authorization": `Bearer ${apiKey}`,
     };
 
     if (isOpenRouter) {
@@ -95,7 +108,7 @@ Formato JSON esperado:
 
     if (!aiResponse.ok) {
       const errText = await aiResponse.text();
-      return new Response(JSON.stringify({ error: `Erro na API do Provedor AI (${aiResponse.status}): ${errText}` }), {
+      return new Response(JSON.stringify({ error: `Erro na API (${aiResponse.status}): ${errText}` }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
