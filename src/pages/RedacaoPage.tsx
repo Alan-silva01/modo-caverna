@@ -21,7 +21,10 @@ import {
   Eye,
   X,
   Shield,
-  Info
+  Info,
+  Wand2,
+  Cpu,
+  CornerDownLeft
 } from 'lucide-react';
 
 export interface TemaRedacao {
@@ -134,6 +137,13 @@ Em suma, a resolução da problemática atinente a [RETOMAR TEMA] exige ação c
   }
 ];
 
+// OpenRouter AI Models available for Copilot
+const OPENROUTER_MODELS = [
+  { id: 'google/gemini-2.0-flash-001', name: 'Gemini 2.0 Flash (Grátis & Rápido)' },
+  { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B (Grátis - Português)' },
+  { id: 'deepseek/deepseek-r1:free', name: 'DeepSeek R1 (Grátis - Raciocínio)' },
+];
+
 // Estimate lines count based on text length and line breaks (~65 chars per line)
 function countLines(text: string): number {
   if (!text.trim()) return 0;
@@ -184,6 +194,13 @@ export default function RedacaoPage() {
   const [resultado, setResultado] = useState<ResultadoCorrecao | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // Copilot Assistant states (OpenRouter AI)
+  const [copilotModel, setCopilotModel] = useState<string>('google/gemini-2.0-flash-001');
+  const [copilotLoading, setCopilotLoading] = useState<boolean>(false);
+  const [copilotTabSuggestion, setCopilotTabSuggestion] = useState<string | null>(null);
+  const [copilotOptions, setCopilotOptions] = useState<{ tipo: string; texto: string }[]>([]);
+  const [showCopilotPanel, setShowCopilotPanel] = useState<boolean>(false);
+
   // Model Essay states
   const [generatingModel, setGeneratingModel] = useState<boolean>(false);
   const [modelEssay, setModelEssay] = useState<{ titulo: string; textoCompleto: string } | null>(null);
@@ -225,6 +242,8 @@ export default function RedacaoPage() {
     setCurrentTema(newTema);
     setResultado(null);
     setErrorMsg(null);
+    setCopilotTabSuggestion(null);
+    setCopilotOptions([]);
 
     if (modo === 'esqueleto') {
       applySelectedEsqueleto();
@@ -242,6 +261,8 @@ export default function RedacaoPage() {
     setModo(newModo);
     setResultado(null);
     setErrorMsg(null);
+    setCopilotTabSuggestion(null);
+    setCopilotOptions([]);
     if (newModo === 'esqueleto') {
       applySelectedEsqueleto();
     } else {
@@ -258,6 +279,81 @@ export default function RedacaoPage() {
   };
 
   const linhas = countLines(texto);
+
+  // Trigger Copilot Autocomplete
+  const handleTriggerCopilot = async () => {
+    if (copilotLoading) return;
+    setCopilotLoading(true);
+    setErrorMsg(null);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL || 'https://wymlckdkrwdxyexrxxka.supabase.co'}/functions/v1/copilot-autocomplete`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            tema: currentTema.tema,
+            concursoId,
+            textoAtual: texto,
+            modelId: copilotModel,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || `Erro no assistente copilot (${response.status})`);
+      }
+
+      const data = await response.json();
+      if (data.sugestaoTab) {
+        setCopilotTabSuggestion(data.sugestaoTab);
+      }
+      if (Array.isArray(data.opcoes)) {
+        setCopilotOptions(data.opcoes);
+        setShowCopilotPanel(true);
+      }
+    } catch (err: any) {
+      console.error('Erro no copilot:', err);
+      setErrorMsg(err.message || 'Erro ao consultar assistente copilot.');
+    } finally {
+      setCopilotLoading(false);
+    }
+  };
+
+  // Keyboard shortcut listener for textarea
+  const handleEditorKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Ctrl + Space or Cmd + Space -> Trigger Copilot
+    if ((e.ctrlKey || e.metaKey) && e.code === 'Space') {
+      e.preventDefault();
+      handleTriggerCopilot();
+      return;
+    }
+
+    // Tab key -> Accept Ghost Text suggestion if present
+    if (e.key === 'Tab' && copilotTabSuggestion) {
+      e.preventDefault();
+      setTexto(prev => prev ? `${prev} ${copilotTabSuggestion}` : copilotTabSuggestion);
+      setCopilotTabSuggestion(null);
+      return;
+    }
+
+    // Escape key -> Clear ghost suggestion
+    if (e.key === 'Escape' && copilotTabSuggestion) {
+      setCopilotTabSuggestion(null);
+    }
+  };
+
+  const handleInsertOptionText = (sugestaoTexto: string) => {
+    setTexto(prev => prev ? `${prev} ${sugestaoTexto}` : sugestaoTexto);
+  };
 
   // Load history from Supabase
   const loadHistorico = async () => {
@@ -778,7 +874,7 @@ export default function RedacaoPage() {
 
           </div>
 
-          {/* Coluna Direita: Editor & Resultado */}
+          {/* Coluna Direita: Editor & Copilot & Resultado */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             
             {/* Modos de Escrita (Do zero vs Esqueleto) */}
@@ -839,16 +935,118 @@ export default function RedacaoPage() {
                 </div>
               )}
 
+              {/* ── Painel de Controle do Assistente Copilot (OpenRouter AI) ── */}
+              <div style={{
+                background: 'var(--background)',
+                padding: '10px 14px',
+                border: '1px solid var(--border)',
+                marginBottom: 'var(--space-sm)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '12px',
+                flexWrap: 'wrap'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Wand2 size={16} style={{ color: 'var(--brand)' }} />
+                  <span style={{ fontSize: '12px', fontWeight: 700, fontFamily: 'Rajdhani', textTransform: 'uppercase' }}>
+                    Assistente Copilot (Auto-Ajuda)
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {/* Seletor de Modelo OpenRouter */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <Cpu size={13} style={{ color: 'var(--muted-foreground)' }} />
+                    <select
+                      className="form-select"
+                      value={copilotModel}
+                      onChange={(e) => setCopilotModel(e.target.value)}
+                      style={{ fontSize: '11px', height: '28px', padding: '2px 8px', width: 'auto' }}
+                    >
+                      {OPENROUTER_MODELS.map(m => (
+                        <option key={m.id} value={m.id}>
+                          {m.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Botão Pedir Sugestão */}
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={handleTriggerCopilot}
+                    disabled={copilotLoading}
+                    style={{ fontSize: '11px', height: '28px', padding: '0 10px' }}
+                  >
+                    {copilotLoading ? (
+                      <>
+                        <Loader size={12} className="loading-spinner" style={{ width: 12, height: 12 }} />
+                        <span>Gerando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles size={12} />
+                        <span>Pedir Sugestão (Ctrl+Espaço)</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Banner de Sugestão Ghost Text (TAB) */}
+              {copilotTabSuggestion && (
+                <div style={{
+                  padding: '10px 14px',
+                  background: 'rgba(234, 179, 8, 0.08)',
+                  border: '1px solid var(--brand)',
+                  marginBottom: 'var(--space-sm)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '12px'
+                }}>
+                  <div style={{ fontSize: '12px', color: 'var(--foreground)', fontStyle: 'italic' }}>
+                    <strong style={{ color: 'var(--brand)', fontStyle: 'normal' }}>Sugestão Copilot:</strong> "{copilotTabSuggestion}"
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={() => {
+                        setTexto(prev => prev ? `${prev} ${copilotTabSuggestion}` : copilotTabSuggestion);
+                        setCopilotTabSuggestion(null);
+                      }}
+                      style={{ fontSize: '10px', height: '26px', padding: '0 8px' }}
+                    >
+                      <CornerDownLeft size={11} />
+                      <span>Inserir [TAB]</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-ghost"
+                      onClick={() => setCopilotTabSuggestion(null)}
+                      style={{ fontSize: '10px', height: '26px', padding: '0 6px' }}
+                    >
+                      Descartar (ESC)
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Textarea Editor */}
               <div style={{ position: 'relative' }}>
                 <textarea
                   className="form-input"
                   value={texto}
                   onChange={(e) => setTexto(e.target.value)}
+                  onKeyDown={handleEditorKeyDown}
                   placeholder={
                     modo === 'esqueleto'
                       ? 'Substitua os termos entre colchetes [ ... ] com suas ideias no esqueleto coringa...'
-                      : 'Escreva seu título e os parágrafos da sua redação aqui (até 30 linhas)...'
+                      : 'Escreva seu título e os parágrafos da sua redação aqui. Pressione Ctrl + Espaço para receber sugestões do assistente...'
                   }
                   rows={16}
                   style={{
@@ -880,6 +1078,66 @@ export default function RedacaoPage() {
                   </span>
                 </div>
               </div>
+
+              {/* ── Painel de 3 Sugestões Estratégicas Rápidas ── */}
+              {showCopilotPanel && copilotOptions.length > 0 && (
+                <div style={{
+                  marginTop: 'var(--space-md)',
+                  padding: 'var(--space-md)',
+                  background: 'var(--background)',
+                  border: '1px solid var(--border)'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-xs)' }}>
+                    <span style={{ fontSize: '11px', fontFamily: 'Rajdhani', fontWeight: 700, textTransform: 'uppercase', color: 'var(--brand)' }}>
+                      💡 Opções Sugeridas pelo Copilot para Continuar Seu Texto:
+                    </span>
+                    <button
+                      type="button"
+                      className="btn btn-ghost"
+                      onClick={() => setShowCopilotPanel(false)}
+                      style={{ padding: 0, width: 20, height: 20 }}
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+                    {copilotOptions.map((opt, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          background: 'var(--card)',
+                          padding: '10px',
+                          border: '1px solid var(--border)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between',
+                          gap: '8px'
+                        }}
+                      >
+                        <div>
+                          <span style={{ fontSize: '10px', color: 'var(--brand)', fontWeight: 700, textTransform: 'uppercase', fontFamily: 'Rajdhani' }}>
+                            {opt.tipo}
+                          </span>
+                          <p style={{ fontSize: '11px', color: 'var(--foreground)', lineHeight: 1.4, marginTop: 4 }}>
+                            "{opt.texto}"
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          onClick={() => handleInsertOptionText(opt.texto)}
+                          style={{ fontSize: '10px', height: '24px', padding: '0 8px', alignSelf: 'flex-start' }}
+                        >
+                          <CornerDownLeft size={10} />
+                          <span>Inserir no Texto</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {errorMsg && (
                 <div className="form-error" style={{ marginTop: 'var(--space-sm)' }}>
