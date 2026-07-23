@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { tema, concursoId = "uema", textoAtual = "", modelId = "google/gemini-2.0-flash-001" } = await req.json();
+    const { tema, concursoId = "uema", textoAtual = "", modelId = "google/gemini-2.0-flash-exp:free" } = await req.json();
 
     if (!tema) {
       return new Response(JSON.stringify({ error: "Tema é obrigatório." }), {
@@ -39,12 +39,16 @@ Deno.serve(async (req) => {
       });
     }
 
-    let apiUrl = "https://openrouter.ai/api/v1/chat/completions";
-    let apiKey = openrouterKey;
-    let targetModel = modelId || "google/gemini-2.0-flash-001";
-    let isOpenRouter = true;
+    // Map old/legacy model IDs to exact OpenRouter slugs
+    let targetModel = modelId || "google/gemini-2.0-flash-exp:free";
+    if (targetModel === "google/gemini-2.0-flash-001") {
+      targetModel = "google/gemini-2.0-flash-exp:free";
+    }
 
-    // Fallback to OpenAI gpt-4o-mini if OPENROUTER_API_KEY is not yet added in Supabase Secrets
+    let apiUrl = "https://openrouter.ai/api/v1/chat/completions";
+    let apiKey = openrouterKey || openaiKey;
+    let isOpenRouter = Boolean(openrouterKey);
+
     if (!openrouterKey && openaiKey) {
       apiUrl = "https://api.openai.com/v1/chat/completions";
       apiKey = openaiKey;
@@ -92,7 +96,8 @@ Formato JSON esperado:
       headers["X-Title"] = "Intelflux Concursos";
     }
 
-    const aiResponse = await fetch(apiUrl, {
+    // Try selected model first
+    let aiResponse = await fetch(apiUrl, {
       method: "POST",
       headers,
       body: JSON.stringify({
@@ -105,6 +110,44 @@ Formato JSON esperado:
         temperature: 0.5,
       }),
     });
+
+    // Fallback try if OpenRouter model slug is unavailable or 404
+    if (!aiResponse.ok && isOpenRouter) {
+      const fallbackModel = "meta-llama/llama-3.3-70b-instruct:free";
+      aiResponse = await fetch(apiUrl, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          model: fallbackModel,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userMessage }
+          ],
+          response_format: { type: "json_object" },
+          temperature: 0.5,
+        }),
+      });
+    }
+
+    // Final fallback to OpenAI gpt-4o-mini if OpenRouter fails completely
+    if (!aiResponse.ok && openaiKey) {
+      aiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${openaiKey}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userMessage }
+          ],
+          response_format: { type: "json_object" },
+          temperature: 0.5,
+        }),
+      });
+    }
 
     if (!aiResponse.ok) {
       const errText = await aiResponse.text();

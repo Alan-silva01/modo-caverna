@@ -139,7 +139,7 @@ Em suma, a resolução da problemática atinente a [RETOMAR TEMA] exige ação c
 
 // OpenRouter AI Models available for Copilot
 const OPENROUTER_MODELS = [
-  { id: 'google/gemini-2.0-flash-001', name: 'Gemini 2.0 Flash (Grátis & Rápido)' },
+  { id: 'google/gemini-2.0-flash-exp:free', name: 'Gemini 2.0 Flash (Grátis & Rápido)' },
   { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B (Grátis - Português)' },
   { id: 'deepseek/deepseek-r1:free', name: 'DeepSeek R1 (Grátis - Raciocínio)' },
 ];
@@ -195,7 +195,7 @@ export default function RedacaoPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Copilot Assistant states (OpenRouter AI)
-  const [copilotModel, setCopilotModel] = useState<string>('google/gemini-2.0-flash-001');
+  const [copilotModel, setCopilotModel] = useState<string>('google/gemini-2.0-flash-exp:free');
   const [copilotLoading, setCopilotLoading] = useState<boolean>(false);
   const [copilotTabSuggestion, setCopilotTabSuggestion] = useState<string | null>(null);
   const [copilotOptions, setCopilotOptions] = useState<{ tipo: string; texto: string }[]>([]);
