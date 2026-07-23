@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { useConcurso } from '../contexts/ConcursoContext';
 import temasData from '../data/temasRedacao.json';
@@ -24,7 +24,9 @@ import {
   Info,
   Wand2,
   Cpu,
-  CornerDownLeft
+  CornerDownLeft,
+  ToggleLeft,
+  ToggleRight
 } from 'lucide-react';
 
 export interface TemaRedacao {
@@ -195,11 +197,46 @@ export default function RedacaoPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Copilot Assistant states (OpenRouter AI)
+  const [copilotAutoMode, setCopilotAutoMode] = useState<boolean>(true);
   const [copilotModel, setCopilotModel] = useState<string>('meta-llama/llama-3.3-70b-instruct:free');
   const [copilotLoading, setCopilotLoading] = useState<boolean>(false);
   const [copilotTabSuggestion, setCopilotTabSuggestion] = useState<string | null>(null);
   const [copilotOptions, setCopilotOptions] = useState<{ tipo: string; texto: string }[]>([]);
   const [showCopilotPanel, setShowCopilotPanel] = useState<boolean>(false);
+
+  const overlayRef = useRef<HTMLDivElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastFetchedTextRef = useRef<string>('');
+
+  // Synchronize overlay scroll position with textarea
+  const handleScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
+    if (overlayRef.current) {
+      overlayRef.current.scrollTop = e.currentTarget.scrollTop;
+      overlayRef.current.scrollLeft = e.currentTarget.scrollLeft;
+    }
+  };
+
+  // Handle live text input with smart inline suggestion trimming
+  const handleTextoChange = (newVal: string) => {
+    if (copilotTabSuggestion) {
+      if (newVal.startsWith(texto)) {
+        const added = newVal.slice(texto.length);
+        const spaceNeeded = (!texto || texto.endsWith(' ') || texto.endsWith('\n') || copilotTabSuggestion.startsWith(' ')) ? '' : ' ';
+        const fullWithLeading = spaceNeeded + copilotTabSuggestion;
+
+        if (fullWithLeading.startsWith(added)) {
+          const remaining = fullWithLeading.slice(added.length).replace(/^ /, '');
+          setCopilotTabSuggestion(remaining || null);
+        } else {
+          setCopilotTabSuggestion(null);
+        }
+      } else {
+        setCopilotTabSuggestion(null);
+      }
+    }
+    setTexto(newVal);
+  };
 
   // Model Essay states
   const [generatingModel, setGeneratingModel] = useState<boolean>(false);
@@ -281,10 +318,10 @@ export default function RedacaoPage() {
   const linhas = countLines(texto);
 
   // Trigger Copilot Autocomplete
-  const handleTriggerCopilot = async () => {
+  const handleTriggerCopilot = async (customText?: string) => {
+    const textToQuery = customText !== undefined ? customText : texto;
     if (copilotLoading) return;
     setCopilotLoading(true);
-    setErrorMsg(null);
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -301,7 +338,7 @@ export default function RedacaoPage() {
           body: JSON.stringify({
             tema: currentTema.tema,
             concursoId,
-            textoAtual: texto,
+            textoAtual: textToQuery,
             modelId: copilotModel,
           }),
         }
@@ -313,34 +350,59 @@ export default function RedacaoPage() {
       }
 
       const data = await response.json();
+      lastFetchedTextRef.current = textToQuery;
+
       if (data.sugestaoTab) {
         setCopilotTabSuggestion(data.sugestaoTab);
       }
       if (Array.isArray(data.opcoes)) {
         setCopilotOptions(data.opcoes);
-        setShowCopilotPanel(true);
       }
     } catch (err: any) {
       console.error('Erro no copilot:', err);
-      setErrorMsg(err.message || 'Erro ao consultar assistente copilot.');
     } finally {
       setCopilotLoading(false);
     }
   };
 
+  // Debounced auto-trigger while typing when Copilot is ATIVO (500ms delay)
+  useEffect(() => {
+    if (!copilotAutoMode) return;
+    if (!texto.trim() || texto.length < 6) {
+      setCopilotTabSuggestion(null);
+      return;
+    }
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      if (texto !== lastFetchedTextRef.current) {
+        handleTriggerCopilot(texto);
+      }
+    }, 500);
+
+    return () => {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    };
+  }, [texto, copilotAutoMode, currentTema.id, concursoId, copilotModel]);
+
   // Keyboard shortcut listener for textarea
   const handleEditorKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Ctrl + Space or Cmd + Space -> Trigger Copilot
+    // Ctrl + Space or Cmd + Space -> Manual Trigger
     if ((e.ctrlKey || e.metaKey) && e.code === 'Space') {
       e.preventDefault();
       handleTriggerCopilot();
       return;
     }
 
-    // Tab key -> Accept Ghost Text suggestion if present
-    if (e.key === 'Tab' && copilotTabSuggestion) {
+    // Tab key or Right Arrow -> Accept Ghost Text suggestion if present
+    const isAtEnd = textareaRef.current ? textareaRef.current.selectionStart === texto.length : true;
+    if ((e.key === 'Tab' || (e.key === 'ArrowRight' && isAtEnd)) && copilotTabSuggestion) {
       e.preventDefault();
-      setTexto(prev => prev ? `${prev} ${copilotTabSuggestion}` : copilotTabSuggestion);
+      const spaceNeeded = (!texto || texto.endsWith(' ') || texto.endsWith('\n') || copilotTabSuggestion.startsWith(' ')) ? '' : ' ';
+      setTexto(prev => `${prev}${spaceNeeded}${copilotTabSuggestion}`);
       setCopilotTabSuggestion(null);
       return;
     }
@@ -935,7 +997,7 @@ export default function RedacaoPage() {
                 </div>
               )}
 
-              {/* ── Painel de Controle do Assistente Copilot (OpenRouter AI) ── */}
+              {/* ── Painel de Controle do Assistente Copilot ── */}
               <div style={{
                 background: 'var(--background)',
                 padding: '10px 14px',
@@ -950,8 +1012,33 @@ export default function RedacaoPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Wand2 size={16} style={{ color: 'var(--brand)' }} />
                   <span style={{ fontSize: '12px', fontWeight: 700, fontFamily: 'Rajdhani', textTransform: 'uppercase' }}>
-                    Assistente Copilot (Auto-Ajuda)
+                    Copilot Autocompletar
                   </span>
+                  
+                  {/* Toggle Mode Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCopilotAutoMode(prev => !prev);
+                      setCopilotTabSuggestion(null);
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      padding: 0,
+                      color: copilotAutoMode ? 'var(--success)' : 'var(--muted-foreground)',
+                      fontSize: '11px',
+                      fontFamily: 'Rajdhani',
+                      fontWeight: 700
+                    }}
+                  >
+                    {copilotAutoMode ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+                    <span>{copilotAutoMode ? 'AUTO (ATIVO)' : 'MANUAL'}</span>
+                  </button>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -972,93 +1059,135 @@ export default function RedacaoPage() {
                     </select>
                   </div>
 
-                  {/* Botão Pedir Sugestão */}
+                  {/* Botão Sugerir Manual / Opções */}
                   <button
                     type="button"
                     className="btn btn-secondary"
-                    onClick={handleTriggerCopilot}
+                    onClick={() => {
+                      handleTriggerCopilot();
+                      setShowCopilotPanel(prev => !prev);
+                    }}
                     disabled={copilotLoading}
                     style={{ fontSize: '11px', height: '28px', padding: '0 10px' }}
                   >
                     {copilotLoading ? (
                       <>
                         <Loader size={12} className="loading-spinner" style={{ width: 12, height: 12 }} />
-                        <span>Gerando...</span>
+                        <span>Sugerindo...</span>
                       </>
                     ) : (
                       <>
                         <Sparkles size={12} />
-                        <span>Pedir Sugestão (Ctrl+Espaço)</span>
+                        <span>{showCopilotPanel ? 'Ocultar Opções' : 'Ver 3 Opções Rápidas'}</span>
                       </>
                     )}
                   </button>
                 </div>
               </div>
 
-              {/* Banner de Sugestão Ghost Text (TAB) */}
-              {copilotTabSuggestion && (
-                <div style={{
-                  padding: '10px 14px',
-                  background: 'rgba(234, 179, 8, 0.08)',
-                  border: '1px solid var(--brand)',
-                  marginBottom: 'var(--space-sm)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '12px'
-                }}>
-                  <div style={{ fontSize: '12px', color: 'var(--foreground)', fontStyle: 'italic' }}>
-                    <strong style={{ color: 'var(--brand)', fontStyle: 'normal' }}>Sugestão Copilot:</strong> "{copilotTabSuggestion}"
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      onClick={() => {
-                        setTexto(prev => prev ? `${prev} ${copilotTabSuggestion}` : copilotTabSuggestion);
-                        setCopilotTabSuggestion(null);
-                      }}
-                      style={{ fontSize: '10px', height: '26px', padding: '0 8px' }}
-                    >
-                      <CornerDownLeft size={11} />
-                      <span>Inserir [TAB]</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-ghost"
-                      onClick={() => setCopilotTabSuggestion(null)}
-                      style={{ fontSize: '10px', height: '26px', padding: '0 6px' }}
-                    >
-                      Descartar (ESC)
-                    </button>
-                  </div>
+              {/* ── Editor com Efeito Ghost Text In-Line (Estilo IDE Antigravity / GitHub Copilot) ── */}
+              <div style={{ position: 'relative', width: '100%', minHeight: '340px' }}>
+                
+                {/* Camada Fantasma (Superimposta exatamente no mesmo espaço para Ghost Text) */}
+                <div
+                  ref={overlayRef}
+                  aria-hidden="true"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    padding: '12px 14px',
+                    fontFamily: 'Inter, system-ui, sans-serif',
+                    fontSize: '13px',
+                    lineHeight: 1.6,
+                    letterSpacing: 'normal',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    pointerEvents: 'none',
+                    color: 'transparent',
+                    overflow: 'hidden',
+                    boxSizing: 'border-box',
+                    border: '1px solid transparent',
+                    margin: 0
+                  }}
+                >
+                  <span>{texto}</span>
+                  {copilotTabSuggestion && (
+                    <span style={{
+                      color: 'var(--muted-foreground)',
+                      opacity: 0.65,
+                      fontStyle: 'italic',
+                      backgroundColor: 'rgba(59, 130, 246, 0.12)',
+                      borderBottom: '1px dashed var(--brand)',
+                      padding: '0 2px',
+                      borderRadius: '2px'
+                    }}>
+                      {(!texto || texto.endsWith(' ') || texto.endsWith('\n') || copilotTabSuggestion.startsWith(' ')) ? '' : ' '}
+                      {copilotTabSuggestion}
+                    </span>
+                  )}
                 </div>
-              )}
 
-              {/* Textarea Editor */}
-              <div style={{ position: 'relative' }}>
+                {/* Textarea Principal */}
                 <textarea
+                  ref={textareaRef}
                   className="form-input"
                   value={texto}
-                  onChange={(e) => setTexto(e.target.value)}
+                  onScroll={handleScroll}
+                  onChange={(e) => handleTextoChange(e.target.value)}
                   onKeyDown={handleEditorKeyDown}
                   placeholder={
                     modo === 'esqueleto'
                       ? 'Substitua os termos entre colchetes [ ... ] com suas ideias no esqueleto coringa...'
-                      : 'Escreva seu título e os parágrafos da sua redação aqui. Pressione Ctrl + Espaço para receber sugestões do assistente...'
+                      : 'Escreva sua redação aqui. O Copilot autocompletará em texto cinza fantasma conforme você digita (Pressione [TAB] ou [Seta Direita] para aceitar, [ESC] para ignorar)...'
                   }
                   rows={16}
                   style={{
                     width: '100%',
-                    fontFamily: 'Inter, sans-serif',
+                    fontFamily: 'Inter, system-ui, sans-serif',
                     fontSize: '13px',
                     lineHeight: 1.6,
-                    padding: 'var(--space-md)',
+                    padding: '12px 14px',
                     resize: 'vertical',
-                    minHeight: '340px'
+                    minHeight: '340px',
+                    background: 'transparent',
+                    position: 'relative',
+                    zIndex: 2,
+                    boxSizing: 'border-box'
                   }}
                 />
+
+                {/* Indicador Flutuante quando houver sugestão [TAB] ativa */}
+                {copilotTabSuggestion && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '8px',
+                    right: '12px',
+                    zIndex: 3,
+                    background: 'var(--card)',
+                    border: '1px solid var(--brand)',
+                    padding: '4px 10px',
+                    fontSize: '10px',
+                    fontFamily: 'Rajdhani',
+                    fontWeight: 700,
+                    color: 'var(--brand)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                  }}>
+                    <span>💡 Pressione [TAB] para aceitar a sugestão em cinza ou [ESC] para descartar</span>
+                    <button
+                      type="button"
+                      onClick={() => setCopilotTabSuggestion(null)}
+                      style={{ background: 'none', border: 'none', color: 'var(--muted-foreground)', cursor: 'pointer', padding: 0 }}
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                )}
 
                 {/* Line Counter Badge */}
                 <div style={{
@@ -1074,7 +1203,7 @@ export default function RedacaoPage() {
                     LINHAS ESTIMADAS (TL): {linhas} / 30 {concursoId === 'uema' && linhas < 15 ? '(MÍNIMO DE 15 LINHAS REQUERIDO)' : 'LINHAS'}
                   </span>
                   <span style={{ color: 'var(--muted-foreground)' }}>
-                    {texto.length} CARACTERES
+                    {texto.length} CARACTERES {copilotLoading ? '· COPILOT PENSANDO...' : ''}
                   </span>
                 </div>
               </div>

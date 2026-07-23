@@ -55,16 +55,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    const systemPrompt = `Você é um tutor especialista em redação de concursos (UEMA e Cebraspe).
-O estudante está escrevendo sobre: "${tema}". Concurso: ${concursoId.toUpperCase()}.
+    const systemPrompt = `Você é um assistente copilot de autocompletar texto (estilo GitHub Copilot / Antigravity) especializado em redações discursivas de concursos públicos (${concursoId.toUpperCase()}).
+O estudante está escrevendo uma redação sobre o tema: "${tema}".
 
-Sua missão: analisar o texto atual e sugerir continuações formais e elegantes.
+Instruções estritas:
+1. "sugestaoTab": Deve ser uma continuação fluida, elegante e coesa de 5 a 15 palavras do ponto exato onde o usuário parou no texto. Não repita o texto do usuário.
+2. "opcoes": 3 alternativas estruturadas ("Conectivo de Transição", "Repertório Sociocultural", "Desdobramento Argumentativo").
 
-REGRAS:
-- Retorne APENAS um objeto JSON válido, sem texto fora do JSON.
-- Forneça "sugestaoTab" (1 frase curta para continuar) e "opcoes" (array com 3 sugestões: "Conectivo de Transição", "Repertório Sociocultural", "Desdobramento Argumentativo").
-
-Formato estrito:
+Retorne APENAS um JSON no seguinte formato estrito:
 {
   "sugestaoTab": "...",
   "opcoes": [
