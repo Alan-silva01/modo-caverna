@@ -36,7 +36,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { tema, concursoId = "uema", textoAtual = "", modelId = "meta-llama/llama-3.3-70b-instruct:free" } = await req.json();
+    const {
+      tema,
+      concursoId = "uema",
+      textoAtual = "",
+      textoAntesCursor,
+      textoDepoisCursor,
+      modelId = "meta-llama/llama-3.3-70b-instruct:free"
+    } = await req.json();
 
     if (!tema) {
       return new Response(JSON.stringify({ error: "Tema é obrigatório." }), {
@@ -59,7 +66,7 @@ Deno.serve(async (req) => {
 O estudante está escrevendo uma redação sobre o tema: "${tema}".
 
 Instruções estritas:
-1. "sugestaoTab": Deve ser uma continuação fluida, elegante e coesa de 5 a 15 palavras do ponto exato onde o usuário parou no texto. Não repita o texto do usuário.
+1. "sugestaoTab": Deve ser uma continuação fluida, elegante e coesa de 5 a 15 palavras que se encaixe no PONTO EXATO do cursor do usuário. Não repita o texto existente.
 2. "opcoes": 3 alternativas estruturadas ("Conectivo de Transição", "Repertório Sociocultural", "Desdobramento Argumentativo").
 
 Retorne APENAS um JSON no seguinte formato estrito:
@@ -72,8 +79,11 @@ Retorne APENAS um JSON no seguinte formato estrito:
   ]
 }`;
 
-    const userMessage = textoAtual.trim()
-      ? `TEXTO ATUAL DO ESTUDANTE:\n"${textoAtual}"`
+    const prefixText = textoAntesCursor !== undefined ? textoAntesCursor : textoAtual;
+    const suffixText = textoDepoisCursor || "";
+
+    const userMessage = prefixText.trim()
+      ? `TEXTO DA REDAÇÃO ANTES DO CURSOR:\n"${prefixText}"\n${suffixText.trim() ? `\nTEXTO DA REDAÇÃO DEPOIS DO CURSOR:\n"${suffixText}"\n` : ""}\nO cursor do estudante está ${suffixText.trim() ? "entre o trecho anterior e o posterior" : "no final do texto"}. Sugira a continuação exata para o ponto do cursor.`
       : `O estudante vai começar a redação sobre "${tema}". Sugira a introdução.`;
 
     let successResult = null;

@@ -204,6 +204,7 @@ export default function RedacaoPage() {
   const [copilotOptions, setCopilotOptions] = useState<{ tipo: string; texto: string }[]>([]);
   const [showCopilotPanel, setShowCopilotPanel] = useState<boolean>(false);
 
+  const [cursorPos, setCursorPos] = useState<number>(0);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -217,12 +218,22 @@ export default function RedacaoPage() {
     }
   };
 
-  // Handle live text input with smart inline suggestion trimming
-  const handleTextoChange = (newVal: string) => {
+  const updateCursorPos = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
+    setCursorPos(e.currentTarget.selectionStart);
+  };
+
+  // Handle live text input with smart inline suggestion trimming based on cursor position
+  const handleTextoChange = (newVal: string, targetCursor?: number) => {
+    const currentCursor = targetCursor !== undefined ? targetCursor : (textareaRef.current?.selectionStart ?? newVal.length);
+    setCursorPos(currentCursor);
+
     if (copilotTabSuggestion) {
-      if (newVal.startsWith(texto)) {
-        const added = newVal.slice(texto.length);
-        const spaceNeeded = (!texto || texto.endsWith(' ') || texto.endsWith('\n') || copilotTabSuggestion.startsWith(' ')) ? '' : ' ';
+      const prevAntes = texto.slice(0, cursorPos);
+      const newAntes = newVal.slice(0, currentCursor);
+
+      if (newAntes.startsWith(prevAntes)) {
+        const added = newAntes.slice(prevAntes.length);
+        const spaceNeeded = (!prevAntes || prevAntes.endsWith(' ') || prevAntes.endsWith('\n') || copilotTabSuggestion.startsWith(' ')) ? '' : ' ';
         const fullWithLeading = spaceNeeded + copilotTabSuggestion;
 
         if (fullWithLeading.startsWith(added)) {
@@ -286,12 +297,14 @@ export default function RedacaoPage() {
       applySelectedEsqueleto();
     } else {
       setTexto('');
+      setCursorPos(0);
     }
   };
 
   const applySelectedEsqueleto = () => {
     const esq = ESQUELETOS_CORINGAS.find(e => e.id === selectedEsqueletoId) || ESQUELETOS_CORINGAS[0];
     setTexto(esq.template);
+    setCursorPos(esq.template.length);
   };
 
   const handleSelectModo = (newModo: 'zero' | 'esqueleto') => {
@@ -304,6 +317,7 @@ export default function RedacaoPage() {
       applySelectedEsqueleto();
     } else {
       setTexto('');
+      setCursorPos(0);
     }
   };
 
@@ -312,16 +326,22 @@ export default function RedacaoPage() {
     const esq = ESQUELETOS_CORINGAS.find(e => e.id === esqueletoId);
     if (esq) {
       setTexto(esq.template);
+      setCursorPos(esq.template.length);
     }
   };
 
   const linhas = countLines(texto);
 
-  // Trigger Copilot Autocomplete
-  const handleTriggerCopilot = async (customText?: string) => {
+  // Trigger Copilot Autocomplete with exact cursor position context
+  const handleTriggerCopilot = async (customText?: string, customCursor?: number) => {
     const textToQuery = customText !== undefined ? customText : texto;
+    const currentCursor = customCursor !== undefined ? customCursor : (textareaRef.current?.selectionStart ?? textToQuery.length);
+
     if (copilotLoading) return;
     setCopilotLoading(true);
+
+    const textoAntes = textToQuery.slice(0, currentCursor);
+    const textoDepois = textToQuery.slice(currentCursor);
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -339,6 +359,8 @@ export default function RedacaoPage() {
             tema: currentTema.tema,
             concursoId,
             textoAtual: textToQuery,
+            textoAntesCursor: textoAntes,
+            textoDepoisCursor: textoDepois,
             modelId: copilotModel,
           }),
         }
@@ -350,7 +372,7 @@ export default function RedacaoPage() {
       }
 
       const data = await response.json();
-      lastFetchedTextRef.current = textToQuery;
+      lastFetchedTextRef.current = `${textToQuery}::${currentCursor}`;
 
       if (data.sugestaoTab) {
         setCopilotTabSuggestion(data.sugestaoTab);
@@ -378,32 +400,51 @@ export default function RedacaoPage() {
     }
 
     debounceTimerRef.current = setTimeout(() => {
-      if (texto !== lastFetchedTextRef.current) {
-        handleTriggerCopilot(texto);
+      const currentKey = `${texto}::${cursorPos}`;
+      if (currentKey !== lastFetchedTextRef.current) {
+        handleTriggerCopilot(texto, cursorPos);
       }
     }, 500);
 
     return () => {
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
     };
-  }, [texto, copilotAutoMode, currentTema.id, concursoId, copilotModel]);
+  }, [texto, cursorPos, copilotAutoMode, currentTema.id, concursoId, copilotModel]);
 
   // Keyboard shortcut listener for textarea
   const handleEditorKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const currentPos = e.currentTarget.selectionStart;
+
     // Ctrl + Space or Cmd + Space -> Manual Trigger
     if ((e.ctrlKey || e.metaKey) && e.code === 'Space') {
       e.preventDefault();
-      handleTriggerCopilot();
+      handleTriggerCopilot(texto, currentPos);
       return;
     }
 
-    // Tab key or Right Arrow -> Accept Ghost Text suggestion if present
-    const isAtEnd = textareaRef.current ? textareaRef.current.selectionStart === texto.length : true;
+    // Tab key or Right Arrow (if at end) -> Accept Ghost Text suggestion at current cursor position
+    const isAtEnd = currentPos === texto.length;
     if ((e.key === 'Tab' || (e.key === 'ArrowRight' && isAtEnd)) && copilotTabSuggestion) {
       e.preventDefault();
-      const spaceNeeded = (!texto || texto.endsWith(' ') || texto.endsWith('\n') || copilotTabSuggestion.startsWith(' ')) ? '' : ' ';
-      setTexto(prev => `${prev}${spaceNeeded}${copilotTabSuggestion}`);
+
+      const textoAntes = texto.slice(0, currentPos);
+      const textoDepois = texto.slice(currentPos);
+      const spaceNeeded = (!textoAntes || textoAntes.endsWith(' ') || textoAntes.endsWith('\n') || copilotTabSuggestion.startsWith(' ')) ? '' : ' ';
+      const inserted = `${spaceNeeded}${copilotTabSuggestion}`;
+      const newTexto = `${textoAntes}${inserted}${textoDepois}`;
+      const newCursorPos = currentPos + inserted.length;
+
+      setTexto(newTexto);
+      setCursorPos(newCursorPos);
       setCopilotTabSuggestion(null);
+
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.selectionStart = newCursorPos;
+          textareaRef.current.selectionEnd = newCursorPos;
+          textareaRef.current.focus();
+        }
+      }, 0);
       return;
     }
 
@@ -414,7 +455,25 @@ export default function RedacaoPage() {
   };
 
   const handleInsertOptionText = (sugestaoTexto: string) => {
-    setTexto(prev => prev ? `${prev} ${sugestaoTexto}` : sugestaoTexto);
+    const currentPos = textareaRef.current ? textareaRef.current.selectionStart : cursorPos;
+    const textoAntes = texto.slice(0, currentPos);
+    const textoDepois = texto.slice(currentPos);
+    const spaceNeeded = (!textoAntes || textoAntes.endsWith(' ') || textoAntes.endsWith('\n') || sugestaoTexto.startsWith(' ')) ? '' : ' ';
+    const inserted = `${spaceNeeded}${sugestaoTexto}`;
+    const newTexto = `${textoAntes}${inserted}${textoDepois}`;
+    const newCursorPos = currentPos + inserted.length;
+
+    setTexto(newTexto);
+    setCursorPos(newCursorPos);
+    setCopilotTabSuggestion(null);
+
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.selectionStart = newCursorPos;
+        textareaRef.current.selectionEnd = newCursorPos;
+        textareaRef.current.focus();
+      }
+    }, 0);
   };
 
   // Load history from Supabase
@@ -1088,47 +1147,55 @@ export default function RedacaoPage() {
               {/* ── Editor com Efeito Ghost Text In-Line (Estilo IDE Antigravity / GitHub Copilot) ── */}
               <div style={{ position: 'relative', width: '100%', minHeight: '340px' }}>
                 
-                {/* Camada Fantasma (Superimposta exatamente no mesmo espaço para Ghost Text) */}
-                <div
-                  ref={overlayRef}
-                  aria-hidden="true"
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    padding: '12px 14px',
-                    fontFamily: 'Inter, system-ui, sans-serif',
-                    fontSize: '13px',
-                    lineHeight: 1.6,
-                    letterSpacing: 'normal',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word',
-                    pointerEvents: 'none',
-                    color: 'transparent',
-                    overflow: 'hidden',
-                    boxSizing: 'border-box',
-                    border: '1px solid transparent',
-                    margin: 0
-                  }}
-                >
-                  <span>{texto}</span>
-                  {copilotTabSuggestion && (
-                    <span style={{
-                      color: 'var(--muted-foreground)',
-                      opacity: 0.65,
-                      fontStyle: 'italic',
-                      backgroundColor: 'rgba(59, 130, 246, 0.12)',
-                      borderBottom: '1px dashed var(--brand)',
-                      padding: '0 2px',
-                      borderRadius: '2px'
-                    }}>
-                      {(!texto || texto.endsWith(' ') || texto.endsWith('\n') || copilotTabSuggestion.startsWith(' ')) ? '' : ' '}
-                      {copilotTabSuggestion}
-                    </span>
-                  )}
-                </div>
+                {/* Camada Fantasma (Superimposta no mesmo espaço para posicionar o Ghost Text exatamente no cursor) */}
+                {(() => {
+                  const textoAntes = texto.slice(0, cursorPos);
+                  const textoDepois = texto.slice(cursorPos);
+                  const spaceNeeded = (!textoAntes || textoAntes.endsWith(' ') || textoAntes.endsWith('\n') || (copilotTabSuggestion && copilotTabSuggestion.startsWith(' '))) ? '' : ' ';
+
+                  return (
+                    <div
+                      ref={overlayRef}
+                      aria-hidden="true"
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        padding: '12px 14px',
+                        fontFamily: 'Inter, system-ui, sans-serif',
+                        fontSize: '13px',
+                        lineHeight: 1.6,
+                        letterSpacing: 'normal',
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                        pointerEvents: 'none',
+                        color: 'transparent',
+                        overflow: 'hidden',
+                        boxSizing: 'border-box',
+                        border: '1px solid transparent',
+                        margin: 0
+                      }}
+                    >
+                      <span>{textoAntes}</span>
+                      {copilotTabSuggestion && (
+                        <span style={{
+                          color: 'var(--muted-foreground)',
+                          opacity: 0.65,
+                          fontStyle: 'italic',
+                          backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                          borderBottom: '1px dashed var(--brand)',
+                          padding: '0 2px',
+                          borderRadius: '2px'
+                        }}>
+                          {spaceNeeded}{copilotTabSuggestion}
+                        </span>
+                      )}
+                      <span>{textoDepois}</span>
+                    </div>
+                  );
+                })()}
 
                 {/* Textarea Principal */}
                 <textarea
@@ -1136,12 +1203,15 @@ export default function RedacaoPage() {
                   className="form-input"
                   value={texto}
                   onScroll={handleScroll}
-                  onChange={(e) => handleTextoChange(e.target.value)}
+                  onClick={updateCursorPos}
+                  onKeyUp={updateCursorPos}
+                  onSelect={updateCursorPos}
+                  onChange={(e) => handleTextoChange(e.target.value, e.target.selectionStart)}
                   onKeyDown={handleEditorKeyDown}
                   placeholder={
                     modo === 'esqueleto'
                       ? 'Substitua os termos entre colchetes [ ... ] com suas ideias no esqueleto coringa...'
-                      : 'Escreva sua redação aqui. O Copilot autocompletará em texto cinza fantasma conforme você digita (Pressione [TAB] ou [Seta Direita] para aceitar, [ESC] para ignorar)...'
+                      : 'Escreva sua redação aqui. O Copilot autocompletará na POSIÇÃO DO SEU CURSOR em texto cinza fantasma (Pressione [TAB] para aceitar, [ESC] para ignorar)...'
                   }
                   rows={16}
                   style={{
