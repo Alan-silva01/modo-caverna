@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useQuestoes } from '../hooks/useQuestoes';
@@ -15,6 +15,7 @@ export default function SolvePage() {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [answered, setAnswered] = useState(false);
   const [results, setResults] = useState<{ questaoId: string; acertou: boolean }[]>([]);
+  const resultsRef = useRef<{ questaoId: string; acertou: boolean }[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Load questions
@@ -72,7 +73,9 @@ export default function SolvePage() {
     setAnswered(true);
 
     await saveResposta(currentQuestion.id, selectedAnswer, acertou);
-    setResults(prev => [...prev, { questaoId: currentQuestion.id, acertou }]);
+    const newEntry = { questaoId: currentQuestion.id, acertou };
+    resultsRef.current = [...resultsRef.current, newEntry];
+    setResults(resultsRef.current);
   }, [selectedAnswer, currentQuestion, saveResposta]);
 
   const handleNext = () => {
@@ -81,9 +84,8 @@ export default function SolvePage() {
       setSelectedAnswer(null);
       setAnswered(false);
     } else {
-      const totalAcertos = results.length > 0
-        ? results.filter(r => r.acertou).length
-        : 0;
+      // Usa o ref para garantir que a última resposta está incluída no cálculo
+      const totalAcertos = resultsRef.current.filter(r => r.acertou).length;
       navigate(`/resultados?total=${questoes.length}&acertos=${totalAcertos}&ids=${searchParams.get('ids')}`);
     }
   };
