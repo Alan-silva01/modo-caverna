@@ -14,7 +14,7 @@ export default function SolvePage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [answered, setAnswered] = useState(false);
-  const [results, setResults] = useState<{ questaoId: string; acertou: boolean }[]>([]);
+  const [, setResults] = useState<{ questaoId: string; acertou: boolean }[]>([]);
   const resultsRef = useRef<{ questaoId: string; acertou: boolean }[]>([]);
   const [loading, setLoading] = useState(true);
 
