@@ -25,6 +25,29 @@ A arquitetura foi estruturada para entregar:
 
 ---
 
+## 📸 Demonstração da Interface (Screenshots)
+
+<div align="center">
+
+### 🔐 Autenticação & Dashboard Principal
+| Autenticação / Login | Painel Principal (Dashboard) |
+|:---:|:---:|
+| <img src="https://res.cloudinary.com/ddhlqymvf/image/upload/v1787236727/Captura_de_Tela_2026-08-20_a%CC%80s_11.26.25_AM_c4ed5j.png" width="450" alt="Login" /> | <img src="https://res.cloudinary.com/ddhlqymvf/image/upload/v1787236727/Captura_de_Tela_2026-08-20_a%CC%80s_11.26.35_AM_pyaixf.png" width="450" alt="Dashboard" /> |
+
+### ⚡ Gerador de Simulados & Correção de Redação por IA
+| Gerador Inteligente de Simulados | Módulo de Correção de Redação |
+|:---:|:---:|
+| <img src="https://res.cloudinary.com/ddhlqymvf/image/upload/v1787236730/Captura_de_Tela_2026-08-20_a%CC%80s_11.26.44_AM_z8xe5v.png" width="450" alt="Gerador" /> | <img src="https://res.cloudinary.com/ddhlqymvf/image/upload/v1787236727/Captura_de_Tela_2026-08-20_a%CC%80s_11.26.49_AM_l2h8uv.png" width="450" alt="Redação" /> |
+
+### 📊 Histórico & Análise Estatística de Desempenho
+| Histórico de Simulados & Provas | Estatísticas Detalhadas |
+|:---:|:---:|
+| <img src="https://res.cloudinary.com/ddhlqymvf/image/upload/v1787236730/Captura_de_Tela_2026-08-20_a%CC%80s_11.26.56_AM_mtjl8i.png" width="450" alt="Histórico" /> | <img src="https://res.cloudinary.com/ddhlqymvf/image/upload/v1787236727/Captura_de_Tela_2026-08-20_a%CC%80s_11.26.52_AM_odfnfj.png" width="450" alt="Estatísticas" /> |
+
+</div>
+
+---
+
 ## Diagrama de Arquitetura do Sistema
 
 ```mermaid
