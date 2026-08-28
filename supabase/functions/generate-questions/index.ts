@@ -220,20 +220,35 @@ Gere as ${quantidade} questões no nível ${validDificuldade} respeitando estrit
         }
       } else if (tipo === "multipla_escolha" && Array.isArray(alts) && alts.length === 5) {
         // Limpa os prefixos (ex: "A) ", "a - ")
-        const cleanAlts = alts.map((a: string) => a.replace(/^[A-E][)\-\s]*/i, "").trim());
+        const cleanAlts = alts.map((a: string) => a.replace(/^[A-E][\)\-\s]*/i, "").trim());
 
-        // A resposta correta gerada pela IA sempre estará no índice 0
+        // Determina o índice correto baseado no gabarito REAL retornado pela IA
+        // (a IA nem sempre obedece à instrução de colocar no índice 0)
+        const aiGabaritoLetter = String(q.gabarito).trim().toUpperCase().replace(/[^A-E]/g, "").charAt(0);
+        const aiCorrectIdx = aiGabaritoLetter ? aiGabaritoLetter.charCodeAt(0) - 65 : 0; // A=0, B=1, ...
+        const safeCorrectIdx = (aiCorrectIdx >= 0 && aiCorrectIdx < 5) ? aiCorrectIdx : 0;
+
         const indexedAlts = cleanAlts.map((text: string, idx: number) => ({
           text,
-          isCorrect: idx === 0
+          isCorrect: idx === safeCorrectIdx
         }));
 
-        // Embaralha as alternativas no servidor
-        const shuffled = [...indexedAlts].sort(() => Math.random() - 0.5);
+        // Embaralha com Fisher-Yates (algoritmo confiável e uniforme)
+        const shuffled = [...indexedAlts];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
 
         // Encontra a nova posição da alternativa correta
         const correctIdx = shuffled.findIndex((item: any) => item.isCorrect);
-        normalizedGabarito = String.fromCharCode(65 + correctIdx); // A, B, C, D, E
+        if (correctIdx === -1) {
+          // Fallback de segurança: se algo deu errado, marca a primeira como correta
+          shuffled[0].isCorrect = true;
+          normalizedGabarito = "A";
+        } else {
+          normalizedGabarito = String.fromCharCode(65 + correctIdx); // A, B, C, D, E
+        }
 
         // Reconstitui com os prefixos corretos das novas posições
         alts = shuffled.map((item: any, idx: number) => {
