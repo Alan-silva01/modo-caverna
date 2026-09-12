@@ -299,8 +299,15 @@ export default function SimuladoPmmaPage() {
         .simulado-pmma-root {
           background: #cbd5e1;
           min-height: 100vh;
-          padding-bottom: 60px;
+          padding-bottom: 80px;
           color: #000;
+          overflow-x: hidden;
+        }
+
+        /* Garantir que as folhas A4 fiquem contidas perfeitamente sem quebrar o layout */
+        .page-sheet, .gabarito-oficial-page {
+          max-width: 100% !important;
+          box-sizing: border-box !important;
         }
 
         .highlight-pulse {
@@ -389,24 +396,43 @@ export default function SimuladoPmmaPage() {
           background: #1d4ed8;
         }
 
-        .bubble-c, .bubble-e {
+        /* Bolinhas C / E com feedback tátil e visual imediato */
+        .bubble {
           transition: all 120ms ease;
+          user-select: none;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .bubble:hover {
+          transform: scale(1.15);
+          border-color: #2563eb;
+        }
+
+        .bubble.selected-c,
+        .bubble.selected-e {
+          background: #0f172a !important;
+          color: #ffffff !important;
+          border-color: #0f172a !important;
+          font-weight: 900 !important;
+          box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.3) !important;
         }
 
         .bubble.bubble-correct {
           background: #16a34a !important;
           color: #fff !important;
           border-color: #16a34a !important;
+          font-weight: 900 !important;
         }
 
         .bubble.bubble-wrong {
           background: #dc2626 !important;
           color: #fff !important;
           border-color: #dc2626 !important;
+          font-weight: 900 !important;
         }
 
         .bubble.bubble-should-be {
-          border: 2px dashed #16a34a !important;
+          border: 2px solid #16a34a !important;
           background: #dcfce7 !important;
           color: #166534 !important;
           font-weight: 900 !important;
@@ -677,8 +703,45 @@ export default function SimuladoPmmaPage() {
         dangerouslySetInnerHTML={{ __html: simuladoPmmaHtml }}
       />
 
-      {/* ── TABELA DO GABARITO OFICIAL CEBRASPE AO FINAL (SEMPRE ACESSÍVEL) ── */}
-      <div dangerouslySetInnerHTML={{ __html: simuladoPmmaGabaritoHtml }} />
+      {/* ── BOTÃO DE ENTREGA AO FINAL DA PROVA (NA ÚLTIMA PÁGINA) ── */}
+      {status === 'in_progress' && (
+        <div style={{
+          maxWidth: '210mm',
+          margin: '20px auto 40px auto',
+          background: '#fff',
+          borderRadius: '8px',
+          padding: '24px',
+          textAlign: 'center',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+          border: '1px solid #cbd5e1'
+        }}>
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
+            Fim do Caderno de Questões
+          </h3>
+          <p style={{ margin: '0 0 16px 0', color: '#64748b', fontSize: '14px' }}>
+            Você respondeu <strong>{stats.respondidas} de 120</strong> questões ({stats.emBranco} em branco).
+          </p>
+          <button
+            type="button"
+            className="btn-entregar"
+            style={{
+              margin: '0 auto',
+              padding: '12px 28px',
+              fontSize: '16px',
+              borderRadius: '8px'
+            }}
+            onClick={() => setShowConfirmModal(true)}
+          >
+            <Send size={18} />
+            <span>Entregar a Prova para Correção</span>
+          </button>
+        </div>
+      )}
+
+      {/* ── TABELA DO GABARITO OFICIAL CEBRASPE: APENAS APÓS ENTREGA ── */}
+      {status === 'submitted' && (
+        <div style={{ marginTop: '20px' }} dangerouslySetInnerHTML={{ __html: simuladoPmmaGabaritoHtml }} />
+      )}
 
       {/* ── MODAL DE CONFIRMAÇÃO DE ENTREGA ── */}
       {showConfirmModal && (
