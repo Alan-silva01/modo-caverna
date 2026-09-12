@@ -231,8 +231,6 @@ export default function SimuladoPmmaPage() {
   // Handle bubble clicks directly via event delegation on container
   const handleContainerClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      if (status === 'submitted') return;
-
       const target = (e.target as HTMLElement).closest('button.bubble');
       if (!target) return;
 
@@ -241,6 +239,14 @@ export default function SimuladoPmmaPage() {
       if (!itemNumStr || !val) return;
 
       const itemNum = parseInt(itemNumStr, 10);
+
+      // Se já estava submetido e o usuário clica para refazer ou marcar, desbloqueia e volta para in_progress
+      if (status === 'submitted') {
+        setStatus('in_progress');
+        setResults(null);
+        localStorage.setItem(STORAGE_KEY_STATUS, 'in_progress');
+        localStorage.removeItem(STORAGE_KEY_RESULTS);
+      }
 
       setAnswers(prev => {
         const next = { ...prev };
@@ -414,11 +420,15 @@ export default function SimuladoPmmaPage() {
           transition: all 120ms ease;
           user-select: none;
           -webkit-tap-highlight-color: transparent;
+          outline: none !important;
+          border: 1.5px solid #000 !important;
+          background: #ffffff !important;
+          color: #000000 !important;
         }
 
         .bubble:hover {
-          transform: scale(1.15);
-          border-color: #000;
+          transform: scale(1.18);
+          border-color: #000000 !important;
         }
 
         .bubble.selected-c,
@@ -427,19 +437,19 @@ export default function SimuladoPmmaPage() {
           color: #ffffff !important;
           border-color: #000000 !important;
           font-weight: 900 !important;
-          box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.4) !important;
+          box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.45) !important;
         }
 
         .bubble.bubble-correct {
           background: #3A6B2A !important;
-          color: #fff !important;
+          color: #ffffff !important;
           border-color: #3A6B2A !important;
           font-weight: 900 !important;
         }
 
         .bubble.bubble-wrong {
           background: #840308 !important;
-          color: #fff !important;
+          color: #ffffff !important;
           border-color: #840308 !important;
           font-weight: 900 !important;
         }
