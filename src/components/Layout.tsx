@@ -13,21 +13,24 @@ import {
   Bell,
   ChevronRight,
   FileText,
+  ShieldCheck,
 } from 'lucide-react';
 import HeaderTimer from './Timer';
 
 const LOGO_URL = 'https://res.cloudinary.com/ddhlqymvf/image/upload/v1784556100/Logo_Modo_Cavernas_1_bk1g0x.png';
 
 const navItems = [
-  { to: '/',            icon: LayoutDashboard, label: 'Início' },
-  { to: '/gerar',       icon: PlusCircle,      label: 'Gerar' },
-  { to: '/redacao',     icon: FileText,        label: 'Redação', desktopOnly: true },
-  { to: '/estatisticas',icon: BarChart3,        label: 'Stats' },
-  { to: '/historico',   icon: History,          label: 'Histórico' },
+  { to: '/',              icon: LayoutDashboard, label: 'Início' },
+  { to: '/simulado-pmma', icon: ShieldCheck,     label: 'Simulado PMMA' },
+  { to: '/gerar',         icon: PlusCircle,      label: 'Gerar' },
+  { to: '/redacao',       icon: FileText,        label: 'Redação', desktopOnly: true },
+  { to: '/estatisticas',  icon: BarChart3,        label: 'Stats' },
+  { to: '/historico',     icon: History,          label: 'Histórico' },
 ];
 
 function getBreadcrumbs(path: string): string[] {
   if (path === '/')              return ['Início'];
+  if (path === '/simulado-pmma') return ['Início', 'Simulado PMMA 2026'];
   if (path === '/gerar')         return ['Início', 'Gerar'];
   if (path === '/redacao')       return ['Início', 'Produção Textual'];
   if (path === '/resolver')      return ['Início', 'Simulado'];

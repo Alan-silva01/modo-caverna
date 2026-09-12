@@ -10,6 +10,7 @@ import ResultsPage from './pages/ResultsPage';
 import StatsPage from './pages/StatsPage';
 import HistoryPage from './pages/HistoryPage';
 import RedacaoPage from './pages/RedacaoPage';
+import SimuladoPmmaPage from './pages/SimuladoPmmaPage';
 
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ConcursoProvider } from './contexts/ConcursoContext';
@@ -45,6 +46,7 @@ function AppRoutes() {
         <Route path="estatisticas" element={<StatsPage />} />
         <Route path="historico" element={<HistoryPage />} />
         <Route path="redacao" element={<RedacaoPage />} />
+        <Route path="simulado-pmma" element={<SimuladoPmmaPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

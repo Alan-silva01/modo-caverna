@@ -239,23 +239,49 @@ export default function DashboardPage() {
         )}
       </section>
 
-      {/* ── Quick Action ── */}
-      <div
-        className="card card-clickable"
-        onClick={() => navigate('/gerar')}
-        style={{ marginBottom: 'var(--space-md)', borderColor: 'var(--brand)' }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
-          <Zap size={18} strokeWidth={1.5} style={{ color: 'var(--brand)', flexShrink: 0 }} />
-          <div style={{ flex: 1 }}>
-            <h3 style={{ fontFamily: 'Rajdhani, sans-serif', fontSize: '14px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--foreground)' }}>
-              Gerar Questões
-            </h3>
-            <p className="text-muted text-xs" style={{ marginTop: '2px' }}>
-              IA estilo CESPE/Cebraspe · escolha disciplina, tema e tipo
-            </p>
+      {/* ── Quick Actions ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-md)', marginBottom: 'var(--space-md)' }}>
+        <div
+          className="card card-clickable"
+          onClick={() => navigate('/simulado-pmma')}
+          style={{ borderColor: '#22c55e', background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(15, 23, 42, 0.4) 100%)' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+            <Shield size={20} strokeWidth={1.7} style={{ color: '#22c55e', flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <h3 style={{ fontFamily: 'Rajdhani, sans-serif', fontSize: '15px', fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--foreground)', margin: 0 }}>
+                  Simulado PMMA 2026
+                </h3>
+                <span style={{ fontSize: '10px', background: '#16a34a', color: '#fff', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                  OFICIAL 3H30
+                </span>
+              </div>
+              <p className="text-muted text-xs" style={{ marginTop: '2px', margin: 0 }}>
+                120 assertivas padrão Cebraspe · cronômetro cravado e entrega com gabarito
+              </p>
+            </div>
+            <Target size={16} style={{ color: '#22c55e', flexShrink: 0 }} />
           </div>
-          <PlusCircle size={15} style={{ color: 'var(--brand)', flexShrink: 0 }} />
+        </div>
+
+        <div
+          className="card card-clickable"
+          onClick={() => navigate('/gerar')}
+          style={{ borderColor: 'var(--brand)' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+            <Zap size={18} strokeWidth={1.5} style={{ color: 'var(--brand)', flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>
+              <h3 style={{ fontFamily: 'Rajdhani, sans-serif', fontSize: '14px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--foreground)', margin: 0 }}>
+                Treino Personalizado
+              </h3>
+              <p className="text-muted text-xs" style={{ marginTop: '2px', margin: 0 }}>
+                IA estilo CESPE · escolha disciplina, tema e quantidade
+              </p>
+            </div>
+            <PlusCircle size={15} style={{ color: 'var(--brand)', flexShrink: 0 }} />
+          </div>
         </div>
       </div>
 

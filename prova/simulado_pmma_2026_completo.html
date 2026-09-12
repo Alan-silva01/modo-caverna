@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Simulado PMMA 2026 - Concurso Soldado QP</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 10mm 12mm 10mm 12mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 10pt;
+      line-height: 1.25;
+      color: #000;
+      background: #cbd5e1;
+      margin: 0;
+      padding: 15px 0;
+    }
+
+    .page-sheet {
+      background: #fff;
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto 15px auto;
+      padding: 12mm 15mm 12mm 15mm;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+      position: relative;
+      page-break-after: always;
+      break-after: page;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        padding: 0;
+      }
+
+      .page-sheet {
+        box-shadow: none;
+        margin: 0;
+        width: 100%;
+        min-height: auto;
+        padding: 0;
+        page-break-after: always;
+        break-after: page;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 2px solid #000;
+      padding-bottom: 2px;
+      margin-bottom: 4px;
+      font-weight: bold;
+      font-size: 8.5pt;
+    }
+
+    .main-title-box {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      font-weight: bold;
+      font-size: 11pt;
+      padding: 2.5px 0;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .columns-container {
+      column-count: 2;
+      column-gap: 18px;
+      column-rule: 1px solid #000;
+      text-align: justify;
+    }
+
+    .instrucoes {
+      font-size: 8.5pt;
+      border-bottom: 1px solid #000;
+      padding-bottom: 4px;
+      margin-bottom: 6px;
+      line-height: 1.18;
+    }
+
+    .instrucoes ul {
+      margin: 0;
+      padding-left: 12px;
+    }
+
+    .instrucoes li {
+      margin-bottom: 2px;
+    }
+
+    .text-box {
+      margin-bottom: 6px;
+      font-size: 9.8pt;
+      line-height: 1.22;
+    }
+
+    .text-box-title {
+      font-weight: bold;
+      margin-bottom: 2px;
+      font-size: 10.2pt;
+    }
+
+    .text-body {
+      text-indent: 1.2em;
+      margin-bottom: 4px;
+      font-size: 9.8pt;
+    }
+
+    .text-source {
+      font-size: 8pt;
+      text-align: right;
+      font-style: italic;
+      margin-bottom: 5px;
+    }
+
+    .enunciado-geral {
+      font-style: italic;
+      margin-bottom: 5px;
+      font-weight: normal;
+      font-size: 9.5pt;
+    }
+
+    .item-block {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 5px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .item-num {
+      font-weight: bold;
+      min-width: 22px;
+      display: inline-block;
+      font-size: 10.2pt;
+    }
+
+    .item-text {
+      flex: 1;
+      padding-right: 4px;
+      font-size: 9.8pt;
+    }
+
+    .bubbles-container {
+      display: inline-flex;
+      gap: 3px;
+      margin-left: 6px;
+      user-select: none;
+      vertical-align: middle;
+    }
+
+    .bubble {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 17px;
+      height: 17px;
+      border: 1.2px solid #000;
+      border-radius: 50%;
+      font-size: 7.8pt;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: sans-serif;
+      background: #fff;
+    }
+
+    .bubble.selected-c,
+    .bubble.selected-e {
+      background: #000;
+      color: #fff;
+    }
+
+    .card-banner {
+      border: 1.5px solid #000;
+      padding: 6px;
+      margin: 4px 0 6px 0;
+      background: #fff;
+      font-family: sans-serif;
+      text-align: center;
+    }
+
+    .card-banner h3 {
+      margin: 2px 0;
+      font-size: 10pt;
+      letter-spacing: 0.5px;
+    }
+
+    .card-banner p {
+      margin: 2px 0;
+      font-size: 8pt;
+      line-height: 1.15;
+    }
+
+    .diagram-box {
+      border: 1px solid #666;
+      background: #fff;
+      padding: 6px;
+      margin: 5px 0;
+      text-align: center;
+    }
+
+    .diagram-svg {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .taskmgr-box {
+      border: 1.5px solid #444;
+      background: #fff;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      font-size: 7.8pt;
+      margin: 5px 0;
+      padding: 5px;
+    }
+
+    .taskmgr-header {
+      background: #f0f0f0;
+      border-bottom: 1px solid #ccc;
+      padding: 2px 4px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .taskmgr-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      padding: 4px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      margin-top: 3px;
+    }
+
+    .taskmgr-chart {
+      background: #000;
+      border: 1px solid #22c55e;
+      height: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .taskmgr-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 4px;
+      font-size: 7.5pt;
+    }
+
+    .taskmgr-table td {
+      padding: 1px 3px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .espaco-livre-print {
+      margin-top: 8px;
+      font-size: 9pt;
+      font-style: italic;
+      color: #444;
+    }
+
+    .controls-top {
+      max-width: 210mm;
+      margin: 0 auto 12px auto;
+      background: #0f172a;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: sans-serif;
+    }
+
+    .btn-action {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .btn-action:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-gabarito {
+      background: #16a34a;
+    }
+
+    .btn-gabarito:hover {
+      background: #15803d;
+    }
+
+    /* GABARITO OFICIAL CEBRASPE */
+    .gabarito-oficial-page {
+      background: #fff;
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto 15px auto;
+      padding: 14mm 16mm;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+      position: relative;
+      font-family: Arial, Helvetica, sans-serif;
+      page-break-after: always;
+      break-after: page;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .edital-header-text {
+      text-align: center;
+      color: #1e3a8a;
+      font-size: 9pt;
+      font-weight: bold;
+      line-height: 1.35;
+      margin-bottom: 14px;
+    }
+
+    .data-aplicacao {
+      text-align: center;
+      font-weight: bold;
+      font-size: 9.5pt;
+      color: #000;
+      margin-bottom: 10px;
+    }
+
+    .cargo-title {
+      text-align: center;
+      font-weight: bold;
+      font-size: 10pt;
+      color: #000;
+      margin-bottom: 20px;
+    }
+
+    .gabaritos-vermelho-title {
+      text-align: center;
+      color: #dc2626;
+      font-size: 11pt;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      margin-bottom: 15px;
+    }
+
+    .obs-anulado {
+      font-size: 8pt;
+      color: #333;
+      margin-bottom: 14px;
+    }
+
+    .tabela-gabarito-cebraspe {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 25px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .tabela-gabarito-cebraspe tr td {
+      text-align: center;
+      padding: 5px 1px;
+      font-size: 8pt;
+    }
+
+    .tabela-gabarito-cebraspe .row-item {
+      font-weight: bold;
+      color: #000;
+    }
+
+    .tabela-gabarito-cebraspe .row-gab {
+      font-weight: bold;
+      color: #000;
+      font-size: 8.5pt;
+    }
+
+    .tabela-gabarito-cebraspe td.header-col {
+      font-weight: bold;
+      text-align: right;
+      padding-right: 8px;
+      width: 55px;
+      font-size: 8pt;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="controls-top no-print">
+    <div>
+      <strong style="font-size: 15px;">PROVA PMMA 2026 — SOLDADO QP (PADRÃO CEBRASPE)</strong>
+      <div style="font-size: 11px; color: #94a3b8;">Imagem oficial do Cebraspe ajustada perfeitamente no topo da folha
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <button class="btn-action" onclick="window.print()">🖨️ Imprimir / Gerar PDF</button>
+      <button class="btn-action btn-gabarito"
+        onclick="document.getElementById('gabarito-oficial').scrollIntoView({behavior:'smooth'})">📋 Gabarito Oficial
+        Cebraspe</button>
+    </div>
+  </div>
+
+  <!-- PÁGINA 1: ITENS 1 A 20 -->
+  <div class="page-sheet">
+    <div class="header-bar">
+      <span>||359_PMMA_CG2_01N569038||</span>
+      <span>CESPE | CEBRASPE – PM/MA – Aplicação: 2026</span>
+    </div>
+
+    <div class="instrucoes">
+      <ul>
+        <li>Cada um dos itens das provas objetivas está vinculado ao comando que imediatamente o antecede. Marque
+          <b>C</b> para CERTO ou <b>E</b> para ERRADO. A ausência de marcação ou marcação de ambos os campos não serão
+          apenadas (0,00 ponto). A resposta em desacordo acarreta perda de 1,00 ponto (-1,00).</li>
+        <li>Itens com "Situação hipotética: ... Assertiva: ..." têm os dados da situação hipotética como premissa para
+          julgamento da assertiva proposta.</li>
+        <li>Eventuais espaços livres que constarem deste caderno de provas poderão ser utilizados para anotações e
+          cálculos de rascunho.</li>
+      </ul>
+    </div>
+
+    <div class="main-title-box">CONHECIMENTOS GERAIS</div>
+
+    <div class="columns-container">
+      <div class="text-box">
+        <div class="text-box-title">Texto CG2A1AAA</div>
+        <div class="text-body">1 A Polícia Militar do Maranhão (PM/MA) foi criada por meio da Lei Provincial n.º 21, de
+          17/6/1836, com o nome de Corpo de Polícia da Província do Maranhão. Ao longo de 115 anos, a instituição
+          recebeu várias denominações, até ser denominada de Polícia Militar do Maranhão, em 1951.</div>
+        <div class="text-body">6 A primeira turma de oficiais da PM/MA com Curso de Formação de Oficiais formou-se em
+          1966, na Academia de Polícia Militar do Estado de Minas Gerais; daí em diante, aconteceram formações em outras
+          academias de diferentes estados. Com a criação da Academia de Polícia Militar do Maranhão, por meio da Lei n.º
+          5.657/1993, passou a caber a ela a formação dos oficiais da corporação.</div>
+        <div class="text-source">Internet: &lt;www.pm.ma.gov.br&gt; (com adaptações).</div>
+      </div>
+
+      <div class="enunciado-geral">Com relação às ideias e a aspectos linguísticos do texto CG2A1AAA, julgue os itens
+        subsequentes.</div>
+
+      <div class="item-block">
+        <span class="item-num">1</span>
+        <div class="item-text">A correção gramatical e o sentido original do texto seriam mantidos caso a forma verbal
+          “aconteceram” (linha 8) fosse substituída por <b>ocorreu</b> ou por <b>ocorreram</b>.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">2</span>
+        <div class="item-text">Infere-se do texto que, até 1993, a formação de oficiais da PM/MA acontecia em outros
+          estados porque não havia academia de polícia militar no estado do Maranhão.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">3</span>
+        <div class="item-text">O termo “a instituição” (linha 3) recupera o sentido do termo “Corpo de Polícia da
+          Província do Maranhão”, primeiro nome da PM/MA.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">4</span>
+        <div class="item-text">De acordo com o texto, entre 1951 — quando recebeu o nome de Polícia Militar do Maranhão
+          — e 1966, a PM/MA não tinha oficiais em seu comando.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="text-box-title" style="margin-top: 6px;">Texto CG2A1BBB</div>
+      <div class="card-banner">
+        <div style="font-size: 8pt; font-weight: bold; color: #b91c1c;">CONVITE</div>
+        <p><b>Prezado(a) Senhor(a),</b><br>
+          O Comitê Estadual de Prevenção às Drogas convida para a solenidade de lançamento do <b>Projeto Parceiros da
+            Paz</b> e da <b>Campanha Maranhão na Prevenção às Drogas</b>.<br>
+          <b>Data:</b> 10 de março de 2026, às 9h | <b>Local:</b> Fórum Des. Sarney Costa
+        </p>
+        <div style="background: #000; color: #fff; padding: 2px 4px; font-weight: bold; font-size: 8pt;">MARANHÃO NA
+          PREVENÇÃO ÀS DROGAS — ENTRE NESTA LUTA!</div>
+      </div>
+
+      <div class="enunciado-geral">A respeito de aspectos linguísticos do texto CG2A1BBB, julgue os próximos itens.
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">5</span>
+        <div class="item-text">A forma verbal empregada no trecho “ENTRE NESTA LUTA!” sinaliza a intenção do autor do
+          texto de levar os leitores a executarem determinada ação.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">6</span>
+        <div class="item-text">A vírgula logo após “Prezado(a) Senhor(a)” foi empregada para isolar um vocativo.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">7</span>
+        <div class="item-text">A correção gramatical seria mantida com a substituição da preposição <b>para</b> pela
+          preposição <b>a</b> em “para participar da solenidade”.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">8</span>
+        <div class="item-text">O autor optou pela utilização de um nível de linguagem predominantemente informal como
+          estratégia para atrair o interesse dos leitores.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="text-box">
+        <div class="text-box-title">Texto CG2A1CCC</div>
+        <div class="text-body">1 A questão da segurança pública passou a ser considerada problema fundamental e
+          principal desafio ao Estado de direito no Brasil. A segurança ganhou enorme visibilidade pública e jamais
+          esteve tão presente nos debates.</div>
+        <div class="text-body">5 O problema da segurança, portanto, não pode mais estar adstrito apenas ao repertório
+          tradicional do direito e das instituições da justiça. Evidentemente, as soluções devem passar pelo
+          fortalecimento da capacidade do Estado em gerir a violência, mas também devem passar pelo alongamento dos
+          pontos de contato das instituições com a sociedade civil.</div>
+        <div class="text-source">Internet: &lt;www.observatoriodeseguranca.org&gt; (com adaptações).</div>
+      </div>
+
+      <div class="enunciado-geral">Acerca das ideias e de aspectos linguísticos do texto CG2A1CCC, julgue os itens.
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">9</span>
+        <div class="item-text">No texto, a palavra “adstrito” (linha 6) tem o mesmo sentido de <b>limitado</b>.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">10</span>
+        <div class="item-text">A locução “mas também” (linha 9) estabelece uma relação de oposição no período em que
+          ocorre.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="text-body" style="margin-top: 4px;">Uma operação policial será realizada com uma equipe de seis
+        agentes: André, Bruno, Caio, Daniel, Eduardo e Fábio. Um agente será coordenador e outro assistente (ambos na
+        base móvel); um agente infiltrará na reunião e três prestarão apoio ao infiltrado. Julgue os itens a seguir.
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">11</span>
+        <div class="item-text">A quantidade de maneiras de formar a equipe de modo que André, Bruno e Caio sejam
+          coordenador, assistente e infiltrado é superior a 5.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">12</span>
+        <div class="item-text">A quantidade de maneiras de formar a equipe de modo que André, Bruno e Caio prestem apoio
+          ao infiltrado é inferior a 10.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">13</span>
+        <div class="item-text">Há mais de 100 maneiras distintas de estruturar, com os seis agentes, a equipe que
+          realizará a operação policial.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">14</span>
+        <div class="item-text">Se os dois agentes da base móvel forem escolhidos aleatoriamente, a probabilidade de
+          André e Bruno serem os escolhidos será superior a 30%.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="text-body" style="margin-top: 4px;">Na preparação de uma ação policial, um agente fez medições em uma
+        casa noturna: no ponto A, estava a 10 m do ponto C (porta). Do ponto B (olhos do agente), visualizava uma câmera
+        no ponto D a 30º com a horizontal. A 24 m de A, perpendicularmente a AC, ficava a base móvel no ponto E.</div>
+
+      <div class="diagram-box">
+        <svg class="diagram-svg" width="220" height="85" viewBox="0 0 220 85">
+          <line x1="20" y1="68" x2="190" y2="68" stroke="#000" stroke-width="1.4" />
+          <line x1="40" y1="68" x2="40" y2="15" stroke="#000" stroke-width="1.8" />
+          <circle cx="40" cy="18" r="3" fill="#dc2626" />
+          <text x="24" y="14" font-size="7.5" font-weight="bold">D (câmera)</text>
+          <text x="18" y="45" font-size="7" transform="rotate(-90 18,45)">casa noturna</text>
+          <line x1="120" y1="68" x2="120" y2="36" stroke="#000" stroke-width="1.4" />
+          <text x="114" y="78" font-size="8" font-weight="bold">A</text>
+          <text x="123" y="52" font-size="7">agente</text>
+          <circle cx="120" cy="36" r="2.5" fill="#2563eb" />
+          <text x="123" y="34" font-size="8" font-weight="bold">B</text>
+          <line x1="120" y1="36" x2="40" y2="18" stroke="#000" stroke-dasharray="3,2" />
+          <line x1="120" y1="36" x2="40" y2="36" stroke="#666" stroke-dasharray="2,2" />
+          <path d="M 100 36 A 20 20 0 0 0 103 31" fill="none" stroke="#000" />
+          <text x="90" y="32" font-size="7">30º</text>
+          <text x="34" y="78" font-size="8" font-weight="bold">C (porta)</text>
+          <text x="65" y="76" font-size="7">calçada</text>
+          <line x1="120" y1="68" x2="180" y2="18" stroke="#000" stroke-dasharray="2,2" />
+          <rect x="175" y="10" width="14" height="10" fill="#475569" />
+          <text x="160" y="8" font-size="7.5" font-weight="bold">E (base móvel)</text>
+        </svg>
+      </div>
+
+      <div class="enunciado-geral">Com referência à figura e à situação descrita, julgue os itens.</div>
+
+      <div class="item-block">
+        <span class="item-num">15</span>
+        <div class="item-text">Considerando AB = 1,70 m e tg30º = 0,58, a câmera (ponto D) estava a uma altura inferior
+          a 7 m do solo.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">16</span>
+        <div class="item-text">Para deslocar-se em linha reta da porta C à base móvel E, um agente precisará se deslocar
+          por, pelo menos, 26 m.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="espaco-livre-print">Espaço livre</div>
+    </div>
+  </div>
+
+  <!-- PÁGINA 2: ITENS 17 A 40 -->
+  <div class="page-sheet">
+    <div class="header-bar">
+      <span>||359_PMMA_CG2_01N569038||</span>
+      <span>CESPE | CEBRASPE – PM/MA – Aplicação: 2026</span>
+    </div>
+
+    <div class="columns-container">
+      <div class="enunciado-geral">A respeito da história republicana, das lutas coloniais e dos movimentos sociais no
+        Maranhão e no Brasil, julgue os itens subsequentes.</div>
+
+      <div class="item-block">
+        <span class="item-num">17</span>
+        <div class="item-text">A vitória eleitoral de Getúlio Vargas, em 1930, pôs fim à República Velha, inaugurando
+          uma nova fase da história política brasileira com forte centralização do poder estatal.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">18</span>
+        <div class="item-text">O caráter essencialmente oligárquico da Primeira República, também denominada República
+          Velha, deve-se ao domínio político das elites regionais cafeeiras e agrárias.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">19</span>
+        <div class="item-text">A expressão “política do café com leite”, normalmente utilizada para caracterizar a
+          Primeira República, reflete a supremacia política e a alternância na presidência dos estados de São Paulo e
+          Minas Gerais.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">20</span>
+        <div class="item-text">Na Primeira República, o número de eleitores era bem elevado e o voto secreto, amparado
+          por eficiente justiça eleitoral, garantia a lisura e a transparência das eleições.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">21</span>
+        <div class="item-text">O movimento tenentista da década de 20 do século XX contestou o modelo político
+          oligárquico e, pelas armas, tentou derrubar as estruturas políticas em vigor no país.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">22</span>
+        <div class="item-text">A renúncia do presidente Jânio Quadros, em 1961, motivou profunda crise política no país,
+          temporariamente solucionada com a adoção do sistema parlamentarista para a posse de João Goulart.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">23</span>
+        <div class="item-text">A derrubada do regime militar, em 1985, deu-se em decorrência de uma revolta armada que
+          uniu setores civis e militares radicais descontentes com o governo dos generais.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">24</span>
+        <div class="item-text">O governo de Juscelino Kubitschek, na segunda metade da década de 50 do século XX, teve
+          como marco a política desenvolvimentista e o ideal de fazer o Brasil progredir cinquenta anos em cinco.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">25</span>
+        <div class="item-text">No século XVII, o Maranhão foi local de conflito entre os colonos, que pretendiam
+          escravizar os indígenas, e os padres jesuítas, que combatiam o cativeiro dos nativos.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">26</span>
+        <div class="item-text">A revolta liderada por Manuel Beckman foi vitoriosa: coroado rei, Beckman governou o
+          Maranhão por décadas até ser anistiado pela Coroa Portuguesa.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">27</span>
+        <div class="item-text">A fundação da França Equinocial (1612) e a construção do Forte de São Luís resultaram da
+          expedição francesa comandada por Daniel de La Touche, senhor de La Ravardière.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">28</span>
+        <div class="item-text">Ao negar-se a enfrentar os revoltosos da Balaiada, Luís Alves de Lima e Silva recusou-se,
+          pela primeira e única vez na carreira, a cumprir uma ordem do governo central regencial.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">29</span>
+        <div class="item-text">A Balaiada (1838–1841) é considerada uma das maiores revoltas rurais e populares da
+          história do Brasil, agregando vaqueiros, artesãos e escravizados quilombolas sob liderança de Manuel dos Anjos
+          e Cosme Bento.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">30</span>
+        <div class="item-text">O Maranhão não aderiu de imediato à Independência proclamada em 1822 por D. Pedro I,
+          permanecendo fiel às Cortes de Lisboa até ser subjugado militarmente em julho de 1823.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="enunciado-geral">Com relação à geografia física, econômica e demográfica do Brasil e do Maranhão,
+        julgue os itens a seguir.</div>
+
+      <div class="item-block">
+        <span class="item-num">31</span>
+        <div class="item-text">A integração produtiva e a internacionalização da economia brasileira são marcadas pela
+          circulação de mercadorias em redes e pelo expressivo papel das exportações de <i>commodities</i> minerais e
+          agrícolas.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">32</span>
+        <div class="item-text">A região do MATOPIBA compreende áreas do bioma Cerrado nos estados do Maranhão,
+          Tocantins, Piauí e Bahia, destacando-se como grande fronteira agrícola nacional de grãos e fibras.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">33</span>
+        <div class="item-text">A Mata de Cocais é uma zona ecotonal de transição entre a Amazônia, o Cerrado e a
+          Caatinga, onde a extração do coco-babaçu desempenha relevante papel socioeconômico tradicional.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">34</span>
+        <div class="item-text">O relevo do estado do Maranhão é caracterizado pela predominância de bacias sedimentares,
+          com baixas superfícies de aplainamento, baixos platôs e extensas chapadas dissecadas.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">35</span>
+        <div class="item-text">As dunas móveis e fixas do Parque Nacional dos Lençóis Maranhenses resultam da ação de um
+          clima semiárido severo presente em todo o litoral ocidental maranhense.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">36</span>
+        <div class="item-text">Na Floresta dos Guarás, situada no litoral ocidental maranhense, encontram-se alguns dos
+          mais extensos e preservados manguezais do Brasil, essenciais para a reprodução de aves como o Guará.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">37</span>
+        <div class="item-text">O complexo industrial da ALUMAR, instalado em São Luís, foi um dos principais
+          investimentos incentivados para o processamento de bauxita e produção de alumínio.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">38</span>
+        <div class="item-text">A formação geomorfológica maranhense é composta, predominantemente, por rochas
+          cristalinas ígneas e metamórficas de idade arqueana.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">39</span>
+        <div class="item-text">O Porto do Itaqui, localizado na Baía de São Marcos, possui calado natural profundo que
+          permite a operação de navios de grande porte (Valemax) para escoamento de minérios e soja.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">40</span>
+        <div class="item-text">A bacia hidrográfica do rio Parnaíba é genuinamente maranhense, sem qualquer
+          compartilhamento de suas águas ou margens com outros estados da Federação.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="espaco-livre-print">Espaço livre</div>
+    </div>
+  </div>
+
+  <!-- PÁGINA 3: ITENS 41 A 65 -->
+  <div class="page-sheet">
+    <div class="header-bar">
+      <span>||359_PMMA_CG2_01N569038||</span>
+      <span>CESPE | CEBRASPE – PM/MA – Aplicação: 2026</span>
+    </div>
+
+    <div class="columns-container">
+      <div class="enunciado-geral">Julgue os itens de 41 a 50 quanto à gramática, pontuação e estruturas proposicionais.
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">41</span>
+        <div class="item-text">Na oração “Haviam vários candidatos inscritos no concurso da PMMA”, a concordância verbal
+          com o verbo haver impessoal atende à norma culta.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">42</span>
+        <div class="item-text">Em “O policial assistiu ao treinamento tático com atenção”, o verbo <b>assistir</b> está
+          empregado na regência exigida pela norma culta no sentido de presenciar.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">43</span>
+        <div class="item-text">O segmento “Nunca informou-se aos praças o horário da escala” viola as regras de
+          colocação pronominal em razão da palavra negativa atrativa.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">44</span>
+        <div class="item-text">Na frase “A policial militar estava meia cansada após a patrulha”, a palavra <b>meia</b>
+          concorda corretamente com o adjetivo.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">45</span>
+        <div class="item-text">A oração “O comandante solicitou, que todos mantivessem a postura” apresenta pontuação
+          incorreta por separar a oração principal da subordinada substantiva.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">46</span>
+        <div class="item-text">A negação lógica de “O soldado é promovido e o soldo é reajustado” é: <b>O soldado não é
+            promovido ou o soldo não é reajustado</b>.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">47</span>
+        <div class="item-text">A proposição “Se o candidato estuda com método, então ele é aprovado” equivale
+          logicamente a: <b>Se o candidato não é aprovado, então ele não estuda com método</b>.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">48</span>
+        <div class="item-text">Se a proposição “Todos os militares são corajosos” é falsa, então conclui-se
+          obrigatoriamente que “Nenhum militar é corajoso”.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">49</span>
+        <div class="item-text">Dadas as premissas “Se o alarme toca, a viatura se desloca” e “A viatura não se
+          deslocou”, conclui-se validamente que <b>O alarme não tocou</b>.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">50</span>
+        <div class="item-text">Uma tabela-verdade associada a uma proposição composta com 3 proposições simples
+          distintas possui exatamente 8 linhas de combinações lógicas.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="main-title-box" style="margin-top: 10px;">CONHECIMENTOS ESPECÍFICOS</div>
+
+      <div class="enunciado-geral">À luz do Estatuto dos Policiais Militares da Polícia Militar do Maranhão (Lei
+        Estadual nº 6.513/1995), julgue os itens a seguir.</div>
+
+      <div class="item-block">
+        <span class="item-num">51</span>
+        <div class="item-text">Posto e graduação são graus hierárquicos conferidos por ato do comandante-geral da
+          Polícia Militar, sendo os de oficiais confirmados em carta patente.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">52</span>
+        <div class="item-text"><b>Situação hipotética:</b> O soldado João ingressou na PMMA em 2010; e o soldado Pedro,
+          em 2011. Ambos foram promovidos a cabo na mesma data. <b>Assertiva:</b> O soldado João terá precedência em
+          relação a Pedro, por antiguidade no grau anterior.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">53</span>
+        <div class="item-text">Aspirantes a oficial são denominados praças especiais e têm precedência hierárquica sobre
+          as demais praças da corporação.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">54</span>
+        <div class="item-text">Policial militar da ativa da PMMA que for posto à disposição de órgão de inteligência de
+          outro estado será considerado em exercício na função policial militar.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">55</span>
+        <div class="item-text">Estrangeiros naturalizados brasileiros podem ingressar como praças na PMMA, mas o
+          oficialato é privativo de brasileiros natos.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">56</span>
+        <div class="item-text">O soldado que praticar conduta que configure crime militar e transgressão disciplinar
+          será punido criminalmente e cumulado com a sanção disciplinar correspondente.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">57</span>
+        <div class="item-text">O soldado que demonstrar incapacidade no desempenho de suas funções poderá ser afastado
+          preventivamente do cargo pelo comandante de seu batalhão.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">58</span>
+        <div class="item-text">As praças da reserva remunerada não estão sujeitas a julgamento perante Conselho de
+          Disciplina.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">59</span>
+        <div class="item-text">Se pretender candidatar-se a cargo eletivo, o policial militar que contar com menos de
+          cinco anos de serviço será demitido ou licenciado <i>ex officio</i>.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">60</span>
+        <div class="item-text">A licença para tratamento de saúde de dependente legal pode ser concedida ao policial
+          militar mediante comprovação médica pericial.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">61</span>
+        <div class="item-text">Estando agregado, o policial militar não ocupa vaga na escala hierárquica do seu quadro,
+          embora figure nela sem número.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">62</span>
+        <div class="item-text">A praça desertora, com ou sem estabilidade assegurada, será automaticamente excluída do
+          serviço ativo logo após a lavratura do termo de deserção.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">63</span>
+        <div class="item-text">A praça excluída a bem da disciplina fará jus a indenização financeira proporcional pelo
+          tempo de serviço prestado à corporação.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">64</span>
+        <div class="item-text">A praça sem estabilidade que ingressar no mau comportamento poderá ser licenciada a bem
+          da disciplina por ato da autoridade competente.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">65</span>
+        <div class="item-text">O policial militar reformado por incapacidade definitiva fica dispensado de qualquer
+          convocação ou mobilização futura no serviço ativo.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PÁGINA 4: ITENS 66 A 90 -->
+  <div class="page-sheet">
+    <div class="header-bar">
+      <span>||359_PMMA_005_01N598624||</span>
+      <span>CESPE | CEBRASPE – PM/MA – Aplicação: 2026</span>
+    </div>
+
+    <div class="columns-container">
+      <div class="enunciado-geral">Com base na Lei Federal nº 14.751/2023 e na Lei de Organização Básica da PMMA (Lei
+        Estadual nº 12.896/2026), julgue os itens a seguir.</div>
+
+      <div class="item-block">
+        <span class="item-num">66</span>
+        <div class="item-text">A Polícia Militar é força auxiliar e reserva do Exército Brasileiro, subordinada
+          operacional e administrativamente ao Ministério da Defesa em tempo de paz.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">67</span>
+        <div class="item-text">O Comandante-Geral da PMMA é nomeado pelo Governador do Estado e deve ser escolhido
+          obrigatoriamente entre os Coronéis da ativa do Quadro de Oficiais de Estado-Maior.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">68</span>
+        <div class="item-text">A Lei nº 14.751/2023 assegura aos policiais militares o porte de arma de fogo com
+          validade nacional, tanto em serviço ativo quanto na inatividade.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">69</span>
+        <div class="item-text">A prisão provisória de policial militar deve ser cumprida em dependência prisional
+          militar de sua própria corporação, separada de presos civis comuns.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">70</span>
+        <div class="item-text">A Corregedoria-Geral da PMMA é órgão subordinado funcionalmente à Defensoria Pública do
+          Estado para apuração de transgressões administrativas.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">71</span>
+        <div class="item-text">O Estado-Maior Geral da PMMA é o órgão de direção geral responsável pelo planejamento
+          estratégico e assessoramento técnico direto ao Comandante-Geral.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">72</span>
+        <div class="item-text">Os Comandos de Policiamento de Área (CPAs) coordenam regionalmente a execução do
+          policiamento dos Batalhões e Companhias Operacionais da PMMA.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">73</span>
+        <div class="item-text">O Batalhão de Operações Policiais Especiais (BOPE) constitui unidade tática de apoio
+          especializado em missões de alto risco e complexidade no Maranhão.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">74</span>
+        <div class="item-text">A Lei nº 14.751/2023 padronizou nacionalmente a exigência de nível superior de
+          escolaridade para o ingresso no cargo de Soldado da Polícia Militar.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">75</span>
+        <div class="item-text">É permitido aos policiais militares estaduais da ativa o exercício do direito
+          constitucional de greve e filiação a sindicatos classistas.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="enunciado-geral">Julgue os itens subsequentes relativos a sistemas operacionais, editores de texto e
+        planilhas eletrônicas.</div>
+
+      <div class="item-block">
+        <span class="item-num">76</span>
+        <div class="item-text">No Windows, quando um usuário efetua login pela primeira vez, seu perfil local com pastas
+          padrão (Documentos, Imagens, Desktop) é criado automaticamente.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">77</span>
+        <div class="item-text">No Windows, uma mesma pasta pode conter simultaneamente dois arquivos distintos com
+          exatamente o mesmo nome e a mesma extensão de arquivo.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">78</span>
+        <div class="item-text">O sistema de arquivos NTFS suporta atribuição de permissões granulares de acesso por
+          usuário e compactação nativa de dados no ambiente Windows.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">79</span>
+        <div class="item-text">No Microsoft Word, os arquivos gravados no formato padrão baseado na tecnologia OpenXML
+          possuem extensão <b>.docx</b>.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">80</span>
+        <div class="item-text">No Microsoft Word, a inserção e formatação de imagens em formatos vetoriais e
+          rasterizados (como JPEG e PNG) é nativamente suportada.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">81</span>
+        <div class="item-text">No Microsoft Excel, a função <b>SE</b> retornará um determinado valor se uma condição
+          lógica for verdadeira e outro valor se a condição for falsa.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">82</span>
+        <div class="item-text">No Microsoft Excel, a fórmula <b>=SOMA(A1:A5)</b> somará todas as células contidas no
+          intervalo contíguo que vai de A1 até A5.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">83</span>
+        <div class="item-text">No Microsoft PowerPoint, é possível imprimir apresentações na forma de folhetos, contendo
+          até nove slides por página impressa.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">84</span>
+        <div class="item-text">Na guia <b>Design</b> do Microsoft PowerPoint, o usuário pode configurar e aplicar temas,
+          variantes de cores e fontes para todos os slides da apresentação.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="text-body" style="margin-top: 4px;">Em um computador desktop com placa-mãe de 4 slots DDR3 e
+        processador Intel Core, foram obtidas as métricas de desempenho mostradas a seguir.</div>
+
+      <div class="taskmgr-box">
+        <div class="taskmgr-header">
+          <span>Gerenciador de Tarefas do Windows</span>
+          <span>Desempenho</span>
+        </div>
+        <div class="taskmgr-grid">
+          <div>
+            <div style="font-weight:bold; font-size:7pt;">Uso de CPU: 19%</div>
+            <div class="taskmgr-chart">
+              <svg width="100%" height="100%" viewBox="0 0 100 48">
+                <path d="M0,40 L10,35 L20,38 L30,20 L40,30 L50,15 L60,25 L70,30 L80,18 L90,22 L100,28" fill="none"
+                  stroke="#22c55e" stroke-width="1.5" />
+              </svg>
+            </div>
+          </div>
+          <div>
+            <div style="font-weight:bold; font-size:7pt;">Memória Física: 4,65 GB</div>
+            <div class="taskmgr-chart">
+              <svg width="100%" height="100%" viewBox="0 0 100 48">
+                <path d="M0,25 L15,25 L30,24 L45,26 L60,25 L75,25 L90,25 L100,25" fill="none" stroke="#38bdf8"
+                  stroke-width="1.5" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        <table class="taskmgr-table">
+          <tr>
+            <td>Total Memória: 8192 MB</td>
+            <td>Identificadores: 21641</td>
+          </tr>
+          <tr>
+            <td>Em Cache: 3047 MB</td>
+            <td>Processos: 68</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="enunciado-geral">Com base na figura do Gerenciador de Desempenho e na arquitetura de microinformática,
+        julgue os itens a seguir.</div>
+
+      <div class="item-block">
+        <span class="item-num">85</span>
+        <div class="item-text">A figura indica que o sistema operacional está com erro de leitura, pois um único
+          processador físico é incapaz de gerenciar mais de 60 processos simultâneos.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">86</span>
+        <div class="item-text">Os processadores modernos possuem capacidade de ajustar dinamicamente sua frequência de
+          operação (<i>clock</i>) de acordo com a demanda exigida.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">87</span>
+        <div class="item-text">Para que uma placa-mãe opere memória em canal duplo (<i>dual-channel</i>), é obrigatória
+          a existência de dois processadores físicos instalados.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">88</span>
+        <div class="item-text">A troca do processador por outro de maior frequência de <i>clock</i> resultará
+          necessariamente em melhora de desempenho em qualquer software executado.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">89</span>
+        <div class="item-text">Na arquitetura dos computadores padrão IBM-PC, há um chip de BIOS dedicado
+          individualmente para cada <i>slot</i> de memória RAM instalado na placa.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">90</span>
+        <div class="item-text">Um requisito basilar para que um software seja classificado como livre é a
+          disponibilização de seu código-fonte para estudo e aperfeiçoamento.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PÁGINA 5: ITENS 91 A 120 -->
+  <div class="page-sheet">
+    <div class="header-bar">
+      <span>||359_PMMA_005_01N598624||</span>
+      <span>CESPE | CEBRASPE – PM/MA – Aplicação: 2026</span>
+    </div>
+
+    <div class="columns-container">
+      <div class="enunciado-geral">Acerca de licenças de software livre, protocolos de rede e segurança da informação,
+        julgue os itens.</div>
+
+      <div class="item-block">
+        <span class="item-num">91</span>
+        <div class="item-text">Para ser considerado livre pela Free Software Foundation, um programa não pode ser
+          comercializado nem distribuído mediante qualquer cobrança financeira.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">92</span>
+        <div class="item-text">As licenças GNU GPL e GNU LGPL são exemplos legítimos de licenças de software livre.
+        </div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">93</span>
+        <div class="item-text">A liberdade de executar o programa para qualquer propósito, desde que não militar ou
+          ilícito, constitui uma das quatro liberdades essenciais do software livre.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">94</span>
+        <div class="item-text">Tanto o protocolo HTTP quanto o protocolo seguro HTTPS podem ser utilizados em redes
+          locais privadas (intranets) e na Internet pública.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">95</span>
+        <div class="item-text">O protocolo DNS é responsável por traduzir nomes de domínio legíveis em endereços MAC
+          físicos de placas de rede ethernet.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">96</span>
+        <div class="item-text">O uso de correio eletrônico corporativo dispensa a consulta a servidores DNS na Internet
+          devido ao roteamento universal em nuvem pública.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">97</span>
+        <div class="item-text">O protocolo SMTP é utilizado prioritariamente para o envio de mensagens entre clientes de
+          e-mail e servidores de correio eletrônico.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">98</span>
+        <div class="item-text">No envio de e-mails, o preenchimento do campo <b>Cco</b> assegura que os destinatários
+          não visualizem os endereços contidos nesse campo.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">99</span>
+        <div class="item-text">As intranets corporativas operam exclusivamente em redes isoladas sem adoção dos
+          protocolos da pilha TCP/IP.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">100</span>
+        <div class="item-text">O modo de navegação privativa em navegadores web impede que provedores de acesso
+          rastreiem o tráfego dos pacotes trafegados na rede.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">101</span>
+        <div class="item-text">Um dos procedimentos recomendados em políticas de cópia de segurança (<i>backup</i>) é a
+          criptografia das mídias para resguardar a confidencialidade dos dados.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">102</span>
+        <div class="item-text">As cópias de dados devem ser mantidas em local seguro, resguardadas de acessos não
+          autorizados e de agentes naturais como umidade, calor e poeira.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">103</span>
+        <div class="item-text">O <i>backup</i> incremental realiza a cópia exclusivamente dos arquivos criados ou
+          alterados desde o último <i>backup</i> completo ou incremental.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">104</span>
+        <div class="item-text">O <i>backup</i> diferencial consome progressivamente menos espaço em disco do que o
+          incremental ao longo dos dias de uma mesma semana.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">105</span>
+        <div class="item-text">A realização de <i>backup</i> em serviços de armazenamento em nuvem dispensa
+          integralmente testes periódicos de restauração de dados.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">106</span>
+        <div class="item-text">O ataque que torna dados inacessíveis usando criptografia e exige resgate para a
+          recuperação da chave é o <b>ransomware</b>.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">107</span>
+        <div class="item-text">Um computador corporativo usado remotamente em ataques DDoS sem o conhecimento de seu
+          operador pode ser um bot integrante de uma <b>botnet</b>.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">108</span>
+        <div class="item-text">Uma máquina infectada por <i>worm</i> caracteriza-se obrigatoriamente como vírus, pois
+          <i>worms</i> não consomem recursos de memória ou processamento.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">109</span>
+        <div class="item-text">Ameaças complexas como ransomware e invasões por botnet seriam totalmente neutralizadas
+          apenas pela instalação de um <i>antiadware</i> gratuito nos terminais.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">110</span>
+        <div class="item-text">O <i>Phishing</i> é uma técnica de engenharia social que busca obter dados sensíveis
+          (senhas, cartões) por meio de comunicações fraudulentas críveis.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">111</span>
+        <div class="item-text">O <i>Firewall</i> é um dispositivo ou software que fiscaliza e filtra conexões de entrada
+          e saída com base em um conjunto de regras predefinidas.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">112</span>
+        <div class="item-text">A autenticação de dois fatores (2FA) garante segurança adicional exigindo algo que o
+          usuário sabe (senha) e algo que ele possui (token/código).</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">113</span>
+        <div class="item-text">O <i>Keylogger</i> é um tipo de <i>spyware</i> capaz de gravar as teclas pressionadas no
+          teclado para captura indevida de credenciais de acesso.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">114</span>
+        <div class="item-text">Um <i>Trojan Horse</i> (Cavalo de Troia) oculta funcionalidades maliciosas sob a
+          aparência de um software inofensivo e legítimo.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">115</span>
+        <div class="item-text">O princípio da <b>Confidencialidade</b> tem como objetivo primordial manter os serviços
+          disponíveis continuamente para acesso público.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">116</span>
+        <div class="item-text">O princípio da <b>Integridade</b> assegura que uma informação não foi corrompida ou
+          modificada de forma não autorizada.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">117</span>
+        <div class="item-text">O princípio do <b>Não Repúdio</b> impede que o emissor negue validamente a autoria de uma
+          mensagem autenticada digitalmente.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">118</span>
+        <div class="item-text">O protocolo HTTPS utiliza criptografia fundamentada em certificados digitais SSL/TLS para
+          resguardar o tráfego web contra interceptações.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">119</span>
+        <div class="item-text">O recurso "Controlar Alterações" no Microsoft Word armazena o histórico das edições
+          realizadas no documento por múltiplos revisores.</div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+
+      <div class="item-block">
+        <span class="item-num">120</span>
+        <div class="item-text">No Windows, o atalho <b>Windows + L</b> bloqueia instantaneamente a estação de trabalho.
+        </div>
+        <div class="bubbles-container"><span class="bubble" onclick="toggleBubble(this)">C</span><span class="bubble"
+            onclick="toggleBubble(this)">E</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PÁGINA 6: GABARITO OFICIAL DEFINITIVO CEBRASPE COM IMAGEM DIRETA -->
+  <div class="gabarito-oficial-page" id="gabarito-oficial">
+
+    <div style="text-align: center; margin-bottom: 12px;">
+      <img
+        src="https://res.cloudinary.com/ddhlqymvf/image/upload/v1787868513/Captura_de_Tela_2026-08-27_a%CC%80s_6.58.46_PM_ai96ra.png"
+        style="width: 100%; max-width: 650px; height: auto; display: block; margin: 0 auto;"
+        alt="Logos CESPE Cebraspe Oficiais" />
+    </div>
+
+    <div class="edital-header-text">
+      ESTADO DO MARANHÃO<br>
+      SECRETARIA DE ESTADO DA ADMINISTRAÇÃO E GESTÃO E PREVIDÊNCIA<br>
+      POLÍCIA MILITAR DO MARANHÃO<br>
+      CONCURSO PÚBLICO PARA PROVIMENTO DE VAGAS E FORMAÇÃO DE CADASTRO DE RESERVA PARA O<br>
+      CARGO DE SOLDADO DO QUADRO DE PRAÇA POLICIAL MILITAR (QP)
+    </div>
+
+    <div class="data-aplicacao">Aplicação: 2026</div>
+    <div class="cargo-title">CONHECIMENTOS GERAIS E ESPECÍFICOS PARA O CARGO DE SOLDADO QP</div>
+
+    <div style="font-size: 7.5pt; text-align: right; color: #666; margin-bottom: 6px;">359_PMMA_CG2_01</div>
+    <div class="gabaritos-vermelho-title">GABARITOS OFICIAIS DEFINITIVOS</div>
+
+    <div class="obs-anulado">Obs.: ( X ) item anulado.</div>
+
+    <!-- TABELA OFICIAL CEBRASPE -->
+    <table class="tabela-gabarito-cebraspe">
+      <tr class="row-item">
+        <td class="header-col">Item</td>
+        <td>1</td>
+        <td>2</td>
+        <td>3</td>
+        <td>4</td>
+        <td>5</td>
+        <td>6</td>
+        <td>7</td>
+        <td>8</td>
+        <td>9</td>
+        <td>10</td>
+        <td>11</td>
+        <td>12</td>
+        <td>13</td>
+        <td>14</td>
+        <td>15</td>
+        <td>16</td>
+        <td>17</td>
+        <td>18</td>
+        <td>19</td>
+        <td>20</td>
+      </tr>
+      <tr class="row-gab">
+        <td class="header-col">Gabarito</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+      </tr>
+
+      <tr class="row-item">
+        <td class="header-col">Item</td>
+        <td>21</td>
+        <td>22</td>
+        <td>23</td>
+        <td>24</td>
+        <td>25</td>
+        <td>26</td>
+        <td>27</td>
+        <td>28</td>
+        <td>29</td>
+        <td>30</td>
+        <td>31</td>
+        <td>32</td>
+        <td>33</td>
+        <td>34</td>
+        <td>35</td>
+        <td>36</td>
+        <td>37</td>
+        <td>38</td>
+        <td>39</td>
+        <td>40</td>
+      </tr>
+      <tr class="row-gab">
+        <td class="header-col">Gabarito</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>E</td>
+      </tr>
+
+      <tr class="row-item">
+        <td class="header-col">Item</td>
+        <td>41</td>
+        <td>42</td>
+        <td>43</td>
+        <td>44</td>
+        <td>45</td>
+        <td>46</td>
+        <td>47</td>
+        <td>48</td>
+        <td>49</td>
+        <td>50</td>
+        <td>51</td>
+        <td>52</td>
+        <td>53</td>
+        <td>54</td>
+        <td>55</td>
+        <td>56</td>
+        <td>57</td>
+        <td>58</td>
+        <td>59</td>
+        <td>60</td>
+      </tr>
+      <tr class="row-gab">
+        <td class="header-col">Gabarito</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>E</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+      </tr>
+
+      <tr class="row-item">
+        <td class="header-col">Item</td>
+        <td>61</td>
+        <td>62</td>
+        <td>63</td>
+        <td>64</td>
+        <td>65</td>
+        <td>66</td>
+        <td>67</td>
+        <td>68</td>
+        <td>69</td>
+        <td>70</td>
+        <td>71</td>
+        <td>72</td>
+        <td>73</td>
+        <td>74</td>
+        <td>75</td>
+        <td>76</td>
+        <td>77</td>
+        <td>78</td>
+        <td>79</td>
+        <td>80</td>
+      </tr>
+      <tr class="row-gab">
+        <td class="header-col">Gabarito</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+      </tr>
+
+      <tr class="row-item">
+        <td class="header-col">Item</td>
+        <td>81</td>
+        <td>82</td>
+        <td>83</td>
+        <td>84</td>
+        <td>85</td>
+        <td>86</td>
+        <td>87</td>
+        <td>88</td>
+        <td>89</td>
+        <td>90</td>
+        <td>91</td>
+        <td>92</td>
+        <td>93</td>
+        <td>94</td>
+        <td>95</td>
+        <td>96</td>
+        <td>97</td>
+        <td>98</td>
+        <td>99</td>
+        <td>100</td>
+      </tr>
+      <tr class="row-gab">
+        <td class="header-col">Gabarito</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>E</td>
+        <td>E</td>
+        <td>E</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>E</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>E</td>
+      </tr>
+
+      <tr class="row-item">
+        <td class="header-col">Item</td>
+        <td>101</td>
+        <td>102</td>
+        <td>103</td>
+        <td>104</td>
+        <td>105</td>
+        <td>106</td>
+        <td>107</td>
+        <td>108</td>
+        <td>109</td>
+        <td>110</td>
+        <td>111</td>
+        <td>112</td>
+        <td>113</td>
+        <td>114</td>
+        <td>115</td>
+        <td>116</td>
+        <td>117</td>
+        <td>118</td>
+        <td>119</td>
+        <td>120</td>
+      </tr>
+      <tr class="row-gab">
+        <td class="header-col">Gabarito</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>E</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+        <td>C</td>
+      </tr>
+    </table>
+
+    <div
+      style="font-size: 8pt; color: #64748b; text-align: center; margin-top: auto; border-top: 1px solid #cbd5e1; padding-top: 8px;">
+      Documento gerado e diagramado estritamente conforme o padrão do Centro Brasileiro de Pesquisa em Avaliação e
+      Seleção e de Promoção de Eventos (Cebraspe).
+    </div>
+  </div>
+
+  <script>
+    function toggleBubble(el) {
+      const container = el.parentElement;
+      const bubbles = container.querySelectorAll('.bubble');
+      const text = el.innerText.trim();
+
+      if (el.classList.contains('selected-c') || el.classList.contains('selected-e')) {
+        el.classList.remove('selected-c', 'selected-e');
+        return;
+      }
+
+      bubbles.forEach(b => b.classList.remove('selected-c', 'selected-e'));
+      if (text === 'C') {
+        el.classList.add('selected-c');
+      } else {
+        el.classList.add('selected-e');
+      }
+    }
+  </script>
+
+</body>
+
+</html>
