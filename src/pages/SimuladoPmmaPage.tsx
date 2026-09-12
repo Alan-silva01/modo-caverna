@@ -114,12 +114,12 @@ export default function SimuladoPmmaPage() {
     }
 
     const respondidas = acertos + erros;
-    // Padrão Cebraspe: Uma errada anula uma certa
-    const notaLiquida = Math.max(0, acertos - erros);
-    const notaLiquidaGerais = Math.max(0, acertosGerais - errosGerais);
-    const notaLiquidaEsp = Math.max(0, acertosEsp - errosEsp);
+    // Padrão Cebraspe Real: Uma errada anula uma certa (permite pontuação líquida negativa!)
+    const notaLiquida = acertos - erros;
+    const notaLiquidaGerais = acertosGerais - errosGerais;
+    const notaLiquidaEsp = acertosEsp - errosEsp;
     const percentualAcertos = respondidas > 0 ? Number(((acertos / respondidas) * 100).toFixed(1)) : 0;
-    const aproveitamentoTotal = Number(((acertos / 120) * 100).toFixed(1));
+    const aproveitamentoTotal = Number(((notaLiquida / 120) * 100).toFixed(1));
 
     return {
       acertos,
@@ -297,17 +297,22 @@ export default function SimuladoPmmaPage() {
       <style>{simuladoPmmaCss}</style>
       <style>{`
         .simulado-pmma-root {
-          background: #cbd5e1;
+          background-color: var(--background);
           min-height: 100vh;
           padding-bottom: 80px;
-          color: #000;
+          color: var(--foreground);
           overflow-x: hidden;
+          font-family: 'Inter', sans-serif;
         }
 
         /* Garantir que as folhas A4 fiquem contidas perfeitamente sem quebrar o layout */
         .page-sheet, .gabarito-oficial-page {
           max-width: 100% !important;
           box-sizing: border-box !important;
+          background: #ffffff !important;
+          color: #000000 !important;
+          border: 1px solid var(--border);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
         }
 
         .highlight-pulse {
@@ -315,7 +320,7 @@ export default function SimuladoPmmaPage() {
         }
 
         @keyframes itemPulse {
-          0% { background: rgba(37, 99, 235, 0.25); outline: 2px solid #2563eb; }
+          0% { background: var(--brand-glow); outline: 2px solid var(--brand); }
           100% { background: transparent; outline: none; }
         }
 
@@ -323,32 +328,35 @@ export default function SimuladoPmmaPage() {
           position: sticky;
           top: 0;
           z-index: 100;
-          background: #0f172a;
-          color: #fff;
-          border-bottom: 1px solid #1e293b;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-          padding: 10px 18px;
+          background-color: var(--card);
+          color: var(--card-foreground);
+          border-bottom: 1px solid var(--border);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          padding: 8px 18px;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          font-family: 'Rajdhani', sans-serif;
         }
 
         .timer-badge {
           display: flex;
           align-items: center;
-          gap: 8px;
-          background: #1e293b;
+          gap: 6px;
+          background-color: var(--secondary);
+          color: var(--foreground);
+          border: 1px solid var(--border);
           padding: 6px 14px;
-          border-radius: 6px;
           font-size: 15px;
           font-weight: 700;
-          letter-spacing: 0.5px;
+          letter-spacing: 0.08em;
+          font-family: 'Rajdhani', sans-serif;
         }
 
         .timer-badge.warning {
-          background: #dc2626;
-          color: #fff;
+          background-color: var(--error);
+          color: var(--error-foreground);
+          border-color: var(--error);
           animation: timerPulse 1s infinite;
         }
 
@@ -359,13 +367,15 @@ export default function SimuladoPmmaPage() {
         }
 
         .btn-entregar {
-          background: #16a34a;
-          color: #fff;
-          border: none;
+          background-color: var(--brand);
+          color: var(--brand-foreground);
+          border: 1px solid var(--brand);
           padding: 8px 18px;
-          border-radius: 6px;
+          font-family: 'Rajdhani', sans-serif;
           font-weight: 700;
-          font-size: 13px;
+          font-size: 14px;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
           cursor: pointer;
           display: flex;
           align-items: center;
@@ -374,26 +384,29 @@ export default function SimuladoPmmaPage() {
         }
 
         .btn-entregar:hover {
-          background: #15803d;
-          transform: translateY(-1px);
+          background-color: var(--brand-hover);
         }
 
         .btn-cartao {
-          background: #2563eb;
-          color: #fff;
-          border: none;
+          background-color: var(--secondary);
+          color: var(--foreground);
+          border: 1px solid var(--border);
           padding: 8px 14px;
-          border-radius: 6px;
-          font-weight: 600;
+          font-family: 'Rajdhani', sans-serif;
+          font-weight: 700;
           font-size: 13px;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
           cursor: pointer;
           display: flex;
           align-items: center;
           gap: 6px;
+          transition: all 150ms ease;
         }
 
         .btn-cartao:hover {
-          background: #1d4ed8;
+          border-color: var(--brand);
+          color: var(--brand);
         }
 
         /* Bolinhas C / E com feedback tátil e visual imediato */
@@ -405,74 +418,77 @@ export default function SimuladoPmmaPage() {
 
         .bubble:hover {
           transform: scale(1.15);
-          border-color: #2563eb;
+          border-color: #000;
         }
 
         .bubble.selected-c,
         .bubble.selected-e {
-          background: #0f172a !important;
+          background: #000000 !important;
           color: #ffffff !important;
-          border-color: #0f172a !important;
+          border-color: #000000 !important;
           font-weight: 900 !important;
-          box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.3) !important;
+          box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.4) !important;
         }
 
         .bubble.bubble-correct {
-          background: #16a34a !important;
+          background: #3A6B2A !important;
           color: #fff !important;
-          border-color: #16a34a !important;
+          border-color: #3A6B2A !important;
           font-weight: 900 !important;
         }
 
         .bubble.bubble-wrong {
-          background: #dc2626 !important;
+          background: #840308 !important;
           color: #fff !important;
-          border-color: #dc2626 !important;
+          border-color: #840308 !important;
           font-weight: 900 !important;
         }
 
         .bubble.bubble-should-be {
-          border: 2px solid #16a34a !important;
-          background: #dcfce7 !important;
-          color: #166534 !important;
+          border: 2px solid #3A6B2A !important;
+          background: #eaf3e6 !important;
+          color: #2b521e !important;
           font-weight: 900 !important;
         }
 
+        /* Hero de Resultados estilizado no Modo Caverna */
         .results-banner {
           max-width: 210mm;
-          margin: 16px auto;
-          background: #fff;
-          border-radius: 8px;
-          padding: 24px;
+          margin: 20px auto;
+          background-color: var(--card);
+          border: 1px solid var(--border);
+          padding: var(--space-xl);
           box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         .results-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-          gap: 12px;
-          margin-top: 16px;
+          gap: 8px;
+          margin-top: var(--space-md);
         }
 
         .result-stat-card {
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-          padding: 12px;
-          border-radius: 6px;
+          background-color: var(--background);
+          border: 1px solid var(--border);
+          padding: 14px 10px;
           text-align: center;
         }
 
         .result-stat-card .val {
-          font-size: 22px;
-          font-weight: 800;
+          font-family: 'Rajdhani', sans-serif;
+          font-size: 26px;
+          font-weight: 700;
+          line-height: 1.1;
         }
 
         .result-stat-card .lbl {
-          font-size: 11px;
-          color: #64748b;
+          font-family: 'Rajdhani', sans-serif;
+          font-size: 10px;
+          color: var(--muted-foreground);
           text-transform: uppercase;
           font-weight: 600;
+          letter-spacing: 0.08em;
           margin-top: 4px;
         }
 
@@ -480,8 +496,8 @@ export default function SimuladoPmmaPage() {
         .cartao-modal-overlay {
           position: fixed;
           top: 0; left: 0; right: 0; bottom: 0;
-          background: rgba(0, 0, 0, 0.65);
-          backdrop-filter: blur(3px);
+          background: rgba(0, 0, 0, 0.75);
+          backdrop-filter: blur(4px);
           z-index: 9999;
           display: flex;
           align-items: center;
@@ -490,15 +506,15 @@ export default function SimuladoPmmaPage() {
         }
 
         .cartao-modal-content {
-          background: #fff;
+          background-color: var(--card);
+          color: var(--card-foreground);
+          border: 1px solid var(--border);
           width: 100%;
           max-width: 860px;
           max-height: 90vh;
-          border-radius: 8px;
           display: flex;
           flex-direction: column;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
 
         .cartao-grid {
@@ -511,36 +527,39 @@ export default function SimuladoPmmaPage() {
 
         .cartao-item-btn {
           padding: 6px 4px;
-          border: 1px solid #cbd5e1;
-          border-radius: 4px;
-          background: #f8fafc;
+          border: 1px solid var(--border);
+          background-color: var(--background);
+          color: var(--foreground);
           cursor: pointer;
           text-align: center;
-          font-size: 12px;
+          font-family: 'Rajdhani', sans-serif;
+          font-size: 13px;
+          font-weight: 600;
           display: flex;
           flex-direction: column;
           align-items: center;
           gap: 2px;
+          transition: all 120ms ease;
         }
 
         .cartao-item-btn.answered {
-          background: #e0f2fe;
-          border-color: #38bdf8;
+          background-color: var(--brand-glow);
+          border-color: var(--brand);
           font-weight: 700;
-          color: #0369a1;
+          color: var(--brand);
         }
 
         .cartao-item-btn.correct {
-          background: #dcfce7;
-          border-color: #22c55e;
-          color: #15803d;
+          background-color: var(--success-bg);
+          border-color: var(--success);
+          color: var(--success);
           font-weight: 700;
         }
 
         .cartao-item-btn.wrong {
-          background: #fee2e2;
-          border-color: #ef4444;
-          color: #b91c1c;
+          background-color: var(--error-bg);
+          border-color: var(--error);
+          color: var(--error);
           font-weight: 700;
         }
       `}</style>
@@ -548,11 +567,11 @@ export default function SimuladoPmmaPage() {
       {/* ── BARRA SUPERIOR FIXA COM CRONÔMETRO DE 3H30 E CONTROLES ── */}
       <div className="sticky-simulado-bar">
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{ fontWeight: 800, fontSize: '15px', letterSpacing: '0.5px' }}>
+          <div style={{ fontWeight: 700, fontSize: '16px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             SIMULADO PMMA 2026
           </div>
-          <span style={{ fontSize: '12px', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <ShieldCheck size={14} color="#38bdf8" /> Soldado QP · Cebraspe
+          <span style={{ fontSize: '11px', color: 'var(--muted-foreground)', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'Inter' }}>
+            <ShieldCheck size={14} color="var(--brand)" /> Soldado QP · Cebraspe
           </span>
         </div>
 
@@ -588,7 +607,6 @@ export default function SimuladoPmmaPage() {
             <button
               type="button"
               className="btn-entregar"
-              style={{ background: '#2563eb' }}
               onClick={handleReiniciarSimulado}
             >
               <RotateCcw size={15} />
@@ -601,15 +619,23 @@ export default function SimuladoPmmaPage() {
       {/* ── PAINEL DE RESULTADO QUANDO FINALIZADO ── */}
       {status === 'submitted' && results && (
         <div className="results-banner">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Award size={26} color="#16a34a" />
-                <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Award size={24} color="var(--brand)" />
+                <h2 style={{
+                  margin: 0,
+                  fontSize: '22px',
+                  fontWeight: 700,
+                  fontFamily: 'Rajdhani',
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  color: 'var(--foreground)'
+                }}>
                   Resultado Oficial da Prova PMMA
                 </h2>
               </div>
-              <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#64748b' }}>
+              <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--muted-foreground)' }}>
                 Correção estritamente realizada de acordo com o gabarito oficial da banca Cebraspe (1 errada anula 1 certa).
               </p>
             </div>
@@ -617,7 +643,6 @@ export default function SimuladoPmmaPage() {
             <button
               type="button"
               className="btn-cartao"
-              style={{ background: '#0f172a' }}
               onClick={() => window.print()}
             >
               <Printer size={15} />
@@ -626,65 +651,72 @@ export default function SimuladoPmmaPage() {
           </div>
 
           <div className="results-grid">
-            <div className="result-stat-card" style={{ borderColor: '#2563eb', background: '#eff6ff' }}>
-              <div className="val" style={{ color: '#1d4ed8' }}>{results.notaLiquida} pts</div>
+            <div
+              className="result-stat-card"
+              style={{
+                borderColor: results.notaLiquida < 0 ? 'var(--error)' : 'var(--brand)',
+                backgroundColor: results.notaLiquida < 0 ? 'var(--error-bg)' : 'var(--brand-glow)'
+              }}
+            >
+              <div
+                className="val"
+                style={{ color: results.notaLiquida < 0 ? 'var(--error)' : 'var(--brand)' }}
+              >
+                {results.notaLiquida > 0 ? `+${results.notaLiquida}` : results.notaLiquida} pts
+              </div>
               <div className="lbl">Nota Líquida Cebraspe</div>
             </div>
 
-            <div className="result-stat-card" style={{ borderColor: '#22c55e', background: '#f0fdf4' }}>
-              <div className="val" style={{ color: '#16a34a' }}>{results.acertos}</div>
-              <div className="lbl">Acertos (+{results.acertos})</div>
+            <div className="result-stat-card" style={{ borderColor: 'var(--success)', backgroundColor: 'var(--success-bg)' }}>
+              <div className="val" style={{ color: 'var(--success)' }}>+{results.acertos}</div>
+              <div className="lbl">Acertos (+1 cada)</div>
             </div>
 
-            <div className="result-stat-card" style={{ borderColor: '#ef4444', background: '#fef2f2' }}>
-              <div className="val" style={{ color: '#dc2626' }}>{results.erros}</div>
-              <div className="lbl">Erros (-{results.erros})</div>
+            <div className="result-stat-card" style={{ borderColor: 'var(--error)', backgroundColor: 'var(--error-bg)' }}>
+              <div className="val" style={{ color: 'var(--error)' }}>-{results.erros}</div>
+              <div className="lbl">Erros (-1 cada)</div>
             </div>
 
             <div className="result-stat-card">
-              <div className="val" style={{ color: '#64748b' }}>{results.emBranco}</div>
+              <div className="val" style={{ color: 'var(--muted-foreground)' }}>{results.emBranco}</div>
               <div className="lbl">Em Branco (0 pts)</div>
             </div>
 
             <div className="result-stat-card">
-              <div className="val" style={{ color: '#0f172a' }}>{results.aproveitamentoTotal}%</div>
+              <div className="val" style={{ color: 'var(--foreground)' }}>{results.aproveitamentoTotal}%</div>
               <div className="lbl">Aproveitamento Total</div>
             </div>
 
             <div className="result-stat-card">
-              <div className="val" style={{ color: '#0f172a' }}>{formatTime(results.tempoGastoSegundos)}</div>
+              <div className="val" style={{ color: 'var(--foreground)' }}>{formatTime(results.tempoGastoSegundos)}</div>
               <div className="lbl">Tempo Utilizado</div>
             </div>
           </div>
 
           <div style={{
             marginTop: '16px',
-            padding: '12px',
-            background: '#f8fafc',
-            borderRadius: '6px',
-            border: '1px solid #e2e8f0',
+            padding: '12px 16px',
+            background: 'var(--background)',
+            border: '1px solid var(--border)',
             fontSize: '13px',
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center'
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '12px',
+            fontFamily: 'Inter',
+            color: 'var(--foreground)'
           }}>
             <div>
-              <strong>Conhecimentos Gerais (1 a 50):</strong> {results.notaLiquidaGerais} pontos líquidos
+              <strong>Conhecimentos Gerais (1 a 50):</strong> {results.notaLiquidaGerais > 0 ? `+${results.notaLiquidaGerais}` : results.notaLiquidaGerais} pontos líquidos
             </div>
             <div>
-              <strong>Conhecimentos Específicos (51 a 120):</strong> {results.notaLiquidaEsp} pontos líquidos
+              <strong>Conhecimentos Específicos (51 a 120):</strong> {results.notaLiquidaEsp > 0 ? `+${results.notaLiquidaEsp}` : results.notaLiquidaEsp} pontos líquidos
             </div>
             <button
               type="button"
-              style={{
-                background: '#16a34a',
-                color: '#fff',
-                border: 'none',
-                padding: '5px 12px',
-                borderRadius: '4px',
-                fontWeight: 600,
-                cursor: 'pointer'
-              }}
+              className="btn-entregar"
+              style={{ padding: '6px 14px', fontSize: '13px' }}
               onClick={() => {
                 const el = document.getElementById('gabarito-oficial');
                 el?.scrollIntoView({ behavior: 'smooth' });
@@ -708,18 +740,25 @@ export default function SimuladoPmmaPage() {
         <div style={{
           maxWidth: '210mm',
           margin: '20px auto 40px auto',
-          background: '#fff',
-          borderRadius: '8px',
-          padding: '24px',
+          backgroundColor: 'var(--card)',
+          border: '1px solid var(--border)',
+          padding: '28px',
           textAlign: 'center',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-          border: '1px solid #cbd5e1'
+          boxShadow: '0 4px 16px rgba(0,0,0,0.12)'
         }}>
-          <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
+          <h3 style={{
+            margin: '0 0 8px 0',
+            fontSize: '20px',
+            fontWeight: 700,
+            fontFamily: 'Rajdhani',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            color: 'var(--foreground)'
+          }}>
             Fim do Caderno de Questões
           </h3>
-          <p style={{ margin: '0 0 16px 0', color: '#64748b', fontSize: '14px' }}>
-            Você respondeu <strong>{stats.respondidas} de 120</strong> questões ({stats.emBranco} em branco).
+          <p style={{ margin: '0 0 16px 0', color: 'var(--muted-foreground)', fontSize: '14px', fontFamily: 'Inter' }}>
+            Você respondeu <strong style={{ color: 'var(--foreground)' }}>{stats.respondidas} de 120</strong> questões ({stats.emBranco} em branco).
           </p>
           <button
             type="button"
@@ -727,8 +766,7 @@ export default function SimuladoPmmaPage() {
             style={{
               margin: '0 auto',
               padding: '12px 28px',
-              fontSize: '16px',
-              borderRadius: '8px'
+              fontSize: '15px'
             }}
             onClick={() => setShowConfirmModal(true)}
           >
@@ -748,41 +786,48 @@ export default function SimuladoPmmaPage() {
         <div className="cartao-modal-overlay">
           <div className="cartao-modal-content" style={{ maxWidth: '520px', padding: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <AlertTriangle size={32} color="#f59e0b" />
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
+              <AlertTriangle size={28} color="var(--warning)" />
+              <h3 style={{
+                margin: 0,
+                fontSize: '18px',
+                fontWeight: 700,
+                fontFamily: 'Rajdhani',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: 'var(--foreground)'
+              }}>
                 Entregar Simulado PMMA para Correção?
               </h3>
             </div>
 
-            <p style={{ fontSize: '14px', color: '#475569', lineHeight: 1.5, margin: '0 0 16px 0' }}>
-              Você respondeu <strong>{stats.respondidas} de 120</strong> questões.
+            <p style={{ fontSize: '14px', color: 'var(--muted-foreground)', lineHeight: 1.5, margin: '0 0 16px 0' }}>
+              Você respondeu <strong style={{ color: 'var(--foreground)' }}>{stats.respondidas} de 120</strong> questões.
               {stats.emBranco > 0 && (
-                <span style={{ color: '#d97706', display: 'block', marginTop: '6px' }}>
+                <span style={{ color: 'var(--warning)', display: 'block', marginTop: '6px' }}>
                   Atenção: <strong>{stats.emBranco} itens</strong> ficaram em branco e não somarão nem subtrairão pontos.
                 </span>
               )}
             </p>
 
             <div style={{
-              background: '#f8fafc',
+              background: 'var(--background)',
               padding: '12px',
-              borderRadius: '6px',
-              border: '1px solid #e2e8f0',
+              border: '1px solid var(--border)',
               marginBottom: '20px',
-              fontSize: '13px'
+              fontSize: '13px',
+              color: 'var(--foreground)'
             }}>
               <div><strong>Tempo restante:</strong> {formatTime(timeLeft)}</div>
-              <div><strong>Critério Cebraspe:</strong> 1 item errado anula 1 item certo.</div>
+              <div><strong>Critério Cebraspe:</strong> 1 item errado anula 1 item certo (pontuação líquida).</div>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
               <button
                 type="button"
-                className="btn-action"
-                style={{ background: '#e2e8f0', color: '#1e293b' }}
+                className="btn-cartao"
                 onClick={() => setShowConfirmModal(false)}
               >
-                Continuar Fazendo Prova
+                Continuar Prova
               </button>
               <button
                 type="button"
@@ -803,16 +848,24 @@ export default function SimuladoPmmaPage() {
           <div className="cartao-modal-content" onClick={e => e.stopPropagation()}>
             <div style={{
               padding: '16px 20px',
-              borderBottom: '1px solid #e2e8f0',
+              borderBottom: '1px solid var(--border)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center'
             }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#0f172a' }}>
+                <h3 style={{
+                  margin: 0,
+                  fontSize: '18px',
+                  fontWeight: 700,
+                  fontFamily: 'Rajdhani',
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  color: 'var(--foreground)'
+                }}>
                   Cartão de Respostas do Simulado
                 </h3>
-                <span style={{ fontSize: '12px', color: '#64748b' }}>
+                <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>
                   Clique em qualquer item para navegar direto até a questão na folha de prova.
                 </span>
               </div>
@@ -825,7 +878,7 @@ export default function SimuladoPmmaPage() {
                   fontSize: '20px',
                   fontWeight: 700,
                   cursor: 'pointer',
-                  color: '#64748b'
+                  color: 'var(--muted-foreground)'
                 }}
               >
                 ✕
