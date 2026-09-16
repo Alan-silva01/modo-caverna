@@ -188,45 +188,66 @@ export default function SimuladoPmmaPage() {
     return () => clearInterval(timer);
   }, [startTime, status, handleFinalizarSimulado]);
 
-  // Update bubble classes in the rendered HTML when answers or status change
-  useEffect(() => {
-    if (!containerRef.current) return;
+  // Gera regras CSS dinâmicas baseadas no estado de respostas e submissão.
+  // Isso garante 100% de estabilidade: o navegador renderiza as bolinhas marcadas
+  // instantaneamente sem depender de mutações manuais de DOM ou re-renderizações frágeis.
+  const dynamicBubbleStyles = useMemo(() => {
+    const rules: string[] = [];
 
-    for (let i = 1; i <= 120; i++) {
-      const block = containerRef.current.querySelector(`#item-block-${i}`);
-      if (!block) continue;
-
-      const bubbleC = block.querySelector(`button.bubble-c`);
-      const bubbleE = block.querySelector(`button.bubble-e`);
-
-      const currentVal = answers[i];
-      const correctVal = GABARITO_MAP[i];
-
-      // Reset classes
-      bubbleC?.classList.remove('selected-c', 'selected-e', 'bubble-correct', 'bubble-wrong', 'bubble-should-be');
-      bubbleE?.classList.remove('selected-c', 'selected-e', 'bubble-correct', 'bubble-wrong', 'bubble-should-be');
-
-      if (status === 'in_progress') {
-        if (currentVal === 'C') bubbleC?.classList.add('selected-c');
-        if (currentVal === 'E') bubbleE?.classList.add('selected-e');
-      } else {
-        // After submission, show official corrections
-        if (currentVal === 'C') {
-          bubbleC?.classList.add(currentVal === correctVal ? 'bubble-correct' : 'bubble-wrong');
+    if (status === 'in_progress') {
+      Object.entries(answers).forEach(([itemNum, val]) => {
+        if (val === 'C' || val === 'E') {
+          const lower = val.toLowerCase();
+          rules.push(
+            `#item-block-${itemNum} button.bubble-${lower} {
+              background: #000000 !important;
+              color: #ffffff !important;
+              border-color: #000000 !important;
+              font-weight: 900 !important;
+              box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.45) !important;
+            }`
+          );
         }
-        if (currentVal === 'E') {
-          bubbleE?.classList.add(currentVal === correctVal ? 'bubble-correct' : 'bubble-wrong');
+      });
+    } else {
+      // Prova submetida: destacar acertos, erros e gabarito oficial
+      for (let i = 1; i <= 120; i++) {
+        const userVal = answers[i];
+        const correctVal = GABARITO_MAP[i];
+
+        if (userVal) {
+          const lowerUser = userVal.toLowerCase();
+          const isCorrect = userVal === correctVal;
+          const bg = isCorrect ? '#3A6B2A' : '#840308';
+          rules.push(
+            `#item-block-${i} button.bubble-${lowerUser} {
+              background: ${bg} !important;
+              color: #ffffff !important;
+              border-color: ${bg} !important;
+              font-weight: 900 !important;
+              box-shadow: 0 0 0 2px ${bg}66 !important;
+            }`
+          );
         }
-        // Highlight official answer if user missed or left blank
-        if (correctVal === 'C' && currentVal !== 'C') {
-          bubbleC?.classList.add('bubble-should-be');
-        }
-        if (correctVal === 'E' && currentVal !== 'E') {
-          bubbleE?.classList.add('bubble-should-be');
+
+        // Se o usuário errou ou deixou em branco, destaca a alternativa correta
+        if (correctVal && userVal !== correctVal) {
+          const lowerCorrect = correctVal.toLowerCase();
+          rules.push(
+            `#item-block-${i} button.bubble-${lowerCorrect} {
+              border: 2px solid #3A6B2A !important;
+              background: #eaf3e6 !important;
+              color: #2b521e !important;
+              font-weight: 900 !important;
+            }`
+          );
         }
       }
     }
+
+    return rules.join('\n');
   }, [answers, status]);
+
 
   // Handle bubble clicks directly via event delegation on container
   const handleContainerClick = useCallback(
@@ -301,6 +322,8 @@ export default function SimuladoPmmaPage() {
     <div className="simulado-pmma-root">
       {/* Injeta os estilos originais da prova do Cebraspe */}
       <style>{simuladoPmmaCss}</style>
+      {/* Regras CSS dinâmicas de preenchimento das bolinhas - 100% à prova de falhas */}
+      <style>{dynamicBubbleStyles}</style>
       <style>{`
         .simulado-pmma-root {
           background-color: var(--background);
@@ -417,18 +440,19 @@ export default function SimuladoPmmaPage() {
 
         /* Bolinhas C / E com feedback tátil e visual imediato */
         .bubble {
-          transition: all 120ms ease;
+          transition: transform 120ms ease, box-shadow 120ms ease;
           user-select: none;
           -webkit-tap-highlight-color: transparent;
           outline: none !important;
-          border: 1.5px solid #000 !important;
-          background: #ffffff !important;
-          color: #000000 !important;
+          border: 1.5px solid #000;
+          background: #ffffff;
+          color: #000000;
+          cursor: pointer;
         }
 
         .bubble:hover {
           transform: scale(1.18);
-          border-color: #000000 !important;
+          border-color: #000000;
         }
 
         .bubble.selected-c,
